@@ -7,3 +7,6 @@
 [submodule "dependencies/tinyshaders"]
 	path = dependencies/tinyshaders
 	url = https://github.com/ziacko/tinyshaders.git
+[submodule "dependencies/glm"]
+	path = dependencies/glm
+	url = https://github.com/g-truc/glm.git
