@@ -1,0 +1,9 @@
+[submodule "dependencies/tinywindow"]
+	path = dependencies/tinywindow
+	url = https://github.com/ziacko/tinywindow.git
+[submodule "dependencies/tinyextender"]
+	path = dependencies/tinyextender
+	url = https://github.com/ziacko/tinyextender.git
+[submodule "dependencies/tinyshaders"]
+	path = dependencies/tinyshaders
+	url = https://github.com/ziacko/tinyshaders.git
