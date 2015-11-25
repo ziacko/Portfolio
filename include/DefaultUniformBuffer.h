@@ -21,6 +21,16 @@ struct defaultUniformBuffer_t
 		this->height = resolution.y;
 	}
 
+	defaultUniformBuffer_t(camera* defaultCamera)
+	{
+		this->projection = defaultCamera->projection;
+		this->view = defaultCamera->view;
+		this->translation = defaultCamera->translation;
+		this->width = defaultCamera->resolution.x;
+		this->height = defaultCamera->resolution.y;
+
+	}
+
 	defaultUniformBuffer_t(){};
 };
 #endif

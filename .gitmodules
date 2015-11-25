@@ -10,3 +10,6 @@
 [submodule "dependencies/glm"]
 	path = dependencies/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "dependencies/tinyclock"]
+	path = dependencies/tinyclock
+	url = https://github.com/ziacko/tinyclock.git
