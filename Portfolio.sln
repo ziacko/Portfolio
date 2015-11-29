@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bubble Displacement", "Exam
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{C96F9364-6369-4EAD-87ED-BDEDCC16D421}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyShaders", "dependencies\tinyshaders\tinyShaders.vcxproj", "{724DE3A9-7341-4E7D-A875-4BD42E761330}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyShaders", "dependencies\tinyshaders\tinyShaders.vcxproj", "{DE3487F3-452D-4D3E-B28A-866A39123FF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,19 +35,19 @@ Global
 		{916BD3D9-73C7-4E54-A2B3-A2A58687661F}.Release|x64.Build.0 = Release|x64
 		{916BD3D9-73C7-4E54-A2B3-A2A58687661F}.Release|x86.ActiveCfg = Release|Win32
 		{916BD3D9-73C7-4E54-A2B3-A2A58687661F}.Release|x86.Build.0 = Release|Win32
-		{724DE3A9-7341-4E7D-A875-4BD42E761330}.Debug|x64.ActiveCfg = Debug|x64
-		{724DE3A9-7341-4E7D-A875-4BD42E761330}.Debug|x64.Build.0 = Debug|x64
-		{724DE3A9-7341-4E7D-A875-4BD42E761330}.Debug|x86.ActiveCfg = Debug|Win32
-		{724DE3A9-7341-4E7D-A875-4BD42E761330}.Debug|x86.Build.0 = Debug|Win32
-		{724DE3A9-7341-4E7D-A875-4BD42E761330}.Release|x64.ActiveCfg = Release|x64
-		{724DE3A9-7341-4E7D-A875-4BD42E761330}.Release|x64.Build.0 = Release|x64
-		{724DE3A9-7341-4E7D-A875-4BD42E761330}.Release|x86.ActiveCfg = Release|Win32
-		{724DE3A9-7341-4E7D-A875-4BD42E761330}.Release|x86.Build.0 = Release|Win32
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4}.Debug|x64.ActiveCfg = Debug|x64
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4}.Debug|x64.Build.0 = Debug|x64
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4}.Debug|x86.ActiveCfg = Debug|Win32
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4}.Debug|x86.Build.0 = Debug|Win32
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4}.Release|x64.ActiveCfg = Release|x64
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4}.Release|x64.Build.0 = Release|x64
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4}.Release|x86.ActiveCfg = Release|Win32
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{724DE3A9-7341-4E7D-A875-4BD42E761330} = {C96F9364-6369-4EAD-87ED-BDEDCC16D421}
+		{DE3487F3-452D-4D3E-B28A-866A39123FF4} = {C96F9364-6369-4EAD-87ED-BDEDCC16D421}
 	EndGlobalSection
 EndGlobal

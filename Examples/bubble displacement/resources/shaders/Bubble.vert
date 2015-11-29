@@ -15,7 +15,7 @@ layout(binding = 0) uniform defaultSettings
 	float height;
 };
 
-layout (binding = 1) uniform bubbleSettings
+layout (std140, binding = 1) uniform bubbleSettings
 {
 	vec2 mousePosition;
 	float attenuation;
@@ -26,15 +26,15 @@ layout (binding = 1) uniform bubbleSettings
 void main()
 {
 	vPosition = projection * view * translation * position;
-	vec4 mouse = projection * view * translation * vec4(mousePosition.x, 1, 1, 1);
+	vec4 mouse = projection * view * translation * vec4(1, 1, 1, 1);
 	//vec4 Res = projection * view * translation * vec4(width, height, 0, 1);
-	//float Distance = length(mouse.xy - vPosition.xy);
+	float Distance = length(vec2(1, 1) - vPosition.xy);
 
-/*	//if the distance between the vert and mouse position is less than attenuation then push said vert away from the mouse Position
+	//if the distance between the vert and mouse position is less than attenuation then push said vert away from the mouse Position
 	if( Distance < attenuation)
 	{
-		//vPosition.xy += normalize(mouse.xy - vPosition.xy) * Distance * 1;
-	}*/
+		vPosition.xy += normalize(vec2(1, 1) - vPosition.xy) * Distance;
+	}
 	vUV = position.xy / vec2(width, height);
 	gl_Position = vPosition;
 }
