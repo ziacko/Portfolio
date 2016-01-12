@@ -27,6 +27,12 @@
     <ClInclude Include="include\bubbleScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\UniformBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Bubble.cpp">
@@ -38,6 +44,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="resources\shaders\Default.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\shaders\bubble.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

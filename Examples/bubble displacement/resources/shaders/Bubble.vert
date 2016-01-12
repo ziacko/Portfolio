@@ -1,18 +1,14 @@
 #version 440
 
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec2 uV;
-
 out vec4 vPosition;
 out vec2 vUV;
 
-layout(binding = 0) uniform defaultSettings
+layout(std140, binding = 0) uniform defaultSettings
 {
 	mat4 projection;
 	mat4 view;
 	mat4 translation;
-	float width;
-	float height;
+	vec2 resolution;
 };
 
 layout (std140, binding = 1) uniform bubbleSettings
@@ -25,16 +21,41 @@ layout (std140, binding = 1) uniform bubbleSettings
 
 void main()
 {
-	vPosition = projection * view * translation * position;
-	vec4 mouse = projection * view * translation * vec4(1, 1, 1, 1);
-	//vec4 Res = projection * view * translation * vec4(width, height, 0, 1);
-	float Distance = length(vec2(1, 1) - vPosition.xy);
+	float cellWidth = resolution.x / dimensions;
+	float cellHeight = resolution.y / dimensions;
 
-	//if the distance between the vert and mouse position is less than attenuation then push said vert away from the mouse Position
-	if( Distance < attenuation)
+	float x = 0;
+	float y = modf(gl_InstanceID / dimensions, x);
+
+	vec4 quad[6] = vec4[6](
+		vec4(0.0f, 0.0f, 1.0f, 1.0f),
+		vec4(cellWidth, 0.0f, 1.0f, 1.0f),
+		vec4(0.0f, cellHeight, 1.0f, 1.0f),
+
+		vec4(0.0f, cellHeight, 1.0f, 1.0f),
+		vec4(cellWidth, 0.0f, 1.0f, 1.0f),
+		vec4(cellWidth, cellHeight, 1.0f, 1.0f));
+
+	vec4 mouseWindowPosition = projection * view * translation * vec4(mousePosition.x, mousePosition.y, 1, 1);
+
+	//generate the render quad from here, don't event bother with a vertex buffer
+	for(int iter = 0; iter < 6; iter++)
 	{
-		vPosition.xy += normalize(vec2(1, 1) - vPosition.xy) * Distance;
+		quad[iter] = projection * view * translation * quad[iter];
+		float x = 0;
+		float y = modf(gl_InstanceID / dimensions, x);
+		quad[iter].x = quad[iter].x + (x * (cellWidth) / resolution.x) * 2;
+		quad[iter].y = quad[iter].y - (y * (cellHeight) / resolution.y) * (dimensions * 2);
 	}
-	vUV = position.xy / vec2(width, height);
+
+	float distancefromMouse = length(mouseWindowPosition.xy - quad[gl_VertexID].xy);
+
+	if(distancefromMouse < attenuation)
+	{
+		quad[gl_VertexID].xy += normalize(mouseWindowPosition.xy - quad[gl_VertexID].xy) * distancefromMouse * offset;
+	}
+
+	vPosition = quad[gl_VertexID];
+	vUV = quad[gl_VertexID].xy / resolution * 500.0f + 0.6f;
 	gl_Position = vPosition;
 }

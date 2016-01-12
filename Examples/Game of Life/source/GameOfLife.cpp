@@ -35,7 +35,7 @@ void Initialize()
 
 	MainCamera = new camera();
 
-	tinyShaders::LoadShaderProgramsFromConfigFile("./resources/shaders/Shaders.txt");
+	tinyShaders::LoadProgramsFromConfigFile("./resources/shaders/Shaders.txt");
 	glViewport(0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
 
 	GOL = new GOL_manager(MainCamera, tinyShaders::GetShaderProgramByIndex(0)->handle);
