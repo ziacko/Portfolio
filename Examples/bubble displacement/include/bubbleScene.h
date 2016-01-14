@@ -39,7 +39,6 @@ public:
 		this->windowName = windowName;
 		this->vertexArrayObject = 0;
 		this->vertexBufferObject = 0;
-		this->indexBufferObject = 0;
 
 		this->sceneCamera = bubbleCamera;
 		this->tweakBarName = "bubble scene";		
@@ -192,63 +191,7 @@ protected:
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(bubbleSettings_t), bubbleSettingsBuffer, GL_STATIC_DRAW);
 		glBindBufferBase(GL_UNIFORM_BUFFER, 1, bubbleSettingsBuffer->bufferHandle);
 		
-	}
-
-	static void HandleMouseClick(GLuint button, GLboolean buttonState)
-	{
-		TwMouseButtonID buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
-		TwMouseAction action = TwMouseAction::TW_MOUSE_PRESSED;
-
-		if (buttonState == 1)
-		{
-			action = TwMouseAction::TW_MOUSE_PRESSED;
-		}
-
-		else
-		{
-			action = TwMouseAction::TW_MOUSE_RELEASED;
-		}
-
-		switch (button)
-		{
-			case MOUSE_LEFTBUTTON:
-			{
-				buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
-				break;
-			}
-
-			case MOUSE_RIGHTBUTTON:
-			{
-				buttonId = TwMouseButtonID::TW_MOUSE_RIGHT;
-				break;
-			}
-
-			case MOUSE_MIDDLEBUTTON:
-			{
-				buttonId = TwMouseButtonID::TW_MOUSE_MIDDLE;
-				break;
-			}
-		}
-		TwMouseButton(action, buttonId);
-	}
-
-	static void HandleWindowResize(GLuint width, GLuint height)
-	{
-		glViewport(0, 0, width, height);
-		TwWindowSize(width, height);
-		defaultUniformBuffer->resolution = glm::vec2(width, height);
-
-		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
-
-		glBindBuffer(GL_UNIFORM_BUFFER, defaultUniformBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_STATIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, defaultUniformBuffer->bufferHandle);
-
-		//update the projection matrix in the buffer
-
-	}
-
-	
+	}	
 };
 
 bubbleScene::bubbleSettings_t* bubbleScene::bubbleSettingsBuffer = nullptr;

@@ -22,9 +22,17 @@ class scene
 {
 public:
 
-	scene()
+	scene(const char* windowName = "Ziyad Barakat's Portfolio ( Example Scene )",
+		camera* bufferCamera = new camera(glm::vec2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)),
+		const GLchar* shaderConfigPath = "./shaders/Shaders.txt")
+
 	{
-		//FreeImage_Initialise();
+		this->windowName = windowName;
+		this->vertexArrayObject = 0;
+		this->vertexBufferObject = 0;
+		this->sceneCamera = bufferCamera;
+		this->shaderConfigPath = shaderConfigPath;
+		this->tweakBarName = windowName;
 	}
 
 	~scene(){}
@@ -38,13 +46,45 @@ public:
 		}
 	}
 
+	virtual void Initialize()
+	{
+		windowManager::Initialize();
+		windowManager::AddWindow(windowName);
+		TinyExtender::InitializeExtensions();
+		tinyClock::Intialize();
+
+		tinyShaders::LoadProgramsFromConfigFile(this->shaderConfigPath);
+		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
+
+		glUseProgram(this->programGLID);
+
+		
+		windowManager::SetWindowOnResizeByIndex(0, &scene::HandleWindowResize);
+		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+
+		GLuint width = 0;
+		GLuint height = 0;
+		windowManager::GetWindowResolutionByIndex(0, width, height);
+		glViewport(0, 0, width, height);
+
+		//this->sceneCamera->resolution = glm::vec2(width, height);
+		InitializeBuffers();
+		
+
+		
+
+		windowManager::SetWindowOnResizeByIndex(0, &scene::HandleWindowResize);
+		windowManager::SetWindowOnMouseButtonEventByIndex(0, &scene::HandleMouseClick);
+
+		InitTweakBar();
+	}
+
 protected:
 
 	static defaultUniformBuffer_t*			defaultUniformBuffer;
 
 	GLuint									vertexArrayObject;
 	GLuint									vertexBufferObject;
-	GLuint									indexBufferObject;
 	camera*									sceneCamera;
 	const GLchar*							windowName;
 	GLuint									programGLID;
@@ -52,33 +92,16 @@ protected:
 	const GLchar*							tweakBarName;
 	GLuint									textureHandle;
 	GLuint									textureUniformHandle;
-
-	virtual void Initialize(const GLchar* shaderConfigPath)
-	{
-		windowManager::Initialize();
-		windowManager::AddWindow(windowName);
-		TinyExtender::InitializeExtensions();
-		tinyClock::Intialize();
-
-		tinyShaders::LoadProgramsFromConfigFile(shaderConfigPath);
-		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
-
-		glUseProgram(this->programGLID);
-
-		InitializeBuffers();
-		windowManager::SetWindowOnResizeByIndex(0, &scene::HandleWindowResize);
-		glViewport(0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-		
-		
-
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
+	const GLchar*							shaderConfigPath;
 
 	virtual void InitTweakBar()
 	{
 		TwInit(TwGraphAPI::TW_OPENGL_CORE, NULL);
 		tweakBar = TwNewBar(tweakBarName);
+		TwWindowSize(this->defaultUniformBuffer->resolution.x,
+			this->defaultUniformBuffer->resolution.y);
+
+
 	}
 
 	virtual void Update()
@@ -99,7 +122,7 @@ protected:
 
 	virtual void SetupVertexBuffer()
 	{
-		GLfloat quadVerts[] =
+		GLfloat quadVerts[16] =
 		{
 			0.0f, 0.0f, 0.1f, 1.0f,
 			sceneCamera->resolution.x, 0.0f, 0.1f, 1.0f,
@@ -131,7 +154,8 @@ protected:
 
 	virtual void InitializeBuffers()
 	{
-		scene::SetupVertexBuffer();
+		defaultUniformBuffer = new defaultUniformBuffer_t(this->sceneCamera);
+		//scene::SetupVertexBuffer();
 		SetupDefaultBuffer();
 	}
 
@@ -147,11 +171,57 @@ protected:
 		windowManager::ShutDown();
 	}
 
+	static void HandleMouseClick(GLuint button, GLboolean buttonState)
+	{
+		TwMouseButtonID buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
+		TwMouseAction action = TwMouseAction::TW_MOUSE_PRESSED;
+
+		if (buttonState == 1)
+		{
+			action = TwMouseAction::TW_MOUSE_PRESSED;
+		}
+
+		else
+		{
+			action = TwMouseAction::TW_MOUSE_RELEASED;
+		}
+
+		switch (button)
+		{
+		case MOUSE_LEFTBUTTON:
+		{
+			buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
+			break;
+		}
+
+		case MOUSE_RIGHTBUTTON:
+		{
+			buttonId = TwMouseButtonID::TW_MOUSE_RIGHT;
+			break;
+		}
+
+		case MOUSE_MIDDLEBUTTON:
+		{
+			buttonId = TwMouseButtonID::TW_MOUSE_MIDDLE;
+			break;
+		}
+		}
+		TwMouseButton(action, buttonId);
+	}
+
 	static void HandleWindowResize(GLuint width, GLuint height)
 	{
-		defaultUniformBuffer->resolution = glm::vec2(width, height);
 		glViewport(0, 0, width, height);
+		TwWindowSize(width, height);
+		defaultUniformBuffer->resolution = glm::vec2(width, height);
+
+		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, defaultUniformBuffer->bufferHandle);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_STATIC_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, defaultUniformBuffer->bufferHandle);
+		//update the projection matrix in the buffer
+
 	}
 };
 

@@ -9,7 +9,9 @@ public:
 	glm::mat4		projection;
 	glm::mat4		view;
 	glm::mat4		translation;
-	glm::vec2		resolution;
+	glm::ivec2		resolution;
+	GLfloat			deltaTime;
+	GLfloat			totalTime;
 	GLuint bufferHandle;
 	GLuint uniformHandle;
 
