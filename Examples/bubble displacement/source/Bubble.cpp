@@ -3,7 +3,7 @@
 int main()
 {
 	bubbleScene* bubble = new bubbleScene();
-
+	bubble->Initialize();
 	bubble->Run();
 
 

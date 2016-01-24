@@ -5,6 +5,17 @@ in vec2 vUV;
 
 out vec4 outColor;
 
+layout(std140, binding = 0) uniform defaultSettings
+{
+	mat4		projection;
+	mat4		view;
+	mat4		translation;
+	ivec2		resolution;
+	ivec2		mousePosition;
+	double		deltaTime;
+	double		totalTime;
+};
+
 layout(std140, binding = 1) uniform perlinSettings
 {
 	float		modValue;
@@ -19,7 +30,7 @@ layout(std140, binding = 1) uniform perlinSettings
 	float		noiseValue2;//2.3
 	uint		colorBias;//20
 
-	float		pattern1Value1;//2.5
+	/*float		pattern1Value1;//2.5
 	float		pattern1Value2;//0.4
 	float		pattern1Value3;//5.2
 	float		pattern1Value4;//1.3
@@ -29,7 +40,7 @@ layout(std140, binding = 1) uniform perlinSettings
 	float		pattern1Value8;//4.0
 	float		pattern1Value9;//8.3
 	float		pattern1Value10;//2.8
-	float		pattern1Value11;//4.0
+	float		pattern1Value11;//4.0*/
 
 	float		pattern2Value1;//0.3
 	float		pattern2Value2;//0.8
@@ -42,8 +53,6 @@ layout(std140, binding = 1) uniform perlinSettings
 	float		pattern2Value9;//8.3
 	float		pattern2Value10;//2.8
 	float		pattern2Value11;//4.0
-
-	
 };
 
 vec4 ModifyValue(vec4 value)
@@ -168,7 +177,7 @@ float FBM(vec2 perlinVector, uint numOctaves, float lacunarity, float gain)
 	return sum;
 }
 
-float Pattern(in vec2 perlinVector)
+/*float Pattern(in vec2 perlinVector)
 {
 	float l = pattern1Value1;
 	float g = pattern1Value2;
@@ -178,7 +187,7 @@ float Pattern(in vec2 perlinVector)
 	vec2 r = vec2(FBM(perlinVector + pattern1Value5 * q + vec2(pattern1Value6, pattern1Value7), numOctaves, 1, g), FBM(perlinVector + pattern1Value8 * q + vec2(pattern1Value9, pattern1Value10), numOctaves, 1, g));
 
 	return FBM(perlinVector + pattern1Value11 * r, numOctaves, 1, g);
-}
+}*/
 
 float Pattern2(in vec2 perlinVector, out vec2 q, out vec2 r, in float time)
 {
@@ -201,7 +210,7 @@ void main()
 	vec2 p = -1.0 + 2.0 * q;
 	vec2 qQ;
 	vec2 r;
-	float color = Pattern2(p, qQ, r, 1.0f) * colorBias;
+	float color = Pattern2(p, qQ, r, float(totalTime)) * colorBias;
 
 	//Color *= 3.5;
 

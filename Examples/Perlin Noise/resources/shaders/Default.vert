@@ -9,6 +9,9 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4		view;
 	mat4		translation;
 	ivec2		resolution;
+	ivec2		mousePosition;
+	double		deltaTime;
+	double		totalTime;
 };
 
 void main()

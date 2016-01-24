@@ -1,4 +1,0 @@
-./GameOfLife.cpp: In constructor ‘GOL_manager::GOL_manager(camera*, GLuint, GLuint, GLfloat, GLuint, GLuint)’:
-./GameOfLife.cpp:84:35: error: ‘class camera’ has no member named ‘translation’
-     GOL_camera->view, GOL_camera->translation, GOL_camera->resolution );
-                                   ^

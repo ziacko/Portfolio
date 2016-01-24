@@ -38,9 +38,6 @@
     <None Include="resources\shaders\Default.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\shaders\default.frag">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="resources\shaders\Perlin.frag">
       <Filter>Resource Files</Filter>
     </None>

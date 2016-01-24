@@ -9,10 +9,10 @@ public:
 
 	struct bubbleSettings_t
 	{
-		glm::vec2		mousePosition;
 		GLfloat			attenuation;
 		GLfloat			offset;
 		GLfloat			gridDimensions;
+
 		GLuint			bufferHandle;
 		GLuint			uniformHandle;
 
@@ -20,7 +20,6 @@ public:
 		{
 			this->attenuation = attenuation;
 			this->offset = offset;
-			this->mousePosition = glm::vec2(0);
 			this->gridDimensions = gridDimensions;
 		}
 
@@ -30,33 +29,19 @@ public:
 	bubbleScene(const char* windowName = "Ziyad Barakat's Portfolio ( bubble displacement )",
 		const char* texturePath = "./textures/earth_diffuse.tga",
 		camera* bubbleCamera = new camera(glm::vec2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)), 
-		const GLchar* shaderConfigPath = "./shaders/Shaders.txt", GLfloat attenuation = 1.0f, 
+		const char* shaderConfigPath = "./shaders/Shaders.txt", GLfloat attenuation = 1.0f, 
 		GLfloat offset = 1.0f)
 	{
-		
-		defaultUniformBuffer = new defaultUniformBuffer_t(bubbleCamera); 
-		bubbleSettingsBuffer = new bubbleSettings_t();
-		this->windowName = windowName;
-		this->vertexArrayObject = 0;
-		this->vertexBufferObject = 0;
-
-		this->sceneCamera = bubbleCamera;
-		this->tweakBarName = "bubble scene";		
-
-		Initialize(shaderConfigPath);
-		GLuint width = 0;
-		GLuint height = 0;
-
-		windowManager::GetWindowResolutionByIndex(0, width, height);
-		glViewport(0, 0, width, height);
-		TwWindowSize(width, height);
+		this->tweakBarName = "bubble scene";
 
 		//load the texture
 		textureHandle = LoadTexture(texturePath, GL_BGRA);
-		//textureHandle = SOIL_load_OGL_texture(texturePath, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, NULL);
+		enableWireframe = true;
+	}
 
-		windowManager::SetWindowOnMouseMoveByIndex(0, &bubbleScene::HandleMouseMotion);
-		windowManager::SetWindowOnResizeByIndex(0, &bubbleScene::HandleWindowResize);
+	void Initialize() override
+	{
+		scene::Initialize();
 	}
 
 	~bubbleScene( void ){}
@@ -86,23 +71,15 @@ protected:
 	static bubbleSettings_t*	bubbleSettingsBuffer;
 	std::vector<glm::vec4>		gridVerts;
 	GLuint						gridDimensions;
-
-	void Initialize(const char* shaderConfigPath) override
-	{
-		scene::Initialize(shaderConfigPath);
-		windowManager::SetWindowOnMouseMoveByIndex(0, &bubbleScene::HandleMouseMotion);
-		windowManager::SetWindowOnMouseButtonEventByIndex(0, &bubbleScene::HandleMouseClick);
-		InitTweakBar();
-	}
+	GLboolean					enableWireframe;
 
 	void InitTweakBar() override
 	{
 		scene::InitTweakBar();
-		TwAddVarRO(tweakBar, "mouse Position X", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->mousePosition.x, NULL);
-		TwAddVarRO(tweakBar, "mouse position Y", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->mousePosition.y, NULL);
 		TwAddVarRW(tweakBar, "attenuation", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->attenuation, "min=0.01 max=1 step=0.01");
 		TwAddVarRW(tweakBar, "offset", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->offset, "min=-1 max=1 step=0.01");
 		TwAddVarRW(tweakBar, "grid dimensions", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->gridDimensions, "min=1 max=1000");
+		TwAddVarRW(tweakBar, "enable wireframe", TwType::TW_TYPE_BOOL8, &enableWireframe, NULL);
 	}
 
 	void SetupBubbleBuffer()
@@ -116,9 +93,9 @@ protected:
 	void InitializeBuffers() override
 	{
 		//SetupVertexBuffer();
-		scene::SetupDefaultBuffer();
+		scene::InitializeBuffers();
+		bubbleSettingsBuffer = new bubbleScene::bubbleSettings_t();
 		SetupBubbleBuffer();
-
 	}
 
 	void SetupVertexBuffer() override
@@ -149,49 +126,32 @@ protected:
 
 	void SetupBubbleUniforms()
 	{
-		textureUniformHandle = glGetUniformLocation(programGLID, "bubbleTexture");
+		//textureUniformHandle = glGetUniformLocation(programGLID, "bubbleTexture");
 		//bubbleSettingsBuffer->uniformHandle = glGetUniformBlockIndex(this->programGLID, "bubbleSettings");
-		//glUniformBlockBinding(this->programGLID, this->bubbleSettingsBuffer->uniformHandle, 1);
+	}
+
+	void UpdateBubblebuffer()
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, bubbleSettingsBuffer->bufferHandle);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(bubbleSettings_t), bubbleSettingsBuffer, GL_DYNAMIC_DRAW);
+		//glBindBufferBase(GL_UNIFORM_BUFFER, 1, bubbleSettingsBuffer->bufferHandle);
 	}
 
 	void Draw()	override
 	{
-		glUniform1i(textureUniformHandle, textureHandle);
-		glActiveTexture(GL_TEXTURE0 + textureHandle);
-		glBindTexture(GL_TEXTURE_2D, textureHandle);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		UpdateBubblebuffer();
 		glUseProgram(this->programGLID);
-		
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(this->bubbleSettingsBuffer->gridDimensions * this->bubbleSettingsBuffer->gridDimensions));
-		
+		if (enableWireframe)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, bubbleSettingsBuffer->gridDimensions * bubbleSettingsBuffer->gridDimensions);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		TwDraw();
 		windowManager::WindowSwapBuffersByIndex(0);
-		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
-
-	static void HandleMouseMotion(GLuint windowX, GLuint windowY, GLuint screenX, GLuint screenY)
-	{
-		//if the window is maximized use the screen mouse position?
-		if (windowManager::GetWindowIsMaximizedByIndex(0))
-		{
-			bubbleSettingsBuffer->mousePosition = glm::vec2(screenX, screenY);
-			TwMouseMotion(screenX, screenY);
-		}
-
-		else
-		{
-			bubbleSettingsBuffer->mousePosition = glm::vec2(windowX, windowY);
-			TwMouseMotion(windowX, windowY);
-		}
-
-		glBindBuffer(GL_UNIFORM_BUFFER, bubbleSettingsBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(bubbleSettings_t), bubbleSettingsBuffer, GL_STATIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 1, bubbleSettingsBuffer->bufferHandle);
-		
-	}	
 };
 
 bubbleScene::bubbleSettings_t* bubbleScene::bubbleSettingsBuffer = nullptr;

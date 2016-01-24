@@ -5,15 +5,17 @@ out vec2 vUV;
 
 layout(std140, binding = 0) uniform defaultSettings
 {
-	mat4 projection;
-	mat4 view;
-	mat4 translation;
-	vec2 resolution;
+	mat4		projection;
+	mat4		view;
+	mat4		translation;
+	ivec2		resolution;
+	ivec2		mousePosition;
+	double		deltaTime;
+	double		totalTime;
 };
 
 layout (std140, binding = 1) uniform bubbleSettings
 {
-	vec2 mousePosition;
 	float attenuation;
 	float offset;
 	float dimensions;
