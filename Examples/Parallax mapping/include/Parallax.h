@@ -1,61 +1,56 @@
 #ifndef PARALLAX_H
 #define PARALLAX_H
 
-#include <Scene.h>
+#include <TexturedScene.h>
 
-class parallaxScene : public scene
+struct parallaxSettings_t
+{
+	GLfloat			scale;
+	GLfloat			rayHeight;
+	GLuint			numSamples;
+
+	GLuint			bufferHandle;
+	GLuint			uniformHandle;
+
+	parallaxSettings_t(GLfloat scale = 0.0f, GLfloat rayHeight = 0.0f, GLuint numSamples = 0)
+	{
+		this->scale = scale;
+		this->rayHeight = rayHeight;
+		this->numSamples = numSamples;
+	}
+
+	~parallaxSettings_t(){};
+};
+
+class parallaxScene : public texturedScene
 {
 public:
 
-	struct parallaxSettings_t
-	{
-		GLfloat			scale;
-		GLfloat			rayHeight;
-		GLuint			numSamples;
-
-		GLuint			bufferHandle;
-		GLuint			uniformHandle;
-
-		parallaxSettings_t()
-		{
-			this->scale = 0.0f;
-			this->rayHeight = 0.0f;
-			this->numSamples = 0;
-		}
-
-		~parallaxSettings_t(){};
-	};
-
-	parallaxScene(const char* diffuseMapPath = "./textures/rocks.jpg", const char* diffuseUniformName = "diffuseMap",
-		const char* heightMapPath = "./textures/rocks_NM_height.tga", const char* heightMapUniformName = "heightMap",
+	parallaxScene(
+		parallaxSettings_t* parallaxSettings = new parallaxSettings_t(),
+		texture* defaultTexture = new texture(),
+		texture* heightMap = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (parallax mapping)",
 		camera* parallaxCamera = new camera(glm::vec2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)),
-		const char* shaderConfigPath = "./shaders/Shaders.txt") : scene(windowName, parallaxCamera, shaderConfigPath, diffuseMapPath, diffuseUniformName)
+		const char* shaderConfigPath = "./shaders/Parallax.txt") : texturedScene(defaultTexture, windowName, parallaxCamera, shaderConfigPath)
 	{
+		this->parallaxSettingsBuffer = parallaxSettings;
 		this->tweakBarName = windowName;
-		this->heightMapPath = heightMapPath;
-		this->heightmapUniformName = heightMapUniformName;
+		this->heightMap = heightMap;
 	}
 
 	void Initialize() override
 	{
-		scene::Initialize();
-		diffuseMapHandle = LoadTexture(diffusePath);
-		heightMapHandle = LoadTexture(heightMapPath, GL_BGRA);
+		texturedScene::Initialize();
+		heightMap->LoadTexture();
 	}
 
 	~parallaxScene(){};
 
-
-
 protected:
 
 	static parallaxSettings_t*		parallaxSettingsBuffer;
-
-	GLuint							heightMapHandle;
-	GLuint							heightMapUniformHandle;
-	const char*						heightmapUniformName;
-	const char*						heightMapPath;
+	texture*						heightMap;
 
 	void InitTweakBar() override
 	{
@@ -65,20 +60,10 @@ protected:
 		TwAddVarRW(tweakBar, "number of samples", TwType::TW_TYPE_INT16, &parallaxSettingsBuffer->numSamples, "min=0 max=1000");
 	}
 
-	void SetupParallaxBuffer()
-	{
-		glGenBuffers(1, &parallaxSettingsBuffer->bufferHandle);
-
-		glBindBuffer(GL_UNIFORM_BUFFER, parallaxSettingsBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(parallaxSettings_t), parallaxSettingsBuffer, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->parallaxSettingsBuffer->bufferHandle);
-	}
-
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		parallaxSettingsBuffer = new parallaxScene::parallaxSettings_t();
-		SetupParallaxBuffer();
+		SetupUniformBuffer<parallaxSettings_t>(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle, 1);
 	}
 
 	void SetupParallaxUniforms()
@@ -87,26 +72,15 @@ protected:
 		glUniformBlockBinding(this->programGLID, parallaxSettingsBuffer->uniformHandle, 1);
 	}
 
-	void UpdateParallaxBuffer()
+	void bindTextures()
 	{
-		glBindBuffer(GL_UNIFORM_BUFFER, parallaxSettingsBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(parallaxSettings_t), parallaxSettingsBuffer, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 1, parallaxSettingsBuffer->bufferHandle);
-	}
-
-	void bindTextures()	override
-	{
-		scene::bindTextures();
-		heightMapUniformHandle = glGetUniformLocation(programGLID, heightmapUniformName);
-		glUniform1i(heightMapUniformHandle, heightMapHandle);
-
-		glActiveTexture(GL_TEXTURE0 + heightMapHandle);
-		glBindTexture(GL_TEXTURE_2D, heightMapHandle);
+		defaultTexture->GetUniformLocation(programGLID);
+		heightMap->GetUniformLocation(programGLID);
 	}
 
 	void Draw() override
 	{
-		UpdateParallaxBuffer();
+		UpdateUniformBuffer<parallaxSettings_t>(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle);
 		glUseProgram(this->programGLID);
 		bindTextures();
 		glDrawArrays(GL_QUADS, 0, 4);
@@ -118,7 +92,7 @@ protected:
 
 };
 
-parallaxScene::parallaxSettings_t* parallaxScene::parallaxSettingsBuffer = nullptr;
+parallaxSettings_t* parallaxScene::parallaxSettingsBuffer = nullptr;
 
 
 

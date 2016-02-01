@@ -1,4 +1,4 @@
-#include <bubbleScene.h>
+#include <bubble.h>
 
 int main()
 {

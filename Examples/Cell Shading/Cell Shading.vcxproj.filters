@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="dependencies">
-      <UniqueIdentifier>{89816a39-8495-4cff-9567-6bdf641c7f02}</UniqueIdentifier>
+      <UniqueIdentifier>{cb5827c6-d714-4f9c-96f4-2f57f84430c3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,25 +33,31 @@
     <ClInclude Include="..\..\include\Utilities.h">
       <Filter>dependencies</Filter>
     </ClInclude>
-    <ClInclude Include="include\bubble.h">
+    <ClInclude Include="..\..\include\Texture.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\TexturedScene.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CellShadingScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Bubble.cpp">
+    <ClCompile Include="source\CellShading.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\resources\shaders\Bubble.vert">
+    <None Include="..\..\resources\shaders\CellShading.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\resources\shaders\textured.frag">
+    <None Include="..\..\resources\shaders\Default.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\resources\shaders\Bubble.txt">
+    <Text Include="..\..\resources\shaders\cellShading.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

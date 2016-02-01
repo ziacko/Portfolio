@@ -1,0 +1,14 @@
+1
+TextureSettingsProgram
+2
+position
+uV
+1
+outColor
+2
+SettingsVertex
+Vertex
+./Shaders/Settings.vert
+TexturedFragment
+Fragment
+./Shaders/Textured.frag

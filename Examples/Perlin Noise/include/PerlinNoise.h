@@ -2,116 +2,119 @@
 #define PERLINNOISE_H
 #include "Scene.h"
 
+struct perlinSettings_t//	: public uniformBuffer_t
+{
+	GLfloat			modValue;
+	GLfloat			permuteValue;
+	GLfloat			taylorInverse;
+	GLfloat			fadeValue1;
+	GLfloat			fadeValue2;
+	GLfloat			fadeValue3;
+	GLuint			numOctaves;
+
+	GLfloat			noiseValue;
+	GLfloat			noiseValue2;
+	GLuint			colorBias;//20
+
+	/*
+	GLfloat			pattern1Value1;//2.5
+	GLfloat			pattern1Value2;//0.4
+	GLfloat			pattern1Value3;//5.2
+	GLfloat			pattern1Value4;//1.3
+	GLfloat			pattern1Value5;//4.0
+	GLfloat			pattern1Value6;//1.7
+	GLfloat			pattern1Value7;//9.2
+	GLfloat			pattern1Value8;//4.0
+	GLfloat			pattern1Value9;//8.3
+	GLfloat			pattern1Value10;//2.8
+	GLfloat			pattern1Value11;//4.0*/
+
+	GLfloat			pattern2Value1;//0.3
+	GLfloat			pattern2Value2;//0.8
+	GLfloat			pattern2Value3;//5.2
+	GLfloat			pattern2Value4;//1.3
+	GLfloat			pattern2Value5;//4.0
+	GLfloat			pattern2Value6;//1.7
+	GLfloat			pattern2Value7;//9.2
+	GLfloat			pattern2Value8;//4.0
+	GLfloat			pattern2Value9;//8.3
+	GLfloat			pattern2Value10;//2.8
+	GLfloat			pattern2Value11;//4.0
+
+	GLuint			bufferHandle;
+	GLuint			uniformHandle;
+
+	perlinSettings_t(GLfloat modValue = 289.0f, GLfloat permuteValue = 34.0f,
+		GLfloat taylorInverse = 1.79284291400159f, GLfloat fadeValue1 = 6.0f, GLfloat fadeValue2 = 15.0f,
+		GLfloat fadeValue3 = 10.0f, GLuint numOctaves = 4,
+		GLuint colorBias = 20,
+		GLfloat noiseValue = 41.0f, GLfloat noiseValue2 = 2.3f,
+
+		GLfloat pattern1Value1 = 2.5f, GLfloat pattern1Value2 = 0.4f, GLfloat pattern1Value3 = 5.2f,
+		GLfloat pattern1Value4 = 1.3f, GLfloat pattern1Value5 = 4.0f, GLfloat pattern1Value6 = 1.7f,
+		GLfloat pattern1Value7 = 9.2f, GLfloat pattern1Value8 = 4.0f, GLfloat pattern1Value9 = 8.3f,
+		GLfloat pattern1Value10 = 2.8f, GLfloat	pattern1Value11 = 4.0f,
+
+		GLfloat pattern2Value1 = 0.3f, GLfloat pattern2Value2 = 0.8f, GLfloat pattern2Value3 = 5.2f,
+		GLfloat pattern2Value4 = 1.3f, GLfloat pattern2Value5 = 4.0f, GLfloat pattern2Value6 = 1.7f,
+		GLfloat pattern2Value7 = 9.2f, GLfloat pattern2Value8 = 4.0f, GLfloat pattern2Value9 = 8.3f,
+		GLfloat pattern2Value10 = 2.8f, GLfloat	pattern2Value11 = 4.0f)
+	{
+		this->modValue = modValue;
+		this->permuteValue = permuteValue;
+		this->taylorInverse = taylorInverse;
+		this->fadeValue1 = fadeValue1;
+		this->fadeValue2 = fadeValue2;
+		this->fadeValue3 = fadeValue3;
+		this->numOctaves = numOctaves;
+
+		this->colorBias = colorBias;
+
+		this->noiseValue = noiseValue;
+		this->noiseValue2 = noiseValue2;
+
+		/*this->pattern1Value1 = pattern1Value1;
+		this->pattern1Value2 = pattern1Value2;
+		this->pattern1Value3 = pattern1Value3;
+		this->pattern1Value4 = pattern1Value4;
+		this->pattern1Value5 = pattern1Value5;
+		this->pattern1Value6 = pattern1Value6;
+		this->pattern1Value7 = pattern1Value7;
+		this->pattern1Value8 = pattern1Value8;
+		this->pattern1Value9 = pattern1Value9;
+		this->pattern1Value10 = pattern1Value10;
+		this->pattern1Value11 = pattern1Value11;*/
+
+		this->pattern2Value1 = pattern2Value1;
+		this->pattern2Value2 = pattern2Value2;
+		this->pattern2Value3 = pattern2Value3;
+		this->pattern2Value4 = pattern2Value4;
+		this->pattern2Value5 = pattern2Value5;
+		this->pattern2Value6 = pattern2Value6;
+		this->pattern2Value7 = pattern2Value7;
+		this->pattern2Value8 = pattern2Value8;
+		this->pattern2Value9 = pattern2Value9;
+		this->pattern2Value10 = pattern2Value10;
+		this->pattern2Value11 = pattern2Value11;
+
+		this->uniformHandle = 0;
+		this->bufferHandle = 0;
+	};
+
+	~perlinSettings_t(){};
+};
+
 class perlinScene : public scene
 {
 public:
 
-	struct perlinSettings_t
+	perlinScene(
+		perlinSettings_t* perlinSettings = new perlinSettings_t(),
+		const char* windowName = "Ziyad Barakat's Portfolio ( Perlin noise )",
+		camera* perlinCamera = new camera(), const GLchar* shaderConfigPath = "./shaders/Perlin.txt")
+		: scene(windowName, perlinCamera, shaderConfigPath)
 	{
-		GLfloat			modValue;
-		GLfloat			permuteValue;
-		GLfloat			taylorInverse;
-		GLfloat			fadeValue1;
-		GLfloat			fadeValue2;
-		GLfloat			fadeValue3;
-		GLuint			numOctaves;
-
-		GLfloat			noiseValue;
-		GLfloat			noiseValue2;
-		GLuint			colorBias;//20
-
-		/*
-		GLfloat			pattern1Value1;//2.5
-		GLfloat			pattern1Value2;//0.4
-		GLfloat			pattern1Value3;//5.2
-		GLfloat			pattern1Value4;//1.3
-		GLfloat			pattern1Value5;//4.0
-		GLfloat			pattern1Value6;//1.7
-		GLfloat			pattern1Value7;//9.2
-		GLfloat			pattern1Value8;//4.0
-		GLfloat			pattern1Value9;//8.3
-		GLfloat			pattern1Value10;//2.8
-		GLfloat			pattern1Value11;//4.0*/
-
-		GLfloat			pattern2Value1;//0.3
-		GLfloat			pattern2Value2;//0.8
-		GLfloat			pattern2Value3;//5.2
-		GLfloat			pattern2Value4;//1.3
-		GLfloat			pattern2Value5;//4.0
-		GLfloat			pattern2Value6;//1.7
-		GLfloat			pattern2Value7;//9.2
-		GLfloat			pattern2Value8;//4.0
-		GLfloat			pattern2Value9;//8.3
-		GLfloat			pattern2Value10;//2.8
-		GLfloat			pattern2Value11;//4.0
-
-		GLuint			bufferHandle;
-		GLuint			uniformHandle;
-
-		perlinSettings_t(GLfloat modValue = 289.0f, GLfloat permuteValue = 34.0f,
-			GLfloat taylorInverse = 1.79284291400159f, GLfloat fadeValue1 = 6.0f, GLfloat fadeValue2 = 15.0f,
-			GLfloat fadeValue3 = 10.0f, GLuint numOctaves = 4, 
-			GLuint colorBias = 20,
-			GLfloat noiseValue = 41.0f, GLfloat noiseValue2 = 2.3f,
-
-			GLfloat pattern1Value1 = 2.5f, GLfloat pattern1Value2 = 0.4f, GLfloat pattern1Value3 = 5.2f,
-			GLfloat pattern1Value4 = 1.3f, GLfloat pattern1Value5 = 4.0f, GLfloat pattern1Value6 = 1.7f,
-			GLfloat pattern1Value7 = 9.2f, GLfloat pattern1Value8 = 4.0f, GLfloat pattern1Value9 = 8.3f,
-			GLfloat pattern1Value10 = 2.8f, GLfloat	pattern1Value11 = 4.0f,
-
-			GLfloat pattern2Value1 = 0.3f, GLfloat pattern2Value2 = 0.8f, GLfloat pattern2Value3 = 5.2f,
-			GLfloat pattern2Value4 = 1.3f, GLfloat pattern2Value5 = 4.0f, GLfloat pattern2Value6 = 1.7f,
-			GLfloat pattern2Value7 = 9.2f, GLfloat pattern2Value8 = 4.0f, GLfloat pattern2Value9 = 8.3f,
-			GLfloat pattern2Value10 = 2.8f, GLfloat	pattern2Value11 = 4.0f)
-		{
-			this->modValue = modValue;
-			this->permuteValue = permuteValue;
-			this->taylorInverse = taylorInverse;
-			this->fadeValue1 = fadeValue1;
-			this->fadeValue2 = fadeValue2;
-			this->fadeValue3 = fadeValue3;
-			this->numOctaves = numOctaves;
-
-			this->colorBias = colorBias;
-
-			this->noiseValue = noiseValue;
-			this->noiseValue2 = noiseValue2;
-
-			/*this->pattern1Value1 = pattern1Value1;
-			this->pattern1Value2 = pattern1Value2;
-			this->pattern1Value3 = pattern1Value3;
-			this->pattern1Value4 = pattern1Value4;
-			this->pattern1Value5 = pattern1Value5;
-			this->pattern1Value6 = pattern1Value6;
-			this->pattern1Value7 = pattern1Value7;
-			this->pattern1Value8 = pattern1Value8;
-			this->pattern1Value9 = pattern1Value9;
-			this->pattern1Value10 = pattern1Value10;
-			this->pattern1Value11 = pattern1Value11;*/
-
-			this->pattern2Value1 = pattern2Value1;
-			this->pattern2Value2 = pattern2Value2;
-			this->pattern2Value3 = pattern2Value3;
-			this->pattern2Value4 = pattern2Value4;
-			this->pattern2Value5 = pattern2Value5;
-			this->pattern2Value6 = pattern2Value6;
-			this->pattern2Value7 = pattern2Value7;
-			this->pattern2Value8 = pattern2Value8;
-			this->pattern2Value9 = pattern2Value9;
-			this->pattern2Value10 = pattern2Value10;
-			this->pattern2Value11 = pattern2Value11;
-
-			this->uniformHandle = 0;
-			this->bufferHandle = 0;
-		};
-
-		~perlinSettings_t(){};
-	};
-
-	perlinScene(const char* windowName = "Ziyad Barakat's Portfolio ( Perlin noise )",
-		camera* perlinCamera = new camera(glm::vec2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)),
-		const GLchar* shaderConfigPath = "./shaders/Shaders.txt") : scene(windowName, perlinCamera, shaderConfigPath)
-	{
+		this->perlinSettingsBuffer = perlinSettings;
 		tweakBarName = windowName;
 	}
 
@@ -170,20 +173,10 @@ protected:
 		TwAddVarRW(tweakBar, "pattern value 11", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value11, "min=0.01 max=10 step=0.01");
 	}
 
-	void SetupPerlinBuffer()
-	{
-		glGenBuffers(1, &perlinSettingsBuffer->bufferHandle);
-
-		glBindBuffer(GL_UNIFORM_BUFFER, perlinSettingsBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(perlinSettings_t), perlinSettingsBuffer, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->perlinSettingsBuffer->bufferHandle);
-	}
-
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		perlinSettingsBuffer = new perlinScene::perlinSettings_t();
-		SetupPerlinBuffer();
+		SetupUniformBuffer<perlinSettings_t>(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle, 1);
 	}
 
 	void SetPerlinUniforms()
@@ -192,16 +185,9 @@ protected:
 		glUniformBlockBinding(this->programGLID, perlinSettingsBuffer->uniformHandle, 1);
 	}
 
-	void UpdatePerlinBuffer()
-	{
-		glBindBuffer(GL_UNIFORM_BUFFER, perlinSettingsBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(perlinSettings_t), perlinSettingsBuffer, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 1, perlinSettingsBuffer->bufferHandle);
-	}
-
 	void Draw()	override
 	{
-		UpdatePerlinBuffer();
+		UpdateUniformBuffer<perlinSettings_t>(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle);
 		glUseProgram(this->programGLID);
 		glDrawArrays(GL_QUADS, 0, 4);
 		TwDraw();
@@ -210,5 +196,5 @@ protected:
 	}
 };
 
-perlinScene::perlinSettings_t* perlinScene::perlinSettingsBuffer = nullptr;
+perlinSettings_t* perlinScene::perlinSettingsBuffer = nullptr;
 #endif

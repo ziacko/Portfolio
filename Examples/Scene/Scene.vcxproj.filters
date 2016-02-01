@@ -13,43 +13,46 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="dependencies">
+      <UniqueIdentifier>{cb5827c6-d714-4f9c-96f4-2f57f84430c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Camera.h">
-      <Filter>Header Files</Filter>
+      <Filter>dependencies</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\DefaultUniformBuffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>dependencies</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Scene.h">
-      <Filter>Header Files</Filter>
+      <Filter>dependencies</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\UniformBuffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>dependencies</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Utilities.h">
-      <Filter>Header Files</Filter>
+      <Filter>dependencies</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\shaders\Default.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\shaders\Default.vert">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="resources\shaders\default.frag">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="resources\shaders\Shaders.txt">
+    <None Include="..\..\resources\shaders\Default.frag">
       <Filter>Resource Files</Filter>
-    </Text>
+    </None>
+    <None Include="..\..\resources\shaders\Default.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\resources\shaders\Default.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

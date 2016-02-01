@@ -24,8 +24,8 @@ class scene
 public:
 
 	scene(const char* windowName = "Ziyad Barakat's Portfolio ( Example Scene )",
-		camera* bufferCamera = new camera(glm::vec2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)),
-		const GLchar* shaderConfigPath = "./shaders/Shaders.txt", const char* diffusePath = "./textures/earth_diffuse.tga", const char* diffuseUniformName = "defaultTexture")
+		camera* bufferCamera = new camera(),
+		const GLchar* shaderConfigPath = "./shaders/Default.txt")
 	{
 		this->windowName = windowName;
 		this->vertexArrayObject = 0;
@@ -33,8 +33,6 @@ public:
 		this->sceneCamera = bufferCamera;
 		this->shaderConfigPath = shaderConfigPath;
 		this->tweakBarName = windowName;
-		this->diffusePath = diffusePath;
-		this->diffuseUniformName = diffuseUniformName;
 	}
 
 	~scene(){}
@@ -98,22 +96,17 @@ protected:
 	const GLchar*							tweakBarName;
 	const GLchar*							shaderConfigPath;
 
-	GLuint									diffuseMapHandle;
-	GLuint									diffuseUniformHandle;
-	const char*								diffuseUniformName;
-	const char*								diffusePath;
-
 	virtual void InitTweakBar()
 	{
 		TwInit(TwGraphAPI::TW_OPENGL_CORE, NULL);
 		tweakBar = TwNewBar(tweakBarName);
-		TwWindowSize(this->defaultUniformBuffer->resolution.x,
-			this->defaultUniformBuffer->resolution.y);
+		TwWindowSize((int)this->defaultUniformBuffer->resolution.x,
+			(int)this->defaultUniformBuffer->resolution.y);
 
-		TwAddVarRO(tweakBar, "window width", TwType::TW_TYPE_INT16, &defaultUniformBuffer->resolution.x, NULL);
-		TwAddVarRO(tweakBar, "window height", TwType::TW_TYPE_INT16, &defaultUniformBuffer->resolution.y, NULL);
-		TwAddVarRO(tweakBar, "mouse X", TwType::TW_TYPE_INT16, &defaultUniformBuffer->mousePosition.x, NULL);
-		TwAddVarRO(tweakBar, "mouse Y", TwType::TW_TYPE_INT16, &defaultUniformBuffer->mousePosition.y, NULL);
+		TwAddVarRO(tweakBar, "window width", TwType::TW_TYPE_FLOAT, &defaultUniformBuffer->resolution.x, NULL);
+		TwAddVarRO(tweakBar, "window height", TwType::TW_TYPE_FLOAT, &defaultUniformBuffer->resolution.y, NULL);
+		TwAddVarRO(tweakBar, "mouse X", TwType::TW_TYPE_FLOAT, &defaultUniformBuffer->mousePosition.x, NULL);
+		TwAddVarRO(tweakBar, "mouse Y", TwType::TW_TYPE_FLOAT, &defaultUniformBuffer->mousePosition.y, NULL);
 		TwAddVarRO(tweakBar, "delta time", TwType::TW_TYPE_DOUBLE, &defaultUniformBuffer->deltaTime, NULL);
 		TwAddVarRO(tweakBar, "total time", TwType::TW_TYPE_DOUBLE, &defaultUniformBuffer->totalTime, NULL);
 		TwAddVarRO(tweakBar, "frames per sec", TwType::TW_TYPE_DOUBLE, &defaultUniformBuffer->framesPerSec, NULL);
@@ -129,7 +122,7 @@ protected:
 		defaultUniformBuffer->totalTime = tinyClock::GetTotalTime();
 		defaultUniformBuffer->framesPerSec = 1.0 / tinyClock::GetDeltaTime();
 		TwRefreshBar(tweakBar);
-		UpdateDefaultBuffer();
+		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
 	}
 
 	virtual void Draw()
@@ -166,7 +159,7 @@ protected:
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (char*)(sizeof(float) * 4));
 	}
 
-	void SetupDefaultBuffer()
+	/*void SetupDefaultBuffer()
 	{
 		glGenBuffers(1, &defaultUniformBuffer->bufferHandle);
 
@@ -179,6 +172,22 @@ protected:
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, defaultUniformBuffer->bufferHandle);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_STATIC_DRAW);
+	}*/
+
+	template<class Type>
+	static void SetupUniformBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferUniformHandle)
+	{
+		glGenBuffers(1, &bufferHandle);
+		glBindBuffer(GL_UNIFORM_BUFFER, bufferHandle);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(Type), buffer, GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, bufferUniformHandle, bufferHandle);
+	}
+
+	template<class Type>
+	static void UpdateUniformBuffer(void* buffer, GLuint bufferHandle)
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, bufferHandle);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(Type), buffer, GL_DYNAMIC_DRAW);
 	}
 
 	virtual void InitializeBuffers()
@@ -193,16 +202,8 @@ protected:
 
 		//why is lower than actual resolution but still valid for tweakbar? it makes no sense!
 		//set the buffer's resolution back to normal afterwards
-		SetupDefaultBuffer();
-	}
-
-	virtual void bindTextures()
-	{
-		diffuseUniformHandle = glGetUniformLocation(programGLID, diffuseUniformName);
-		glUniform1i(diffuseUniformHandle, diffuseMapHandle);
-
-		glActiveTexture(GL_TEXTURE0 + diffuseMapHandle);
-		glBindTexture(GL_TEXTURE_2D, diffuseMapHandle);
+		//SetupDefaultBuffer();
+		SetupUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, 0);
 	}
 
 	void SetupDefaultUniforms()
@@ -229,23 +230,23 @@ protected:
 
 		switch (button)
 		{
-		case MOUSE_LEFTBUTTON:
-		{
-			buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
-			break;
-		}
+			case MOUSE_LEFTBUTTON:
+			{
+				buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
+				break;
+			}
 
-		case MOUSE_RIGHTBUTTON:
-		{
-			buttonId = TwMouseButtonID::TW_MOUSE_RIGHT;
-			break;
-		}
+			case MOUSE_RIGHTBUTTON:
+			{
+				buttonId = TwMouseButtonID::TW_MOUSE_RIGHT;
+				break;
+			}
 
-		case MOUSE_MIDDLEBUTTON:
-		{
-			buttonId = TwMouseButtonID::TW_MOUSE_MIDDLE;
-			break;
-		}
+			case MOUSE_MIDDLEBUTTON:
+			{
+				buttonId = TwMouseButtonID::TW_MOUSE_MIDDLE;
+				break;
+			}
 		}
 		TwMouseButton(action, buttonId);
 	}
@@ -255,18 +256,15 @@ protected:
 		glViewport(0, 0, width, height);
 		TwWindowSize(width, height);
 		defaultUniformBuffer->resolution = glm::vec2(width, height);
-
 		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, defaultUniformBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_DYNAMIC_DRAW);
+		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
 	}
 
 	static void HandleMouseMotion(GLuint windowX, GLuint windowY, GLuint screenX, GLuint screenY)
 	{
 		defaultUniformBuffer->mousePosition = glm::vec2(windowX, windowY);
-		glBindBuffer(GL_UNIFORM_BUFFER, defaultUniformBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_DYNAMIC_DRAW);
+		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
 		TwMouseMotion(windowX, windowY);
 	}
 

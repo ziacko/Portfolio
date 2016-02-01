@@ -1,0 +1,14 @@
+1
+bubbleProgram
+2
+position
+uV
+1
+outColor
+2
+bubbleVertex
+Vertex
+./Shaders/Bubble.vert
+TexturedFragment
+Fragment
+./Shaders/Textured.frag

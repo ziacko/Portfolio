@@ -23,7 +23,7 @@ public:
 	float				farPlane;
 	projectionType		currentProjectionType;	
 
-	camera( glm::vec2 resolution = glm::vec2( 1280, 720 ), float speed = 1.0f, 
+	camera( glm::vec2 resolution = glm::vec2( DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT ), float speed = 1.0f, 
 			projectionType type = PROJECTION_ORTHOGRAPHIC, float nearPlane = 0.01f, 
 			float farPlane = 100.0f, float fieldOfView = 45.0f )
 	{

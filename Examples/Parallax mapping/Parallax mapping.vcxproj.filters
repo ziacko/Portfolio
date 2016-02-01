@@ -13,45 +13,48 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="dependencies">
+      <UniqueIdentifier>{c093d769-cf92-4a37-9545-b382c268d8ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\DefaultUniformBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\UniformBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Utilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Parallax.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Camera.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DefaultUniformBuffer.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Scene.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\UniformBuffer.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Utilities.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Texture.h">
+      <Filter>dependencies</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\shaders\Default.vert">
+    <None Include="..\..\resources\shaders\Default.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="resources\shaders\default.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="resources\shaders\Parallax.frag">
+    <None Include="..\..\resources\shaders\Parallax.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="resources\shaders\Shaders.txt">
+    <Text Include="..\..\resources\shaders\Parallax.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Scene.cpp">
+    <ClCompile Include="source\Parallax.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
