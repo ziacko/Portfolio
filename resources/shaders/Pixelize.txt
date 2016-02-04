@@ -1,5 +1,5 @@
 1
-CellShadingProgram
+PixelizeProgram
 2
 position
 uV
@@ -9,6 +9,6 @@ outColor
 DefaultVertex
 Vertex
 ./Shaders/Default.vert
-CellShaderFragment
+PixelizeFragment
 Fragment
-./Shaders/CellShading.frag
+./Shaders/Pixelize.frag

@@ -1,5 +1,5 @@
 1
-CellShadingProgram
+GaussianProgram
 2
 position
 uV
@@ -9,6 +9,6 @@ outColor
 DefaultVertex
 Vertex
 ./Shaders/Default.vert
-CellShaderFragment
+GaussianFragment
 Fragment
-./Shaders/CellShading.frag
+./Shaders/Gaussian.frag

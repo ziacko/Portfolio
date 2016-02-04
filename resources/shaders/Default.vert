@@ -1,13 +1,16 @@
 #version 440
 
-out vec4 vPosition;
-out vec2 vUV;
+out defaultBlock
+{
+	vec4 position;
+	vec2 UV;
+} outBlock;
 
 layout(std140, binding = 0) uniform defaultSettings
 {
-	mat4 projection;
-	mat4 view;
-	mat4 translation;
+	mat4		projection;
+	mat4		view;
+	mat4		translation;
 	vec2		resolution;
 	vec2		mousePosition;
 	double		deltaTime;
@@ -28,6 +31,6 @@ void main()
 		quad[iter] = projection * view * translation * quad[iter];
 	}
 
-	vUV = quad[gl_VertexID].xy * 0.5f + 0.5f;
+	outBlock.UV = quad[gl_VertexID].xy * 0.5f + 0.5f;
 	gl_Position = quad[gl_VertexID];
 }

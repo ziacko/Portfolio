@@ -1,5 +1,5 @@
 1
-CellShadingProgram
+SepiaProgram
 2
 position
 uV
@@ -9,6 +9,6 @@ outColor
 DefaultVertex
 Vertex
 ./Shaders/Default.vert
-CellShaderFragment
+SepiaFragment
 Fragment
-./Shaders/CellShading.frag
+./Shaders/Sepia.frag

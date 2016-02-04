@@ -1,5 +1,5 @@
 1
-CellShadingProgram
+ContrastProgram
 2
 position
 uV
@@ -9,6 +9,6 @@ outColor
 DefaultVertex
 Vertex
 ./Shaders/Default.vert
-CellShaderFragment
+ContrastFragment
 Fragment
-./Shaders/CellShading.frag
+./Shaders/Contrast.frag

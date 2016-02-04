@@ -120,8 +120,8 @@ public:
 
 			glTexImage2D(target, mipmapLevels, internalFormat, width, height, border, format, dataType, data);
 
-			glTexParameterf(target, GL_TEXTURE_WRAP_S, wrapSSetting);
-			glTexParameterf(target, GL_TEXTURE_WRAP_T, wrapTSetting);
+			glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapSSetting);
+			glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapTSetting);
 			break;
 		}
 
@@ -172,8 +172,8 @@ public:
 		}
 		}
 
-		glTexParameterf(target, GL_TEXTURE_MIN_FILTER, minFilterSetting);
-		glTexParameterf(target, GL_TEXTURE_MAG_FILTER, magFilterSetting);
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilterSetting);
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilterSetting);
 
 		UnbindTexture();
 	}
@@ -195,7 +195,7 @@ public:
 		}
 		}
 		BindTexture();
-		glTexParameterf(target, GL_TEXTURE_MIN_FILTER, this->minFilterSetting);
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, this->minFilterSetting);
 		UnbindTexture();
 	}
 
@@ -217,7 +217,7 @@ public:
 		}
 
 		BindTexture();
-		glTexParameterf(target, GL_TEXTURE_MAG_FILTER, this->magFilterSetting);
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, this->magFilterSetting);
 		UnbindTexture();
 	}
 
@@ -257,7 +257,7 @@ public:
 		}
 
 		BindTexture();
-		glTexParameterf(target, GL_TEXTURE_WRAP_S, this->wrapSSetting);
+		glTexParameteri(target, GL_TEXTURE_WRAP_S, this->wrapSSetting);
 		UnbindTexture();
 	}
 
@@ -297,7 +297,7 @@ public:
 		}
 
 		BindTexture();
-		glTexParameterf(target, GL_TEXTURE_WRAP_T, this->wrapTSetting);
+		glTexParameteri(target, GL_TEXTURE_WRAP_T, this->wrapTSetting);
 		UnbindTexture();
 	}
 
@@ -337,7 +337,7 @@ public:
 		}
 
 		BindTexture();
-		glTexParameterf(target, GL_TEXTURE_WRAP_R, this->wrapRSetting);
+		glTexParameteri(target, GL_TEXTURE_WRAP_R, this->wrapRSetting);
 		UnbindTexture();
 	}
 

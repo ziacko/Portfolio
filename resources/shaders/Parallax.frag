@@ -1,7 +1,10 @@
 #version 440
 
-in vec4 vPosition;
-in vec2 vUV;
+in defaultBlock
+{
+	vec4 position;
+	vec2 UV;
+} inBlock;
 
 out vec4 outColor;
 
@@ -39,8 +42,8 @@ void main()
 
 	float stepSize = 1.0f / numSamples;
 
-	vec2 dX = dFdx(vUV);
-	vec2 dY = dFdy(vUV);
+	vec2 dX = dFdx(inBlock.UV);
+	vec2 dY = dFdy(inBlock.UV);
 
 	float currentRayHeight = rayHeight;
 	vec2 currentOffset = vec2(0);
@@ -51,7 +54,7 @@ void main()
 
 	for(float currentSample = 0.0f; currentSample < numSamples; numSamples)
 	{
-		currentSampledHeight = textureGrad(heightMap, vUV + currentOffset, dX, dY).a;
+		currentSampledHeight = textureGrad(heightMap, inBlock.UV + currentOffset, dX, dY).a;
 		if(currentSampledHeight > currentRayHeight)
 		{
 			float delta1 = currentSampledHeight - currentRayHeight;
@@ -71,6 +74,6 @@ void main()
 		}
 	}
 
-	vec2 finalCoords = vUV + currentOffset;
+	vec2 finalCoords = inBlock.UV + currentOffset;
 	outColor = texture2D(diffuseMap, finalCoords);
 }

@@ -8,6 +8,7 @@ struct cellShadeSettings_t
 	GLfloat		greenModifier;
 	GLfloat		blueModifier;
 	GLfloat		cellDistance;
+
 	GLuint		bufferHandle;
 	GLuint		uniformHandle;
 
@@ -34,14 +35,14 @@ public:
 		const char* shaderConfigPath = "./shaders/cellShading.txt") :
 		texturedScene(defaultTexture, windowName, textureCamera, shaderConfigPath)
 	{
-
+		this->cellShadeSettingsBuffer = cellShade;
 	}
 
 	~cellShadingScene(void){};
 
 protected:
 
-	static cellShadeSettings_t*		cellShadeSettingsBuffer;
+	cellShadeSettings_t*		cellShadeSettingsBuffer;
 
 	void InitTweakBar() override
 	{
@@ -55,7 +56,6 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		cellShadeSettingsBuffer = new cellShadeSettings_t();
 		SetupUniformBuffer<cellShadeSettings_t>(cellShadeSettingsBuffer, cellShadeSettingsBuffer->bufferHandle, 1);
 	}
 
@@ -65,9 +65,5 @@ protected:
 		UpdateUniformBuffer<cellShadeSettings_t>(cellShadeSettingsBuffer, cellShadeSettingsBuffer->bufferHandle);
 	}
 };
-
-cellShadeSettings_t* cellShadingScene::cellShadeSettingsBuffer = nullptr;
-
-
 
 #endif

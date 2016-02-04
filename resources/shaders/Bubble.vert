@@ -1,7 +1,10 @@
 #version 440
 
-out vec4 vPosition;
-out vec2 vUV;
+out defaultBlock
+{
+	vec4 position;
+	vec2 UV;
+} outBlock;
 
 layout(std140, binding = 0) uniform defaultSettings
 {
@@ -52,21 +55,21 @@ void main()
 
 	float distancefromMouse = length(mouseWindowPosition.xy - quad[gl_VertexID].xy);
 
-	if(distancefromMouse < attenuation)
+	if(distancefromMouse < (attenuation + offset) && 
+		distancefromMouse > attenuation)
 	{
 		vec2 pushVector = normalize(mouseWindowPosition.xy - quad[gl_VertexID].xy) * distancefromMouse * offset;
 		quad[gl_VertexID].xy += pushVector;
-		vUV = quad[gl_VertexID].xy * 0.5f + 0.5f;
-		vUV += distancefromMouse * offset;
-		// - offset;// * offset;// * 0.1f + 0.1f;
+		outBlock.UV = quad[gl_VertexID].xy * 0.5f + 0.5f;
+		outBlock.UV += distancefromMouse * offset;
 	}
 
 	else
 	{
-		vUV = quad[gl_VertexID].xy * 0.5f + 0.5f;
+		outBlock.UV = quad[gl_VertexID].xy * 0.5f + 0.5f;
 	}
 
-	vPosition = quad[gl_VertexID];
+	outBlock.position = quad[gl_VertexID];
 	
-	gl_Position = vPosition;
+	gl_Position = outBlock.position;
 }
