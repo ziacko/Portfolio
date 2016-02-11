@@ -2,6 +2,7 @@
 #define SCENE_H
 #define FREEIMAGE_LIB
 #define TW_STATIC
+//#define GLM_SWIZZLE
 
 #include <stdlib.h>
 #include <TinyExtender.h>

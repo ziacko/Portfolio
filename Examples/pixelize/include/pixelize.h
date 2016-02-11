@@ -10,7 +10,7 @@ struct pixelizeSettings_t
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
 
-	pixelizeSettings_t(GLfloat pixelWidth = 10.0f, GLfloat pixelHeight = 10.0f)
+	pixelizeSettings_t(GLfloat pixelWidth = 8.0f, GLfloat pixelHeight = 8.0f)
 	{
 		this->pixelWidth = pixelWidth;
 		this->pixelHeight = pixelHeight;

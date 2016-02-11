@@ -10,7 +10,7 @@ struct contrastSettings_t
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
 
-	contrastSettings_t(GLfloat contrast = 1.0f)
+	contrastSettings_t(GLfloat contrast = 1.5f)
 	{
 		this->contrast = contrast;
 	}
@@ -58,8 +58,5 @@ protected:
 	}
 
 };
-
-
-
 
 #endif

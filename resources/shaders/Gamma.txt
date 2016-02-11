@@ -1,0 +1,14 @@
+1
+GammaProgram
+2
+position
+uV
+1
+outColor
+2
+DefaultVertex
+Vertex
+./Shaders/Default.vert
+GammaFragment
+Fragment
+./Shaders/Gamma.frag

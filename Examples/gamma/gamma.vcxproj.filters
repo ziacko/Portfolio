@@ -39,7 +39,7 @@
     <ClInclude Include="..\..\include\TexturedScene.h">
       <Filter>dependencies</Filter>
     </ClInclude>
-    <ClInclude Include="include\Sepia.h">
+    <ClInclude Include="include\Gamma.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,17 +47,17 @@
     <None Include="..\..\resources\shaders\Default.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\resources\shaders\sepia.frag">
+    <None Include="..\..\resources\shaders\Gamma.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\resources\shaders\sepia.txt">
+    <Text Include="..\..\resources\shaders\Gamma.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\sepia.cpp">
+    <ClCompile Include="source\gamma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

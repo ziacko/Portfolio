@@ -29,15 +29,19 @@ uniform sampler2D defaultTexture;
 
 void main()
 {
-	float deltaX = pixelWidth * (1.0 / resolution.x);
-	float deltaY = pixelHeight * (1.0 / resolution.y);
+	if(gl_FragCoord.x < mousePosition.x)
+	{
+		outColor = texture2D(defaultTexture, inBlock.UV);
+	}
 
-	vec2 uv = vec2(deltaX * floor(inBlock.UV.x / deltaX),
-	deltaY * floor(inBlock.UV.y / deltaY));
+	else
+	{
+		float deltaX = pixelWidth * (1.0 / resolution.x);
+		float deltaY = pixelHeight * (1.0 / resolution.y);
 
+		vec2 uv = vec2(deltaX * floor(inBlock.UV.x / deltaX),
+		deltaY * floor(inBlock.UV.y / deltaY));
 
-
-	outColor = texture2D(defaultTexture, uv);
-
-	
+		outColor = texture2D(defaultTexture, uv);
+	}
 }

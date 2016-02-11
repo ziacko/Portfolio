@@ -49,5 +49,14 @@ vec4 Sepia( in vec4 color )
 void main()
 {
 	vec4 texColor = texture2D(defaultTexture, inBlock.UV);
-	outColor = mix(texColor, Sepia(texColor), clamp(factor, 0.0, 1.0));
+
+	if(gl_FragCoord.x < mousePosition.x)
+	{
+		outColor = texColor;
+	}
+
+	else
+	{
+		outColor = mix(texColor, Sepia(texColor), clamp(factor, 0.0, 1.0));
+	}
 }

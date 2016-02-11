@@ -47,17 +47,11 @@
     <None Include="..\..\resources\shaders\Default.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\resources\shaders\textured.frag">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\..\resources\shaders\Contrast.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\resources\shaders\textured.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
     <Text Include="..\..\resources\shaders\Contrast.txt">
       <Filter>Resource Files</Filter>
     </Text>

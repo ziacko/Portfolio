@@ -6,6 +6,8 @@ in defaultBlock
 	vec2 UV;
 } inBlock;
 
+out vec4 outColor;
+
 layout(std140, binding = 0) uniform defaultSettings
 {
 	mat4		projection;
@@ -17,26 +19,22 @@ layout(std140, binding = 0) uniform defaultSettings
 	double		totalTime;
 };
 
-layout(std140, binding = 1) uniform contrastSettings
+layout(std140, binding = 1) uniform gammaSettings
 {
-	float		contrast;
+	vec4		gamma;
 };
-
-out vec4 outColor;
 
 uniform sampler2D defaultTexture;
 
 void main()
 {
-	if(gl_FragCoord.x < mousePosition.x)
-	{
-		outColor = (texture2D(defaultTexture, inBlock.UV) - 0.5) * contrast + 0.5;
-	}
-
-	else
+	if(gl_FragCoord.x > mousePosition.x)
 	{
 		outColor = texture2D(defaultTexture, inBlock.UV);
 	}
 
-	
+	else
+	{
+		outColor = pow( texture2D(defaultTexture, inBlock.UV), 1.0 / gamma);
+	}
 }
