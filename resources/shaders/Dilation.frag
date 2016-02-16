@@ -1,4 +1,4 @@
-#version 440
+#version 420
 
 in defaultBlock
 {
@@ -54,5 +54,5 @@ void main()
 	else
 	{
 		outColor = texture2D(defaultTexture, inBlock.UV);
-	}	
+	}
 }

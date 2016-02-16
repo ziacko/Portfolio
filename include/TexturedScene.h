@@ -24,14 +24,16 @@ public:
 
 	virtual void Draw() override
 	{
-		glBindVertexArray(this->vertexArrayObject);
+		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(this->programGLID);
 		defaultTexture->GetUniformLocation(this->programGLID);
-
+		
+		glPointSize(20.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDrawArrays(GL_QUADS, 0, 4);
 		TwDraw();
 		windowManager::WindowSwapBuffersByIndex(0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 	}
 
 protected:

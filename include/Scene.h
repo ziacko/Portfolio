@@ -19,6 +19,7 @@
 #include <AntTweakBar.h>
 #include <FreeImage.h>
 #include "Utilities.h"
+#include "VertexBuffer.h"
 
 class scene
 {
@@ -29,8 +30,6 @@ public:
 		const GLchar* shaderConfigPath = "./shaders/Default.txt")
 	{
 		this->windowName = windowName;
-		this->vertexArrayObject = 0;
-		this->vertexBufferObject = 0;
 		this->sceneCamera = bufferCamera;
 		this->shaderConfigPath = shaderConfigPath;
 		this->tweakBarName = windowName;
@@ -55,7 +54,7 @@ public:
 		TinyExtender::InitializeExtensions();
 		tinyClock::Intialize();
 
-		tinyShaders::LoadProgramsFromConfigFile(this->shaderConfigPath);
+		tinyShaders::LoadShaderProgramsFromConfigFile(this->shaderConfigPath);
 		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
 
 		glUseProgram(this->programGLID);
@@ -63,6 +62,8 @@ public:
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
 		//this->sceneCamera->resolution = glm::vec2(width, height);
+
+		//glEnable(GL_DEPTH_TEST);
 		
 		InitializeBuffers();
 		SetupCallbacks();
@@ -87,9 +88,8 @@ public:
 protected:
 
 	static defaultUniformBuffer_t*			defaultUniformBuffer;
+	static vertexBuffer_t*					defaultVertexBuffer;
 
-	GLuint									vertexArrayObject;
-	GLuint									vertexBufferObject;
 	camera*									sceneCamera;
 	const GLchar*							windowName;
 	GLuint									programGLID;
@@ -128,7 +128,7 @@ protected:
 
 	virtual void Draw()
 	{
-		glBindVertexArray(this->vertexArrayObject);
+		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(this->programGLID);
 
 		glDrawArrays(GL_QUADS, 0, 4);
@@ -139,25 +139,16 @@ protected:
 
 	virtual void SetupVertexBuffer()
 	{
+
+		defaultVertexBuffer = new vertexBuffer_t(defaultUniformBuffer->resolution);
+
 		GLfloat quadVerts[16] =
 		{
-			0.0f, 0.0f, 0.1f, 1.0f,
-			sceneCamera->resolution.x, 0.0f, 0.1f, 1.0f,
-			sceneCamera->resolution.x, sceneCamera->resolution.y, 0.1f, 1.0f,
-			0.0f, sceneCamera->resolution.y, 0.1f, 1.0f
+			0.0f, 0.0f, 1.0f, 1.0f,
+			sceneCamera->resolution.x, 0.0f, 1.0f, 1.0f,
+			sceneCamera->resolution.x, sceneCamera->resolution.y, 1.0f, 1.0f,
+			0.0f, sceneCamera->resolution.y, 1.0f, 1.0f
 		};
-
-		glEnable(GL_DEPTH_TEST);
-
-		glGenBuffers(1, &vertexBufferObject);
-		glGenVertexArrays(1, &vertexArrayObject);
-		glBindVertexArray(vertexArrayObject);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, quadVerts, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (char*)(sizeof(float) * 4));
 	}
 
 	/*void SetupDefaultBuffer()
@@ -198,12 +189,14 @@ protected:
 		GLuint height = 0;
 		windowManager::GetWindowResolutionByIndex(0, width, height);
 		glViewport(0, 0, width, height);
+		glEnable(GL_DEPTH_TEST);
 		defaultUniformBuffer->resolution = glm::vec2(width, height);
 		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
 
 		//why is lower than actual resolution but still valid for tweakbar? it makes no sense!
 		//set the buffer's resolution back to normal afterwards
 		//SetupDefaultBuffer();
+		SetupVertexBuffer();
 		SetupUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, 0);
 	}
 
@@ -260,6 +253,7 @@ protected:
 		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
 
 		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
+		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);
 	}
 
 	static void HandleMouseMotion(GLuint windowX, GLuint windowY, GLuint screenX, GLuint screenY)
@@ -280,11 +274,17 @@ protected:
 
 		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
 
+		//bind the uniform buffer and refill it
 		glBindBuffer(GL_UNIFORM_BUFFER, defaultUniformBuffer->bufferHandle);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_DYNAMIC_DRAW);
+
+		//generate a new vertex buffer with the new information
+
+		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);		
 	}
 };
 
-defaultUniformBuffer_t* scene::defaultUniformBuffer = nullptr;
+defaultUniformBuffer_t*		scene::defaultUniformBuffer = nullptr;
+vertexBuffer_t*				scene::defaultVertexBuffer = nullptr;
 
 #endif

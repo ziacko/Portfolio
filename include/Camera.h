@@ -24,7 +24,7 @@ public:
 	projectionType		currentProjectionType;	
 
 	camera( glm::vec2 resolution = glm::vec2( DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT ), float speed = 1.0f, 
-			projectionType type = PROJECTION_ORTHOGRAPHIC, float nearPlane = 0.01f, 
+			projectionType type = PROJECTION_ORTHOGRAPHIC, float nearPlane = 0.1f, 
 			float farPlane = 100.0f, float fieldOfView = 45.0f )
 	{
 		this->farPlane = farPlane;
@@ -45,7 +45,7 @@ public:
 		if (currentProjectionType == PROJECTION_ORTHOGRAPHIC)
 		{
 			this->view = glm::mat4(1);
-			this->view[3][2] = -2.0f;
+			this->view[3][2] = -5.0f;
 		}
 
 		else

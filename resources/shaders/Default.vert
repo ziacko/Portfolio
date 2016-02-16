@@ -1,4 +1,7 @@
-#version 440
+#version 420
+
+layout (location = 0) in vec4 position;
+layout (location = 1) in vec2 UV;
 
 out defaultBlock
 {
@@ -31,6 +34,7 @@ void main()
 		quad[iter] = projection * view * translation * quad[iter];
 	}
 
+	//outBlock.position = projection * view * translation * position;
 	outBlock.UV = quad[gl_VertexID].xy * 0.5f + 0.5f;
 	gl_Position = quad[gl_VertexID];
 }

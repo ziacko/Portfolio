@@ -86,29 +86,11 @@ protected:
 	}
 
 	void SetupVertexBuffer() override
-	{
+	{ 
 		GLfloat cellWidth = defaultUniformBuffer->resolution.x / bubbleSettingsBuffer->gridDimensions;
 		GLfloat cellHeight = defaultUniformBuffer->resolution.y / bubbleSettingsBuffer->gridDimensions;
 
-		GLfloat quadVerts[] =
-		{
-			0.0f, 0.0f, 0.1f, 1.0f,
-			cellWidth, 0.0f, 0.1f, 1.0f,
-			cellWidth, cellHeight, 0.1f, 1.0f,
-			0.0f, cellHeight, 0.1f, 1.0f
-		};
-
-		glEnable(GL_DEPTH_TEST);
-
-		glGenBuffers(1, &vertexBufferObject);
-		glGenVertexArrays(1, &vertexArrayObject);
-		glBindVertexArray(vertexArrayObject);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, quadVerts, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (char*)(sizeof(float) * 4));
+		defaultVertexBuffer = new vertexBuffer_t(glm::vec2(cellWidth, cellHeight));
 	}
 
 	void SetupBubbleUniforms()
