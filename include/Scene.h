@@ -3,12 +3,12 @@
 #define FREEIMAGE_LIB
 #define TW_STATIC
 //#define GLM_SWIZZLE
-
 #include <stdlib.h>
 #include <TinyExtender.h>
+using namespace TinyExtender;
 #include <TinyShaders.h>
 #include <TinyWindow.h>
-#include <tinyclock.h>
+#include <TinyClock.h>
 #include <fwd.hpp>
 #include <glm.hpp>
 #include <matrix.hpp>
@@ -20,6 +20,8 @@
 #include <FreeImage.h>
 #include "Utilities.h"
 #include "VertexBuffer.h"
+
+using namespace TinyWindow;
 
 class scene
 {
@@ -33,13 +35,16 @@ public:
 		this->sceneCamera = bufferCamera;
 		this->shaderConfigPath = shaderConfigPath;
 		this->tweakBarName = windowName;
+
+		manager = new windowManager();
+		window = manager->AddWindow(windowName);
 	}
 
 	~scene(){}
 
 	virtual void Run()
 	{
-		while (!windowManager::GetWindowShouldCloseByIndex(0))
+		while (!window->shouldClose)
 		{
 			Update();
 			Draw();
@@ -49,10 +54,8 @@ public:
 	virtual void Initialize()
 	{
 		FreeImage_Initialise();
-		windowManager::Initialize();
-		windowManager::AddWindow(windowName);
 		TinyExtender::InitializeExtensions();
-		tinyClock::Intialize();
+		tinyClock::Initialize();
 
 		tinyShaders::LoadShaderProgramsFromConfigFile(this->shaderConfigPath);
 		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
@@ -72,20 +75,23 @@ public:
 
 	virtual void SetupCallbacks()
 	{
-		windowManager::SetWindowOnResizeByIndex(0, &scene::HandleWindowResize);
-		windowManager::SetWindowOnMouseButtonEventByIndex(0, &scene::HandleMouseClick);
-		windowManager::SetWindowOnMouseMoveByIndex(0, &scene::HandleMouseMotion);
-		windowManager::SetWindowOnMaximizedByIndex(0, &scene::HandleMaximize);
+		window->SetWindowOnResizeByIndex(0, &scene::HandleWindowResize);
+		window->SetWindowOnMouseButtonEventByIndex(0, &scene::HandleMouseClick);
+		window->SetWindowOnMouseMoveByIndex(0, &scene::HandleMouseMotion);
+		window->SetWindowOnMaximizedByIndex(0, &scene::HandleMaximize);
 	}
 
 	virtual void ShutDown() const
 	{
 		FreeImage_DeInitialise();
 		tinyShaders::Shutdown();
-		windowManager::ShutDown();
+		manager->ShutDown();
 	}
 
 protected:
+
+	windowManager*							manager;
+	tWindow*								window;
 
 	static defaultUniformBuffer_t*			defaultUniformBuffer;
 	static vertexBuffer_t*					defaultVertexBuffer;

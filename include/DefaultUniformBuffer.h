@@ -18,7 +18,7 @@ public:
 	GLuint				uniformHandle;
 
 	defaultUniformBuffer_t( glm::mat4 projection, glm::mat4 view,
-			glm::mat4 translation = glm::mat4( 1 ), glm::vec2 resolution = glm::vec2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT) )
+			glm::mat4 translation = glm::mat4( 1 ), glm::vec2 resolution = glm::vec2(1280, 720) )
 	{
 		//uniformBuffer_t();
 		this->projection = projection;
