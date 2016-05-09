@@ -15,6 +15,8 @@ public:
 
 	vertexBuffer_t(glm::vec2 resolution)
 	{
+		bufferHandle = 0;
+		vertexArrayHandle = 0;
 		GLfloat quadVerts[16] =
 		{
 			0.0f, 0.0f, 1.0f, 1.0f,
@@ -25,7 +27,20 @@ public:
 
 		glGenBuffers(1, &bufferHandle);
 		glGenVertexArrays(1, &vertexArrayHandle);
-		glBindVertexArray(bufferHandle);
+		try
+		{
+			glBindVertexArray(bufferHandle);
+		}
+
+		catch (std::exception* e)
+		{
+			std::cout << e->what();
+			//printf("%s \n", e->what());
+			return;
+		}
+
+
+		//glBindVertexArray(bufferHandle);
 
 		glBindBuffer(gl_array_buffer, bufferHandle);
 		glBufferData(gl_array_buffer, sizeof(float) * 16, quadVerts, gl_static_draw);

@@ -3,6 +3,7 @@
 #define FREEIMAGE_LIB
 #define TW_STATIC
 //#define GLM_SWIZZLE
+#include <iostream>
 #include <stdlib.h>
 #include <TinyExtender.h>
 using namespace TinyExtender;
@@ -34,6 +35,8 @@ public:
 		this->sceneCamera = bufferCamera;
 		this->shaderConfigPath = shaderConfigPath;
 		this->tweakBarName = windowName;
+		defaultVertexBuffer = nullptr;
+		defaultUniformBuffer = nullptr;
 
 		manager = new windowManager();
 		window = manager->AddWindow(windowName);
@@ -57,7 +60,7 @@ public:
 
 		TinyExtender::InitializeExtentions();
 		GLuint blarg = 0;
-		blarg = TinyExtender::glCreateShader(gl_vertex_shader);
+		blarg = glCreateShader(gl_vertex_shader);
 		tinyShaders::LoadShaderProgramsFromConfigFile(this->shaderConfigPath);
 		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
 
@@ -146,8 +149,17 @@ protected:
 
 	virtual void SetupVertexBuffer()
 	{
+		try
+		{
+			defaultVertexBuffer = new vertexBuffer_t(defaultUniformBuffer->resolution);
+		}
 
-		defaultVertexBuffer = new vertexBuffer_t(defaultUniformBuffer->resolution);
+		catch (std::exception* e)
+		{
+			std::cout << e->what();
+		}
+
+		
 
 		GLfloat quadVerts[16] =
 		{
