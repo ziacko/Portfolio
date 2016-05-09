@@ -8,7 +8,7 @@ include (CMakePackageConfigHelpers)
 set (PROJECT_LABEL "Portfolio")
 add_definitions (-D_CRT_SECURE_NO_WARNINGS)
 
-find_Package(OpenGL)
+find_Package(OpenGL REQUIRED)
 
 if(UNIX)
 	set (LINK_DIRECTORY "/usr/lib")
@@ -34,32 +34,18 @@ set (COMMON_OUTPUT_DIR "./bin")
 set (DEBUG_OUTPUT_DIR "./bin/Debug/")
 set (RELEASE_OUTPUT_DIR "./bin/Release/")
 
-#set (PORTFOLIO_INCLUDE_DIR "./include")
-#set (TINYWINDOW_INCLUDE_DIR "./dependencies/tinywindow/Include")
-#set (TINYEXTENDER_INCLUDE_DIR "./dependencies/tinyextender/Include")
-#set (TINYSHADERS_INCLUDE_DIR "./dependencies/tinyextender/Include")
-#set (TINYCLOCK_INCLUDE_DIR "./dependencies/tinyclock/Include")
-#set (GLM_INCLUDE_DIR "./dependencies/glm/glm/")
-#set (FREEIMAGE__INCLUDE_DIR "./dependencies/FreeImage/Dist/x32")
-#set (COMMON_INCLUDE_DIRS "${PORTFOLIO_INCLUDE_DIR} ${TINYWINDOW_INCLUDE_DIR} ${TINYEXTENDER_INCLUDE_DIR} ${TINYSHADERS_INCLUDE_DIR} ${TINYCLOCK_INCLUDE_DIR} ${GLM_INCLUDE_DIR}")
-
-#include_directories("${PORTFOLIO_INCLUDE_DIR}")
-#include_directories("${TINYWINDOW_INCLUDE_DIR}")
-#include_directories("${TINYEXTENDER_INCLUDE_DIR}")
-#include_directories("${TINYSHADERS_INCLUDE_DIR}")
-#include_directories("${TINYCLOCK_INCLUDE_DIR}")
-#include_directories("${GLM_INCLUDE_DIR}")
-
 set (TINYWINDOW_EXAMPLE_DIR "./dependencies/tinywindow/Example")
 set (TINYEXTENDER_EXAMPLE_DIR "./dependencies/tinyextender/Example")
 set (TINYSHADERS_EXAMPLE_DIR "./dependencies/tinyshaders/Example")
 set (TINYCLOCK_EXAMPLE_DIR "./dependencies/tinyclock/Example")
+set (SOIL_DIR "./dependencies/SOIL")
 
 #build dependencies
 add_subdirectory("${TINYWINDOW_EXAMPLE_DIR}")
 add_subdirectory("${TINYEXTENDER_EXAMPLE_DIR}")
 add_subdirectory("${TINYSHADERS_EXAMPLE_DIR}")
 add_subdirectory("${TINYCLOCK_EXAMPLE_DIR}")
+add_subdirectory("${SOIL_DIR}")
 
 #build examples
 add_subdirectory("./Examples/Scene/")

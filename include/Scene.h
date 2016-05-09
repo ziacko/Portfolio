@@ -16,9 +16,8 @@ using namespace TinyExtender;
 #include <gtc/matrix_transform.hpp>
 #include <Camera.h>
 #include <DefaultUniformBuffer.h>
-#include <AntTweakBar.h>
-#include <FreeImage.h>
-#include "Utilities.h"
+#include <SOIL.h>
+//#include "Utilities.h"
 #include "VertexBuffer.h"
 
 using namespace TinyWindow;
@@ -29,7 +28,7 @@ public:
 
 	scene(const char* windowName = "Ziyad Barakat's Portfolio ( Example Scene )",
 		camera* bufferCamera = new camera(),
-		const GLchar* shaderConfigPath = "./shaders/Default.txt")
+		const GLchar* shaderConfigPath = "../../resources/shaders/Default.txt")
 	{
 		this->windowName = windowName;
 		this->sceneCamera = bufferCamera;
@@ -38,6 +37,7 @@ public:
 
 		manager = new windowManager();
 		window = manager->AddWindow(windowName);
+		sceneClock = new tinyClock_t();
 	}
 
 	~scene(){}
@@ -53,10 +53,11 @@ public:
 
 	virtual void Initialize()
 	{
-		FreeImage_Initialise();
-		TinyExtender::InitializeExtensions();
-		tinyClock::Initialize();
+		//FreeImage_Initialise();
 
+		TinyExtender::InitializeExtentions();
+		GLuint blarg = 0;
+		blarg = TinyExtender::glCreateShader(gl_vertex_shader);
 		tinyShaders::LoadShaderProgramsFromConfigFile(this->shaderConfigPath);
 		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
 
@@ -70,28 +71,29 @@ public:
 		
 		InitializeBuffers();
 		SetupCallbacks();
-		InitTweakBar();
+		//InitTweakBar();
 	}
 
 	virtual void SetupCallbacks()
 	{
-		window->SetWindowOnResizeByIndex(0, &scene::HandleWindowResize);
-		window->SetWindowOnMouseButtonEventByIndex(0, &scene::HandleMouseClick);
-		window->SetWindowOnMouseMoveByIndex(0, &scene::HandleMouseMotion);
-		window->SetWindowOnMaximizedByIndex(0, &scene::HandleMaximize);
+		window->resizeEvent = &scene::HandleWindowResize;
+		window->mouseButtonEvent = &scene::HandleMouseClick;
+		window->mouseMoveEvent = &scene::HandleMouseMotion;
+		//window->maximizedEvent = &scene::HandleMaximize;
 	}
 
 	virtual void ShutDown() const
 	{
-		FreeImage_DeInitialise();
+		//FreeImage_DeInitialise();
 		tinyShaders::Shutdown();
 		manager->ShutDown();
 	}
 
 protected:
 
-	windowManager*							manager;
-	tWindow*								window;
+	static windowManager*					manager;
+	static tWindow*							window;
+	tinyClock_t*							sceneClock;
 
 	static defaultUniformBuffer_t*			defaultUniformBuffer;
 	static vertexBuffer_t*					defaultVertexBuffer;
@@ -99,11 +101,10 @@ protected:
 	camera*									sceneCamera;
 	const GLchar*							windowName;
 	GLuint									programGLID;
-	TwBar*									tweakBar;
 	const GLchar*							tweakBarName;
 	const GLchar*							shaderConfigPath;
 
-	virtual void InitTweakBar()
+	/*virtual void InitTweakBar()
 	{
 		TwInit(TwGraphAPI::TW_OPENGL_CORE, NULL);
 		tweakBar = TwNewBar(tweakBarName);
@@ -118,17 +119,17 @@ protected:
 		TwAddVarRO(tweakBar, "total time", TwType::TW_TYPE_DOUBLE, &defaultUniformBuffer->totalTime, NULL);
 		TwAddVarRO(tweakBar, "frames per sec", TwType::TW_TYPE_DOUBLE, &defaultUniformBuffer->framesPerSec, NULL);
 		TwAddSeparator(tweakBar, NULL, NULL);
-	}
+	}*/
 
 	virtual void Update()
 	{
-		windowManager::PollForEvents();
+		manager->PollForEvents();
 		sceneCamera->Update();
-		tinyClock::UpdateClockAdaptive();
-		defaultUniformBuffer->deltaTime = tinyClock::GetDeltaTime();
-		defaultUniformBuffer->totalTime = tinyClock::GetTotalTime();
-		defaultUniformBuffer->framesPerSec = 1.0 / tinyClock::GetDeltaTime();
-		TwRefreshBar(tweakBar);
+		sceneClock->UpdateClockAdaptive();
+		defaultUniformBuffer->deltaTime = sceneClock->GetDeltaTime();
+		defaultUniformBuffer->totalTime = sceneClock->GetTotalTime();
+		defaultUniformBuffer->framesPerSec = 1.0 / sceneClock->GetDeltaTime();
+		//TwRefreshBar(tweakBar);
 		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
 	}
 
@@ -138,8 +139,8 @@ protected:
 		glUseProgram(this->programGLID);
 
 		glDrawArrays(GL_QUADS, 0, 4);
-		TwDraw();
-		windowManager::WindowSwapBuffersByIndex(0);
+		//TwDraw();
+		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -176,28 +177,25 @@ protected:
 	static void SetupUniformBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferUniformHandle)
 	{
 		glGenBuffers(1, &bufferHandle);
-		glBindBuffer(GL_UNIFORM_BUFFER, bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(Type), buffer, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, bufferUniformHandle, bufferHandle);
+		glBindBuffer(gl_uniform_buffer, bufferHandle);
+		glBufferData(gl_uniform_buffer, sizeof(Type), buffer, gl_dynamic_draw);
+		glBindBufferBase(gl_uniform_buffer, bufferUniformHandle, bufferHandle);
 	}
 
 	template<class Type>
 	static void UpdateUniformBuffer(void* buffer, GLuint bufferHandle)
 	{
-		glBindBuffer(GL_UNIFORM_BUFFER, bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(Type), buffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(gl_uniform_buffer, bufferHandle);
+		glBufferData(gl_uniform_buffer, sizeof(Type), buffer, gl_dynamic_draw);
 	}
 
 	virtual void InitializeBuffers()
 	{
 		defaultUniformBuffer = new defaultUniformBuffer_t(this->sceneCamera);
-		GLuint width = 0;
-		GLuint height = 0;
-		windowManager::GetWindowResolutionByIndex(0, width, height);
-		glViewport(0, 0, width, height);
+		glViewport(0, 0, window->resolution.width, window->resolution.height);
 		glEnable(GL_DEPTH_TEST);
-		defaultUniformBuffer->resolution = glm::vec2(width, height);
-		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
+		defaultUniformBuffer->resolution = glm::vec2(window->resolution.width, window->resolution.height);
+		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
 
 		//why is lower than actual resolution but still valid for tweakbar? it makes no sense!
 		//set the buffer's resolution back to normal afterwards
@@ -213,67 +211,65 @@ protected:
 		glUniformBlockBinding(this->programGLID, defaultUniformBuffer->uniformHandle, 0);
 	}
 
-	static void HandleMouseClick(GLuint button, GLboolean buttonState)
+	static void HandleMouseClick(mouseButton_t button, buttonState_t state)
 	{
-		TwMouseButtonID buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
-		TwMouseAction action = TwMouseAction::TW_MOUSE_PRESSED;
+		//TwMouseButtonID buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
+		//TwMouseAction action = TwMouseAction::TW_MOUSE_PRESSED;
 
-		if (buttonState == 1)
+		if (state == buttonState_t::down)
 		{
-			action = TwMouseAction::TW_MOUSE_PRESSED;
+			//action = TwMouseAction::TW_MOUSE_PRESSED;
 		}
 
 		else
 		{
-			action = TwMouseAction::TW_MOUSE_RELEASED;
+			//action = TwMouseAction::TW_MOUSE_RELEASED;
 		}
 
 		switch (button)
 		{
-			case MOUSE_LEFTBUTTON:
+			case mouseButton_t::left:
 			{
-				buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
+				//buttonId = TwMouseButtonID::TW_MOUSE_LEFT;
 				break;
 			}
 
-			case MOUSE_RIGHTBUTTON:
+			case mouseButton_t::right:
 			{
-				buttonId = TwMouseButtonID::TW_MOUSE_RIGHT;
+				//buttonId = TwMouseButtonID::TW_MOUSE_RIGHT;
 				break;
 			}
 
-			case MOUSE_MIDDLEBUTTON:
+			case mouseButton_t::middle:
 			{
-				buttonId = TwMouseButtonID::TW_MOUSE_MIDDLE;
+				//buttonId = TwMouseButtonID::TW_MOUSE_MIDDLE;
 				break;
 			}
 		}
-		TwMouseButton(action, buttonId);
+		//TwMouseButton(action, buttonId);
 	}
 
-	static void HandleWindowResize(GLuint width, GLuint height)
+	static void HandleWindowResize(TinyWindow::vec2_t<unsigned int> dimensions)
 	{
-		glViewport(0, 0, width, height);
-		TwWindowSize(width, height);
-		defaultUniformBuffer->resolution = glm::vec2(width, height);
-		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
+		glViewport(0, 0, dimensions.width, dimensions.height);
+		//TwWindowSize(dimensions.width, dimensions.height);
+		defaultUniformBuffer->resolution = glm::vec2(dimensions.width, dimensions.height);
+		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
 
 		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
 		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);
 	}
 
-	static void HandleMouseMotion(GLuint windowX, GLuint windowY, GLuint screenX, GLuint screenY)
+	static void HandleMouseMotion(vec2_t<int> windowPosition, vec2_t<int> screenPosition)
 	{
-		defaultUniformBuffer->mousePosition = glm::vec2(windowX, windowY);
+		defaultUniformBuffer->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
 		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
-		TwMouseMotion(windowX, windowY);
+		//TwMouseMotion(windowPosition.x, windowPosition.y);
 	}
 
-	static void HandleMaximize()
+	/*static void HandleMaximize()
 	{
-		GLuint width, height;
-		windowManager::GetWindowResolutionByIndex(0, width, height);
-		glViewport(0, 0, width, height);
+		glViewport(0, 0, window->resolution.width, window->resolution.height);
 
 		TwWindowSize(width, height);
 		defaultUniformBuffer->resolution = glm::vec2(width, height);
@@ -281,16 +277,18 @@ protected:
 		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, 0.01f, 10.0f);
 
 		//bind the uniform buffer and refill it
-		glBindBuffer(GL_UNIFORM_BUFFER, defaultUniformBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(gl_uniform_buffer, defaultUniformBuffer->bufferHandle);
+		glBufferData(gl_uniform_buffer, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_DYNAMIC_DRAW);
 
 		//generate a new vertex buffer with the new information
 
 		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);		
-	}
+	}*/
 };
 
 defaultUniformBuffer_t*		scene::defaultUniformBuffer = nullptr;
 vertexBuffer_t*				scene::defaultVertexBuffer = nullptr;
+windowManager*				scene::manager = nullptr;
+tWindow*					scene::window = nullptr;
 
 #endif

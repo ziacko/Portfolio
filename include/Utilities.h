@@ -56,8 +56,8 @@ GLuint LoadTexture(const char* texture, GLuint format = GL_RGBA, GLuint* width =
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//set the texture wrapping to edge clamping
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, gl_clamp_to_edge);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, gl_clamp_to_edge);
 
 	//unbind the texture
 	glBindTexture(GL_TEXTURE_2D, 0);
