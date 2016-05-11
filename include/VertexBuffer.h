@@ -27,20 +27,7 @@ public:
 
 		glGenBuffers(1, &bufferHandle);
 		glGenVertexArrays(1, &vertexArrayHandle);
-		try
-		{
-			glBindVertexArray(bufferHandle);
-		}
-
-		catch (std::exception* e)
-		{
-			std::cout << e->what();
-			//printf("%s \n", e->what());
-			return;
-		}
-
-
-		//glBindVertexArray(bufferHandle);
+		glBindVertexArray(bufferHandle);
 
 		glBindBuffer(gl_array_buffer, bufferHandle);
 		glBufferData(gl_array_buffer, sizeof(float) * 16, quadVerts, gl_static_draw);
