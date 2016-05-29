@@ -52,7 +52,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (sepia)",
 		camera* sepiaCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/Sepia.txt")
+		const char* shaderConfigPath = "../../resources/shaders/Sepia.txt")
 		: texturedScene(defaultTexture, windowName, sepiaCamera, shaderConfigPath)
 	{
 		this->sepiaSettings = sepiaSettings;
@@ -64,7 +64,7 @@ protected:
 
 	sepiaSettings_t*		sepiaSettings;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "factor", TwType::TW_TYPE_FLOAT, &sepiaSettings->factor, "min=0 max=1 step=0.01");
@@ -79,7 +79,7 @@ protected:
 		TwAddVarRW(tweakBar, "blue modifier 1", TwType::TW_TYPE_FLOAT, &sepiaSettings->blueModifier1, "min=0 max=1 step=0.01");
 		TwAddVarRW(tweakBar, "blue modifier 2", TwType::TW_TYPE_FLOAT, &sepiaSettings->blueModifier2, "min=0 max=1 step=0.01");
 		TwAddVarRW(tweakBar, "blue modifier 3", TwType::TW_TYPE_FLOAT, &sepiaSettings->blueModifier3, "min=0 max=1 step=0.01");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

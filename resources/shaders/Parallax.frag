@@ -27,7 +27,7 @@ layout(std140, binding = 1) uniform parallaxSettings
 };
 
 uniform sampler2D diffuseMap;
-uniform sampler2D heightMap;
+uniform sampler2D heightMap; //are these the same?
 
 void main()
 {

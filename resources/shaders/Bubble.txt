@@ -8,7 +8,7 @@ outColor
 2
 bubbleVertex
 Vertex
-./Shaders/Bubble.vert
+../../resources/shaders/Bubble.vert
 TexturedFragment
 Fragment
-./Shaders/Textured.frag
+../../resources/shaders/Textured.frag

@@ -8,7 +8,7 @@ outColor
 2
 DefaultVertex
 Vertex
-./Shaders/Default.vert
+../../resources/Shaders/Default.vert
 ErosionFragment
 Fragment
-./Shaders/Erosion.frag
+../../resources/Shaders/Erosion.frag

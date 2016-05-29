@@ -29,8 +29,8 @@ public:
 		glGenVertexArrays(1, &vertexArrayHandle);
 		glBindVertexArray(bufferHandle);
 
-		glBindBuffer(gl_array_buffer, bufferHandle);
-		glBufferData(gl_array_buffer, sizeof(float) * 16, quadVerts, gl_static_draw);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferHandle);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, quadVerts, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (char*)(sizeof(float) * 4));
@@ -46,8 +46,8 @@ public:
 			0.0f, resolution.y, 1.0f, 1.0f
 		};
 
-		glBindBuffer(gl_array_buffer, bufferHandle);
-		glBufferData(gl_array_buffer, sizeof(float) * 16, newVerts, gl_static_draw);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferHandle);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, newVerts, GL_STATIC_DRAW);
 
 	}
 

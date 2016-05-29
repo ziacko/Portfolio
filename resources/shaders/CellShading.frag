@@ -57,7 +57,7 @@ void main()
 		float dist = sqrt((Kernel1 * Kernel1) + (Kernel2 * Kernel2));
 		if (dist > cellDistance )
 		{
-			outColor = vec4(0.0);
+			outColor = vec4(0.0); //ok how do i flip this part?
 		}
 
 		else
@@ -68,6 +68,6 @@ void main()
 
 	else
 	{
-		outColor = texture2D(defaultTexture, inBlock.UV);
+		outColor = texture2D(defaultTexture, inBlock.UV); // SOIL doesn't flip the image automatically and Freeimage wont compile waaaaaaaaaagh
 	}
 }

@@ -31,10 +31,12 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (chromatic aberration)",
 		camera* chromaticCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/Chromatic.txt") : texturedScene(defaultTexture, windowName, chromaticCamera, shaderConfigPath)
+		const char* shaderConfigPath = "../../resources/shaders/Chromatic.txt") : texturedScene(defaultTexture, windowName, chromaticCamera, shaderConfigPath)
 	{
 		this->tweakBarName = windowName;
 		this->chromaticSettingsBuffer = chromaticSettings;
+
+		chromaticSettingsBuffer->blueOffset = 0.015f;
 	}
 
 	~chromaticScene( void ){}
@@ -43,13 +45,13 @@ protected:
 
 	static chromaticSettings_t*		chromaticSettingsBuffer;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "red offset", TwType::TW_TYPE_FLOAT, &chromaticSettingsBuffer->redOffset, "min=-1 max=1 step=0.0001");
 		TwAddVarRW(tweakBar, "green offset", TwType::TW_TYPE_FLOAT, &chromaticSettingsBuffer->greenOffset, "min=-1 max=1 step=0.0001");
 		TwAddVarRW(tweakBar, "blue offset", TwType::TW_TYPE_FLOAT, &chromaticSettingsBuffer->blueOffset, "min=-1 max=1 step=0.0001");
-	}
+	}*/
 
 	void SetupChromaticBuffer()
 	{

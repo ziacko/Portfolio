@@ -1,7 +1,7 @@
 #ifndef TEXTURE_SETTINGS_H
 #define TEXTURE_SETTINGS_H
 #include <TexturedScene.h>
-
+//can't use SOIL with this. I need to get FreeImage working again
 typedef enum { LINEAR = 0, NEAREST } magFilterSettings_t;
 typedef enum { NEAREST_MIPMAP_NEAREST = 2, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } minFilterSettings_t;
 typedef enum { CLAMP_TO_EDGE = 0, MIRROR_CLAMP_TO_EDGE, CLAMP_TO_BORDER, REPEAT, MIRRORED_REPEAT } wrapSettings_t;
@@ -12,13 +12,13 @@ public:
 	textureSettings(texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's Portfolio (texture settings)",
 		camera* textureCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/textureSettings.txt") :
+		const char* shaderConfigPath = "../../resources/shaders/textureSettings.txt") :
 		texturedScene(defaultTexture, windowName, textureCamera, shaderConfigPath)
 	{
 
 	}
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwEnumVal magFilterEV[] = { { LINEAR, "linear" }, { NEAREST, "Nearest" } };
@@ -28,9 +28,9 @@ public:
 		{ CLAMP_TO_BORDER, "clamp to border" }, { REPEAT, "repeat" }, { MIRRORED_REPEAT, "mirrored repeat" } };
 		TwType wrapSettingType = TwDefineEnum("wrap setting", wrapSettingEV, 5);
 
-		/*TwEnumVal minfilterEV[] = { { LINEAR, "linear" }, { NEAREST, "Nearest" },
+		/ *TwEnumVal minfilterEV[] = { { LINEAR, "linear" }, { NEAREST, "Nearest" },
 		{ NEAREST_MIPMAP_NEAREST, "nearest mipmap nearest" }, { NEAREST_MIPMAP_LINEAR, "nearest mipmap linear" },
-		{ LINEAR_MIPMAP_NEAREST, "linear mipmap nearest" }, { LINEAR_MIPMAP_LINEAR, "linear mipmap linear" } };*/
+		{ LINEAR_MIPMAP_NEAREST, "linear mipmap nearest" }, { LINEAR_MIPMAP_LINEAR, "linear mipmap linear" } };* /
 
 		TwAddVarCB(tweakBar, "min filter settings", magFilterType, SetMinFilter, GetMinFilter, &minFilterSetting, NULL);
 		TwAddVarCB(tweakBar, "mag filter settings", magFilterType, SetMagFilter, GetMagFilter, &magFilterSetting, NULL);
@@ -93,7 +93,7 @@ public:
 	static void TW_API GetWrapRSetting(void* value, void* clientData)
 	{
 		*(wrapSettings_t *)value = wrapRSetting;
-	}
+	}*/
 
 protected:
 
@@ -104,10 +104,10 @@ protected:
 	static wrapSettings_t				wrapRSetting;
 };
 
-magFilterSettings_t textureSettings::minFilterSetting = LINEAR;
-magFilterSettings_t textureSettings::magFilterSetting = LINEAR;
+magFilterSettings_t textureSettings::minFilterSetting = NEAREST;
+magFilterSettings_t textureSettings::magFilterSetting = NEAREST;
 
-wrapSettings_t textureSettings::wrapSSetting = CLAMP_TO_EDGE;
+wrapSettings_t textureSettings::wrapSSetting = REPEAT;
 wrapSettings_t textureSettings::wrapTSetting = CLAMP_TO_EDGE;
 wrapSettings_t textureSettings::wrapRSetting = CLAMP_TO_EDGE;
 

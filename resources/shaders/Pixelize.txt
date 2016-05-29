@@ -8,7 +8,7 @@ outColor
 2
 DefaultVertex
 Vertex
-./Shaders/Default.vert
+../../resources/Shaders/Default.vert
 PixelizeFragment
 Fragment
-./Shaders/Pixelize.frag
+../../resources/Shaders/Pixelize.frag

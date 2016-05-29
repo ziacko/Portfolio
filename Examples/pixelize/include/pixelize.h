@@ -28,7 +28,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (pixelize)",
 		camera* pixelizeCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/Pixelize.txt")
+		const char* shaderConfigPath = "../../resources/shaders/Pixelize.txt")
 		: texturedScene(defaultTexture, windowName, pixelizeCamera, shaderConfigPath)
 	{
 		this->pixelizeSettings = pixelizeSettings;
@@ -40,12 +40,12 @@ protected:
 
 	pixelizeSettings_t*		pixelizeSettings;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "pixel width", TwType::TW_TYPE_FLOAT, &pixelizeSettings->pixelWidth, "min=0 step=0.01");
 		TwAddVarRW(tweakBar, "pixel height", TwType::TW_TYPE_FLOAT, &pixelizeSettings->pixelHeight, "min=0 step=0.01");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

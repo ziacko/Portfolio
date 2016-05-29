@@ -32,7 +32,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's Portfolio (texture settings)",
 		camera* textureCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/cellShading.txt") :
+		const char* shaderConfigPath = "../../resources/shaders/cellShading.txt") :
 		texturedScene(defaultTexture, windowName, textureCamera, shaderConfigPath)
 	{
 		this->cellShadeSettingsBuffer = cellShade;
@@ -44,7 +44,7 @@ protected:
 
 	cellShadeSettings_t*		cellShadeSettingsBuffer;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "red modifier", TwType::TW_TYPE_FLOAT, &cellShadeSettingsBuffer->redModifier, "min=-1 max=1 step=0.0001");
@@ -52,6 +52,7 @@ protected:
 		TwAddVarRW(tweakBar, "blue modifier", TwType::TW_TYPE_FLOAT, &cellShadeSettingsBuffer->blueModifier, "min=-1 max=1 step=0.0001");
 		TwAddVarRW(tweakBar, "cell distance", TwType::TW_TYPE_FLOAT, &cellShadeSettingsBuffer->cellDistance, "min=-1 max=1 step=0.0001");
 	}
+*/
 
 	void InitializeBuffers() override
 	{

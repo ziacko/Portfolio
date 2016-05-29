@@ -8,7 +8,7 @@ outColor
 2
 DefaultVertex
 Vertex
-./Shaders/Default.vert
+../../resources/Shaders/Default.vert
 SharpenFragment
 Fragment
-./Shaders/Sharpen.frag
+../../resources/Shaders/Sharpen.frag

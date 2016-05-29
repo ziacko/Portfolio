@@ -1,7 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-
 class camera
 {
 public:
@@ -64,8 +63,6 @@ public:
 			this->view = glm::inverse(this->translation);
 		}
 	}
-
-
 };
 
 #endif

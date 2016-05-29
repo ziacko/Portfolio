@@ -8,7 +8,7 @@ outColor
 2
 SettingsVertex
 Vertex
-./Shaders/Settings.vert
+../../resources/Shaders/Settings.vert
 TexturedFragment
 Fragment
-./Shaders/Textured.frag
+../../resources/Shaders/Textured.frag

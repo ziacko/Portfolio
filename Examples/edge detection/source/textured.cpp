@@ -1,9 +1,9 @@
-#include "TexturedScene.h"
+#include "EdgeDetection.h"
 
 int main()
 {
 	
-	texturedScene* exampleScene = new texturedScene();
+	edgeDetectionScene* exampleScene = new edgeDetectionScene();
 	exampleScene->Initialize();
 	exampleScene->Run();
 

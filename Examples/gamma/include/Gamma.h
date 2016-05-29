@@ -26,7 +26,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (gamma)",
 		camera* gammaCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/gamma.txt")
+		const char* shaderConfigPath = "../../resources/shaders/gamma.txt")
 		: texturedScene(defaultTexture, windowName, gammaCamera, shaderConfigPath)
 	{
 		this->gammaSettings = gammaSettings;
@@ -38,13 +38,13 @@ protected:
 
 	gammaSettings_t*		gammaSettings;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "gamma red", TwType::TW_TYPE_FLOAT, &gammaSettings->gammaSettings.x, "min=-100 max=100 step=0.01");
 		TwAddVarRW(tweakBar, "gamma green", TwType::TW_TYPE_FLOAT, &gammaSettings->gammaSettings.y, "min=-100 max=100 step=0.01");
 		TwAddVarRW(tweakBar, "gamma blue", TwType::TW_TYPE_FLOAT, &gammaSettings->gammaSettings.z, "min=-100 max=100 step=0.01");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

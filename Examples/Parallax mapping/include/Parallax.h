@@ -12,7 +12,7 @@ struct parallaxSettings_t
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
 
-	parallaxSettings_t(GLfloat scale = 0.0f, GLfloat rayHeight = 0.0f, GLuint numSamples = 0)
+	parallaxSettings_t(GLfloat scale = 0.1f, GLfloat rayHeight = 0.25f, GLuint numSamples = 100)
 	{
 		this->scale = scale;
 		this->rayHeight = rayHeight;
@@ -31,8 +31,8 @@ public:
 		texture* defaultTexture = new texture(),
 		texture* heightMap = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (parallax mapping)",
-		camera* parallaxCamera = new camera(glm::vec2(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)),
-		const char* shaderConfigPath = "./shaders/Parallax.txt") : texturedScene(defaultTexture, windowName, parallaxCamera, shaderConfigPath)
+		camera* parallaxCamera = new camera(),
+		const char* shaderConfigPath = "../../resources/shaders/Parallax.txt") : texturedScene(defaultTexture, windowName, parallaxCamera, shaderConfigPath)
 	{
 		this->parallaxSettingsBuffer = parallaxSettings;
 		this->tweakBarName = windowName;
@@ -52,13 +52,13 @@ protected:
 	static parallaxSettings_t*		parallaxSettingsBuffer;
 	texture*						heightMap;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "parallax scale", TwType::TW_TYPE_FLOAT, &parallaxSettingsBuffer->scale, "min=0 max=10 step=0.001");
 		TwAddVarRW(tweakBar, "ray height", TwType::TW_TYPE_FLOAT, &parallaxSettingsBuffer->rayHeight, "min=0 max=10 step=0.001");
 		TwAddVarRW(tweakBar, "number of samples", TwType::TW_TYPE_INT16, &parallaxSettingsBuffer->numSamples, "min=0 max=1000");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{
@@ -74,7 +74,7 @@ protected:
 
 	void bindTextures()
 	{
-		defaultTexture->GetUniformLocation(programGLID);
+		defaultTexture->GetUniformLocation(programGLID); //ok so heightmap is fine. just diffuse map is screwed
 		heightMap->GetUniformLocation(programGLID);
 	}
 
@@ -84,8 +84,8 @@ protected:
 		glUseProgram(this->programGLID);
 		bindTextures();
 		glDrawArrays(GL_QUADS, 0, 4);
-		TwDraw();
-		windowManager::WindowSwapBuffersByIndex(0);
+		//TwDraw();
+		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 

@@ -28,10 +28,10 @@ public:
 
 	bubbleScene(
 		bubbleSettings_t* bubbleSettings = new bubbleSettings_t(),
-		texture* defaultTexture = new texture(),
+		texture* defaultTexture = new texture("../../resources/textures/earth_diffuse.tga", "defaultTexture", GL_RGBA),
 		const char* windowName = "Ziyad Barakat's Portfolio ( bubble displacement )",		
 		camera* bubbleCamera = new camera(), 
-		const char* shaderConfigPath = "./shaders/Bubble.txt", GLfloat attenuation = 1.0f, 
+		const char* shaderConfigPath = "../../resources/shaders/Bubble.txt", GLfloat attenuation = 1.0f, 
 		GLfloat offset = 1.0f) : texturedScene(defaultTexture, windowName, bubbleCamera, shaderConfigPath)
 	{
 
@@ -69,14 +69,14 @@ protected:
 	GLuint						gridDimensions;
 	GLboolean					enableWireframe;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "attenuation", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->attenuation, "min=0.01 max=1 step=0.01");
 		TwAddVarRW(tweakBar, "offset", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->offset, "min=-1 max=1 step=0.01");
 		TwAddVarRW(tweakBar, "grid dimensions", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->gridDimensions, "min=1 max=1000");
 		TwAddVarRW(tweakBar, "enable wireframe", TwType::TW_TYPE_BOOL8, &enableWireframe, NULL);
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{
@@ -111,8 +111,8 @@ protected:
 
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(bubbleSettingsBuffer->gridDimensions * bubbleSettingsBuffer->gridDimensions));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		TwDraw();
-		windowManager::WindowSwapBuffersByIndex(0);
+		//TwDraw();
+		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 };

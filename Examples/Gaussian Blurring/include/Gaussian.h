@@ -10,7 +10,7 @@ struct gaussianSettings_t
 	GLuint		bufferHandle;
 	GLuint		uniformHandle;
 
-	gaussianSettings_t(GLuint numOffsets = 5, GLfloat weight = 0.0f)
+	gaussianSettings_t(GLuint numOffsets = 5, GLfloat weight = 0.1f)
 	{
 		this->numOffsets = numOffsets;
 		this->weight = weight;
@@ -27,7 +27,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's Portfolio (gaussian blurring)",
 		camera* textureCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/gaussian.txt") :
+		const char* shaderConfigPath = "../../resources/shaders/gaussian.txt") :
 		texturedScene(defaultTexture, windowName, textureCamera, shaderConfigPath)
 	{
 		this->gaussianSettingsBuffer = gaussian;
@@ -39,11 +39,11 @@ protected:
 
 	static	gaussianSettings_t*		gaussianSettingsBuffer;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "blur weight", TwType::TW_TYPE_FLOAT, &gaussianSettingsBuffer->weight, "min=0 max=1 step=0.001");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

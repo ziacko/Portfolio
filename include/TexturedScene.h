@@ -7,10 +7,10 @@ class texturedScene : public scene
 {
 public:
 
-	texturedScene(texture* defaultTexture = new texture(),
+	texturedScene(texture* defaultTexture = new texture("../../resources/textures/crate_sideup.png", "defaultTexture", GL_RGBA, GL_RGBA),
 		const char* windowName = "Ziyad Barakat's Portfolio (textured scene)",
 		camera* textureCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/Textured.txt") :
+		const char* shaderConfigPath = "../../resources/shaders/Textured.txt") :
 		scene(windowName, textureCamera, shaderConfigPath)
 	{
 		this->defaultTexture = defaultTexture;
@@ -31,18 +31,13 @@ public:
 		glPointSize(20.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDrawArrays(GL_QUADS, 0, 4);
-		TwDraw();
-		windowManager::WindowSwapBuffersByIndex(0);
-		
+		window->SwapDrawBuffers();
 	}
 
 protected:
 
 	static texture*		defaultTexture;
-
 };
 
 texture* texturedScene::defaultTexture = nullptr;
-
-
 #endif

@@ -29,7 +29,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (dilation)",
 		camera* dilationCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/dilation.txt")
+		const char* shaderConfigPath = "../../resources/shaders/dilation.txt")
 		: texturedScene(defaultTexture, windowName, dilationCamera, shaderConfigPath)
 	{
 		this->dilationSettings = dilationSettings;
@@ -41,12 +41,12 @@ protected:
 
 	dilationSettings_t*			dilationSettings;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "dilation strength X", TwType::TW_TYPE_FLOAT, &dilationSettings->strengthX, "min=0 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "dilation strength Y", TwType::TW_TYPE_FLOAT, &dilationSettings->strengthY, "min=0 max=10 step=0.01");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

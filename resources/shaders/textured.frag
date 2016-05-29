@@ -12,5 +12,5 @@ uniform sampler2D defaultTexture;
 
 void main()
 {
-	outColor = texture2D(defaultTexture, inBlock.UV);
+	outColor = texture2D(defaultTexture, vec2(inBlock.UV.x,1.0 - inBlock.UV.y));
 }

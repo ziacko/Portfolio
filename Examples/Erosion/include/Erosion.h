@@ -29,7 +29,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (erosion)",
 		camera* erosionCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/erosion.txt")
+		const char* shaderConfigPath = "../../resources/shaders/erosion.txt")
 		: texturedScene(defaultTexture, windowName, erosionCamera, shaderConfigPath)
 	{
 		this->erosionSettings = erosionSettings;
@@ -41,12 +41,12 @@ protected:
 
 	erosionSettings_t*		erosionSettings;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "erosion strength X", TwType::TW_TYPE_FLOAT, &erosionSettings->strengthX, "min=0 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "erosion strength Y", TwType::TW_TYPE_FLOAT, &erosionSettings->strengthY, "min=0 max=10 step=0.01");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

@@ -35,6 +35,7 @@ set (DEBUG_OUTPUT_DIR "./bin/Debug/")
 set (RELEASE_OUTPUT_DIR "./bin/Release/")
 
 set (TINYWINDOW_EXAMPLE_DIR "./dependencies/tinywindow/Example")
+set (TINYWINDOW_VULKAN_DIR "./dependencies/tinywindow/vulkan")
 set (TINYEXTENDER_EXAMPLE_DIR "./dependencies/tinyextender/Example")
 set (TINYSHADERS_EXAMPLE_DIR "./dependencies/tinyshaders/Example")
 set (TINYCLOCK_EXAMPLE_DIR "./dependencies/tinyclock/Example")
@@ -42,6 +43,7 @@ set (SOIL_DIR "./dependencies/SOIL")
 
 #build dependencies
 add_subdirectory("${TINYWINDOW_EXAMPLE_DIR}")
+add_subdirectory("${TINYWINDOW_VULKAN_DIR}")
 add_subdirectory("${TINYEXTENDER_EXAMPLE_DIR}")
 add_subdirectory("${TINYSHADERS_EXAMPLE_DIR}")
 add_subdirectory("${TINYCLOCK_EXAMPLE_DIR}")
@@ -49,3 +51,20 @@ add_subdirectory("${SOIL_DIR}")
 
 #build examples
 add_subdirectory("./Examples/Scene/")
+add_subdirectory("./Examples/texturedScene/")
+add_subdirectory("./Examples/bubble displacement/")
+add_subdirectory("./Examples/Cell Shading/")
+add_subdirectory("./Examples/Chromatic Abberation/")
+add_subdirectory("./Examples/Contrast/")
+add_subdirectory("./Examples/Dilation")
+add_subdirectory("./Examples/Edge detection") #FIX!
+add_subdirectory("./Examples/Erosion")
+add_subdirectory("./Examples/Gamma")
+add_subdirectory("./Examples/Gaussian Blurring")
+add_subdirectory("./Examples/Parallax Mapping")
+add_subdirectory("./Examples/Perlin Noise")
+add_subdirectory("./Examples/Pixelize")
+add_subdirectory("./Examples/radial blur")
+add_subdirectory("./Examples/sepia") #FIX!
+add_subdirectory("./Examples/sharpen")
+add_subdirectory("./Examples/texture settings") #FIX!

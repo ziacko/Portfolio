@@ -5,8 +5,8 @@ class texture
 {
 public:
 
-	texture(const char* path = "./textures/earth_diffuse.tga", const char* uniformName = "defaultTexture", GLuint width = NULL, GLuint height = NULL,
-		GLenum format = GL_BGRA, GLint internalFormat = GL_RGBA, GLenum target = GL_TEXTURE_2D,
+	texture(const char* path = "../../resources/textures/earth_diffuse.tga", const char* uniformName = "defaultTexture",
+		GLenum format = GL_RGBA, GLint internalFormat = GL_RGBA, GLenum target = GL_TEXTURE_2D,
 		GLint currentMipmapLevel = 0, GLint mipmapLevels = 0, GLint border = 0, GLenum dataType = GL_UNSIGNED_BYTE,
 		GLenum internalDataType = GL_RGBA32F, GLint xOffset = 0, GLint yOffset = 0,
 		GLenum minFilterSetting = GL_LINEAR, GLenum magFilterSetting = GL_LINEAR,
@@ -14,8 +14,8 @@ public:
 	{
 		this->path = path;
 		this->uniformName = uniformName;
-		this->width = width;
-		this->height = height;
+		this->width = 0;
+		this->height = 0;
 		this->format = format;
 		this->internalFormat = internalFormat;
 		this->target = target;
@@ -32,6 +32,8 @@ public:
 		this->wrapSSetting = wrapSSetting;
 		this->wrapTSetting = wrapTSetting;
 		this->wrapRSetting = wrapRSetting;
+
+		this->handle = 0;
 
 		//LoadTexture();
 	}
@@ -57,7 +59,7 @@ public:
 
 	void LoadTexture()
 	{
-		FIBITMAP* bitmap = nullptr;
+		/*FIBITMAP* bitmap = nullptr;
 		//printf(" error: could not load bitmap: %s \n", path);
 		FREE_IMAGE_FORMAT FIformat = FreeImage_GetFileType(path, 0);
 
@@ -96,9 +98,16 @@ public:
 		}
 
 		data = FreeImage_GetBits(bitmap);
-		FREE_IMAGE_TYPE imageType = FreeImage_GetImageType(bitmap);
+		FREE_IMAGE_TYPE imageType = FreeImage_GetImageType(bitmap);*/
+		int width = 0;
+		int height = 0;
+		int channels = 0;
 
-		glGenTextures(1, &handle);
+		//data = SOIL_load_image(path, &width, &height, &channels, SOIL_LOAD_RGBA);
+
+		handle = SOIL_load_OGL_texture(path, SOIL_LOAD_RGBA, handle, SOIL_FLAG_INVERT_Y);
+
+	/*	glGenTextures(1, &handle);
 		glBindTexture(target, handle);
 
 		switch (target)
@@ -175,7 +184,7 @@ public:
 		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilterSetting);
 		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilterSetting);
 
-		UnbindTexture();
+		UnbindTexture();*/
 	}
 
 	void SetMinFilter(GLenum minFilterSetting)

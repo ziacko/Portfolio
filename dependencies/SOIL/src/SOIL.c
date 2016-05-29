@@ -1037,7 +1037,7 @@ unsigned int
 	img = (unsigned char*)malloc( width*height*channels );
 	memcpy( img, data, width*height*channels );
 	/*	does the user want me to invert the image?	*/
-	if( flags & SOIL_FLAG_INVERT_Y )
+	if( flags & SOIL_FLAG_INVERT_Y ) //its manual? ffs
 	{
 		int i, j;
 		for( j = 0; j*2 < height; ++j )

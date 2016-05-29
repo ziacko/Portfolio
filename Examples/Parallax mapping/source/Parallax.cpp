@@ -4,8 +4,8 @@ int main()
 {
 	parallaxScene* exampleScene = new parallaxScene(
 		new parallaxSettings_t(),
-		new texture("./textures/rocks.jpg", "diffuseMap"), 
-		new texture("./textures/rocks_NM_height.tga", "heightMap"));
+		new texture("../../resources/textures/stones.bmp", "diffuseMap"), 
+		new texture("../../resources/textures/stones_NM_height.tga", "heightMap"));
 
 	exampleScene->Initialize();
 	exampleScene->Run();

@@ -46,7 +46,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (sharpen)",
 		camera* sharpencamera = new camera(),
-		const char* shaderConfigPath = "./shaders/sharpen.txt")
+		const char* shaderConfigPath = "../../resources/shaders/sharpen.txt")
 		: texturedScene(defaultTexture, windowName, sharpencamera, shaderConfigPath)
 	{
 		this->sharpenSettings = sharpenSettings;
@@ -58,7 +58,7 @@ protected:
 
 	sharpenSettings_t*			sharpenSettings;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "kernel 1", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel1, "min=-100 max=100 step=0.01");
@@ -70,7 +70,7 @@ protected:
 		TwAddVarRW(tweakBar, "kernel 7", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel7, "min=-100 max=100 step=0.01");
 		TwAddVarRW(tweakBar, "kernel 8", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel8, "min=-100 max=100 step=0.01");
 		TwAddVarRW(tweakBar, "kernel 9", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel9, "min=-100 max=100 step=0.01");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

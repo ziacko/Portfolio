@@ -111,7 +111,7 @@ public:
 	perlinScene(
 		perlinSettings_t* perlinSettings = new perlinSettings_t(),
 		const char* windowName = "Ziyad Barakat's Portfolio ( Perlin noise )",
-		camera* perlinCamera = new camera(), const GLchar* shaderConfigPath = "./shaders/Perlin.txt")
+		camera* perlinCamera = new camera(), const GLchar* shaderConfigPath = "../../resources/shaders/Perlin.txt")
 		: scene(windowName, perlinCamera, shaderConfigPath)
 	{
 		this->perlinSettingsBuffer = perlinSettings;
@@ -127,7 +127,7 @@ protected:
 
 	static perlinSettings_t*		perlinSettingsBuffer;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "mod Value", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->modValue, "min=0.01 max=1000 step=0.1");
@@ -146,7 +146,7 @@ protected:
 
 		TwAddSeparator(tweakBar, "secondary settings", NULL);
 
-		/*TwAddVarRW(tweakBar, "pattern 1 value 1", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value1, "min=0.01 max=10 step=0.01");
+		/ *TwAddVarRW(tweakBar, "pattern 1 value 1", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value1, "min=0.01 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "pattern 1 value 2", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value2, "min=0.01 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "pattern 1 value 3", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value3, "min=0.01 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "pattern 1 value 4", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value4, "min=0.01 max=10 step=0.01");
@@ -156,7 +156,7 @@ protected:
 		TwAddVarRW(tweakBar, "pattern 1 value 8", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value8, "min=0.01 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "pattern 1 value 9", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value9, "min=0.01 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "pattern 1 value 10", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value10, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 11", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value11, "min=0.01 max=10 step=0.01");	*/
+		TwAddVarRW(tweakBar, "pattern 1 value 11", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value11, "min=0.01 max=10 step=0.01");	* /
 
 		//TwAddSeparator(tweakBar, "tertiary settings", NULL);
 
@@ -171,7 +171,7 @@ protected:
 		TwAddVarRW(tweakBar, "pattern value 9", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value9, "min=0.01 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "pattern value 10", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value10, "min=0.01 max=10 step=0.01");
 		TwAddVarRW(tweakBar, "pattern value 11", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value11, "min=0.01 max=10 step=0.01");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{
@@ -190,8 +190,9 @@ protected:
 		UpdateUniformBuffer<perlinSettings_t>(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle);
 		glUseProgram(this->programGLID);
 		glDrawArrays(GL_QUADS, 0, 4);
-		TwDraw();
-		windowManager::WindowSwapBuffersByIndex(0);
+		//TwDraw();
+	//	windowManager::WindowSwapBuffersByIndex(0);
+		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 };

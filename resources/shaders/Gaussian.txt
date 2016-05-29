@@ -8,7 +8,7 @@ outColor
 2
 DefaultVertex
 Vertex
-./Shaders/Default.vert
+../../resources/Shaders/Default.vert
 GaussianFragment
 Fragment
-./Shaders/Gaussian.frag
+../../resources/Shaders/Gaussian.frag

@@ -34,7 +34,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's Portfolio (radial blur)",
 		camera* radialCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/radialBlurring.txt") :
+		const char* shaderConfigPath = "../../resources/shaders/radialBlurring.txt") :
 		texturedScene(defaultTexture, windowName, radialCamera, shaderConfigPath)
 	{
 		this->radialBlurSettingsBuffer = radial;
@@ -46,7 +46,7 @@ protected:
 
 	static radialBlur_t*		radialBlurSettingsBuffer;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "exposure", TwType::TW_TYPE_FLOAT, &radialBlurSettingsBuffer->exposure, "min=0 max=1 step=0.001");
@@ -55,7 +55,7 @@ protected:
 		TwAddVarRW(tweakBar, "weight", TwType::TW_TYPE_FLOAT, &radialBlurSettingsBuffer->weight, "min=0 max=1 step=0.001");
 		//TwAddVarRW(tweakBar, "attenuation", TwType::TW_TYPE_FLOAT, &radialBlurSettingsBuffer->attenuation, "min=0 max=100 step=0.01");
 		TwAddVarRW(tweakBar, "samples", TwType::TW_TYPE_UINT16, &radialBlurSettingsBuffer->samples, "min=0 max=1000");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

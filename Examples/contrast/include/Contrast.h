@@ -27,7 +27,7 @@ public:
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (contrast)",
 		camera* contrastCamera = new camera(),
-		const char* shaderConfigPath = "./shaders/contrast.txt")
+		const char* shaderConfigPath = "../../resources/shaders/contrast.txt")
 		: texturedScene(defaultTexture, windowName, contrastCamera, shaderConfigPath)
 	{
 		this->contrastSettings = contrastSettings;
@@ -39,11 +39,11 @@ protected:
 
 	contrastSettings_t*			contrastSettings;
 
-	void InitTweakBar() override
+	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();
 		TwAddVarRW(tweakBar, "contrast", TwType::TW_TYPE_FLOAT, &contrastSettings->contrast, "min=0 max=10 step=0.01");
-	}
+	}*/
 
 	void InitializeBuffers() override
 	{

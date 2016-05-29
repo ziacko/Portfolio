@@ -1,0 +1,11 @@
+# CMake generation dependency list for this directory.
+C:/Users/ziyad/Documents/Portfolio/dependencies/SOIL/CMakeLists.txt
+C:/Users/ziyad/Documents/Portfolio/CMakeFiles/3.4.2/CMakeCCompiler.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.4/Modules/CMakeCInformation.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.4/Modules/Platform/Windows-MSVC-C.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.4/Modules/Platform/Windows-MSVC.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.4/Modules/CMakeCommonLanguageInclude.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.4/Modules/FindOpenGL.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.4/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.4/Modules/FindPackageMessage.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.4/Modules/CMakeParseArguments.cmake

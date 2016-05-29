@@ -8,7 +8,7 @@ outColor
 2
 DefaultVertex
 Vertex
-./Shaders/Default.vert
+../../resources/Shaders/Default.vert
 PerlinFragment
 Fragment
-./Shaders/Perlin.frag
+../../resources/Shaders/Perlin.frag
