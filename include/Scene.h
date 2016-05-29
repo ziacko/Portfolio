@@ -105,12 +105,11 @@ public:
 		io.KeyMap[ImGuiKey_Z] = 'z';
 
 		io.RenderDrawListsFn = RenderImGUIDrawLists;
-
-		
 	}
 
 	static void RenderImGUIDrawLists(ImDrawData* drawData)
 	{
+		//thjis function might b the culprit
 		ImGuiIO& io = ImGui::GetIO();
 		int framebufferWidth = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
 		int framebufferHeight = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
@@ -122,28 +121,16 @@ public:
 
 		drawData->ScaleClipRects(io.DisplayFramebufferScale);
 
-		GLint lastProgram;
-		glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
-		GLint lastTexture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
-		//GLint lastActiveTexture;
-		//glGetIntegerv(GL_ACTIVE_TEXTURE, &lastActiveTexture);
-		GLint lastArrayBuffer;
-		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
-		GLint lastElementArrayBuffer;
-		glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &lastElementArrayBuffer);
-		GLint lastVertexArray;
-		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVertexArray);
-		GLint lastBlendSrc;
-		glGetIntegerv(GL_BLEND_SRC, &lastBlendSrc);
-		GLint lastBlendDst;
-		glGetIntegerv(GL_BLEND_DST, &lastBlendDst);
-		GLint lastBlendEquationRGB;
-		glGetIntegerv(GL_BLEND_EQUATION_RGB, &lastBlendEquationRGB);
-		GLint lastBlendEquationAlpha;
-		glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &lastBlendEquationAlpha);
-		GLint lastViewport[4];
-		glGetIntegerv(GL_VIEWPORT, lastViewport);
+		GLint lastProgram;	glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
+		GLint lastTexture;	glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
+		GLint lastArrayBuffer;	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
+		GLint lastElementArrayBuffer;	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &lastElementArrayBuffer);
+		GLint lastVertexArray;	glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVertexArray);
+		GLint lastBlendSrc;	glGetIntegerv(GL_BLEND_SRC, &lastBlendSrc);
+		GLint lastBlendDst;	glGetIntegerv(GL_BLEND_DST, &lastBlendDst);
+		GLint lastBlendEquationRGB;	glGetIntegerv(GL_BLEND_EQUATION_RGB, &lastBlendEquationRGB);
+		GLint lastBlendEquationAlpha;	glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &lastBlendEquationAlpha);
+		GLint lastViewport[4];	glGetIntegerv(GL_VIEWPORT, lastViewport);
 		GLboolean lastEnableBlend = glIsEnabled(GL_BLEND);
 		GLboolean lastEnableCullFace = glIsEnabled(GL_CULL_FACE);
 		GLboolean lastEnableDepthTest = glIsEnabled(GL_DEPTH_TEST);
@@ -157,11 +144,11 @@ public:
 		glEnable(GL_SCISSOR_TEST);
 		glActiveTexture(GL_TEXTURE0);
 
-		glViewport(0, 0, (GLsizei)framebufferWidth, (GLsizei)framebufferHeight);
+		glViewport(0, 0, 1280, 720);
 		const float orthoProjection[4][4] =
 		{
-			{2.0f / io.DisplaySize.x, 0.0f, 0.0f, 0.0f},
-			{0.0f, 2.0f / -io.DisplaySize.y, 0.0f, 0.0f },
+			{2.0f / (float)window->resolution.width, 0.0f, 0.0f, 0.0f},
+			{0.0f, 2.0f / -(float)window->resolution.height, 0.0f, 0.0f },
 			{0.0f, 0.0f, -1.0f, 0.0f},
 			{-1.0f, 1.0f, 0.0f, 1.0f }
 		};
@@ -192,7 +179,7 @@ public:
 				else
 				{
 					glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)drawCommand->TextureId);
-					glScissor((int)drawCommand->ClipRect.x, (int)(framebufferHeight - drawCommand->ClipRect.w), (int)(drawCommand->ClipRect.z - drawCommand->ClipRect.x), (int)(drawCommand->ClipRect.w - drawCommand->ClipRect.y));
+					glScissor(0, 0, 1280, 720);
 					glDrawElements(GL_TRIANGLES, (GLsizei)drawCommand->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, indexBufferOffset);
 				}
 				indexBufferOffset += drawCommand->ElemCount;
@@ -409,21 +396,28 @@ protected:
 
 	virtual void Draw()
 	{
-		//glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		//glUseProgram(this->programGLID);
+		/*glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+		glUseProgram(this->programGLID);
 
-		//glDrawArrays(GL_QUADS, 0, 4);
+		glDrawArrays(GL_QUADS, 0, 4);*/
+
+		static const char* blarg = "new whatever";
 		
 		ImGUINewFrame();
 		ImGui::Text("blarg");
 		static float f = 0.0f;
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+		if (ImGui::Button(blarg))
+		{
+			blarg = "poop";
+		}
+		ImGui::Text("App average FPS %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("total running time %.5f", sceneClock->GetTotalTime());
+		glViewport(0, 0, 1280, 720);
 		
-		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui::Render();
 		window->SwapDrawBuffers();
-		
-		
+		glClear(GL_COLOR_BUFFER_BIT);		
 	}
 
 	virtual void SetupVertexBuffer()
