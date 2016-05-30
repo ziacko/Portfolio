@@ -1,7 +1,7 @@
 #ifndef TEXTURE_SETTINGS_H
 #define TEXTURE_SETTINGS_H
 #include <TexturedScene.h>
-//can't use SOIL with this. I need to get FreeImage working again
+
 typedef enum { LINEAR = 0, NEAREST } magFilterSettings_t;
 typedef enum { NEAREST_MIPMAP_NEAREST = 2, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } minFilterSettings_t;
 typedef enum { CLAMP_TO_EDGE = 0, MIRROR_CLAMP_TO_EDGE, CLAMP_TO_BORDER, REPEAT, MIRRORED_REPEAT } wrapSettings_t;
@@ -18,97 +18,60 @@ public:
 
 	}
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override //it's not virtual because i don't really want anything to inherit from it at this point. 
 	{
-		scene::InitTweakBar();
-		TwEnumVal magFilterEV[] = { { LINEAR, "linear" }, { NEAREST, "Nearest" } };
-		TwType magFilterType = TwDefineEnum("filterSetting", magFilterEV, 2);
+		texturedScene::BuildGUI(io);
 
-		TwEnumVal wrapSettingEV[] = { { CLAMP_TO_EDGE, "clamp to edge" }, { MIRROR_CLAMP_TO_EDGE, "mirrored clamp to edge" },
-		{ CLAMP_TO_BORDER, "clamp to border" }, { REPEAT, "repeat" }, { MIRRORED_REPEAT, "mirrored repeat" } };
-		TwType wrapSettingType = TwDefineEnum("wrap setting", wrapSettingEV, 5);
+		//aaaahhhh much nicer!
+		//mag
+		if (ImGui::ListBox("mag filter setting", &magFilterIndex, magFilterSettings.data(), magFilterSettings.size()))
+		{
+			defaultTexture->SetMagFilter(magFilterSetting);
+		}
 
-		/ *TwEnumVal minfilterEV[] = { { LINEAR, "linear" }, { NEAREST, "Nearest" },
-		{ NEAREST_MIPMAP_NEAREST, "nearest mipmap nearest" }, { NEAREST_MIPMAP_LINEAR, "nearest mipmap linear" },
-		{ LINEAR_MIPMAP_NEAREST, "linear mipmap nearest" }, { LINEAR_MIPMAP_LINEAR, "linear mipmap linear" } };* /
+		//min
+		if (ImGui::ListBox("min filter setting", &minFilterIndex, minFilterSettings.data(), minFilterSettings.size()))
+		{
+			defaultTexture->SetMinFilter(minFilterIndex);
+		}
 
-		TwAddVarCB(tweakBar, "min filter settings", magFilterType, SetMinFilter, GetMinFilter, &minFilterSetting, NULL);
-		TwAddVarCB(tweakBar, "mag filter settings", magFilterType, SetMagFilter, GetMagFilter, &magFilterSetting, NULL);
-
-		TwAddVarCB(tweakBar, "wrap S setting", wrapSettingType, SetWrapSSettings, GetWrapSSetting, &wrapSSetting, NULL);
-		TwAddVarCB(tweakBar, "wrap T setting", wrapSettingType, SetWrapTSettings, GetWrapTSetting, &wrapTSetting, NULL);
-		TwAddVarCB(tweakBar, "wrap R setting", wrapSettingType, SetWrapRSettings, GetWrapRSetting, &wrapRSetting, NULL);
+		//S wrap setting
+		if (ImGui::ListBox("S wrap texture setting", &sWrapIndex, wrapSettings.data(), wrapSettings.size()))
+		{
+			defaultTexture->SetWrapS(sWrapIndex);
+		}
+		//T wrap setting
+		if (ImGui::ListBox("T wrap texture setting", &tWrapIndex, wrapSettings.data(), wrapSettings.size()))
+		{
+			defaultTexture->SetWrapT(tWrapIndex);
+		}
+		//R wrap setting (3D textures) //not doing 3D right now so I'll leave it out
+		/*if (ImGui::ListBox("R wrap texture setting", &rWrapIndex, wrapSettings.data(), wrapSettings.size()))
+		{
+			defaultTexture->SetWrapR(rWrapIndex);
+		}*/
 	}
-
-	static void TW_API SetMagFilter(const void* value, void* clientData)
-	{
-		magFilterSetting = *(const magFilterSettings_t *)(value);
-		defaultTexture->SetMagFilter(magFilterSetting);
-	}
-
-	static void TW_API GetMagFilter(void* value, void* clientData)
-	{
-		*(magFilterSettings_t *)value = magFilterSetting;
-	}
-
-	static void TW_API SetMinFilter(const void* value, void* clientData)
-	{
-		minFilterSetting = *(const magFilterSettings_t *)(value);
-		defaultTexture->SetMinFilter(minFilterSetting);
-	}
-
-	static void TW_API GetMinFilter(void* value, void* clientData)
-	{
-		*(magFilterSettings_t *)value = minFilterSetting;
-	}
-
-	static void TW_API SetWrapSSettings(const void* value, void* clientData)
-	{
-		wrapSSetting = *(const wrapSettings_t*)(value);
-		defaultTexture->SetWrapS(wrapSSetting);
-	}
-
-	static void TW_API GetWrapSSetting(void* value, void* clientData)
-	{
-		*(wrapSettings_t *)value = wrapSSetting;
-	}
-
-	static void TW_API SetWrapTSettings(const void* value, void* clientData)
-	{
-		wrapTSetting = *(const wrapSettings_t*)(value);
-		defaultTexture->SetWrapT(wrapTSetting);
-	}
-
-	static void TW_API GetWrapTSetting(void* value, void* clientData)
-	{
-		*(wrapSettings_t *)value = wrapTSetting;
-	}
-
-	static void TW_API SetWrapRSettings(const void* value, void* clientData)
-	{
-		wrapRSetting = *(const wrapSettings_t*)(value);
-		defaultTexture->SetWrapR(wrapRSetting);
-	}
-
-	static void TW_API GetWrapRSetting(void* value, void* clientData)
-	{
-		*(wrapSettings_t *)value = wrapRSetting;
-	}*/
 
 protected:
 
-	static magFilterSettings_t			minFilterSetting;
-	static magFilterSettings_t			magFilterSetting;
-	static wrapSettings_t				wrapSSetting;
-	static wrapSettings_t				wrapTSetting;
-	static wrapSettings_t				wrapRSetting;
+	magFilterSettings_t				minFilterSetting = LINEAR;
+	magFilterSettings_t				magFilterSetting = LINEAR;
+	wrapSettings_t					wrapSSetting = CLAMP_TO_EDGE;
+	wrapSettings_t					wrapTSetting = CLAMP_TO_EDGE;
+	wrapSettings_t					wrapRSetting = CLAMP_TO_EDGE;
+
+	//no need to edit these. but I can't make these const :(
+	std::vector<const char*>		wrapSettings = { "clamp to edge", "mirror clamp to edge", "clamp to border", "repeat", "mirrored repeat" };
+	std::vector<const char*>		magFilterSettings = { "linear", "nearest" };
+	std::vector<const char*>		minFilterSettings = { "linear", "nearest", "nearest mipmap nearest" , "nearest mipmap linear" , "linear mipmap nearest" , "linear mipmap linear" };
+
+	//look into making these into std::pairs?
+	int minFilterIndex = 0; //can't be a local variable
+	int magFilterIndex = 0;
+
+	int sWrapIndex = 0;
+	int tWrapIndex = 0;
+	int rWrapIndex = 0;
 };
-
-magFilterSettings_t textureSettings::minFilterSetting = NEAREST;
-magFilterSettings_t textureSettings::magFilterSetting = NEAREST;
-
-wrapSettings_t textureSettings::wrapSSetting = REPEAT;
-wrapSettings_t textureSettings::wrapTSetting = CLAMP_TO_EDGE;
-wrapSettings_t textureSettings::wrapRSetting = CLAMP_TO_EDGE;
 
 #endif

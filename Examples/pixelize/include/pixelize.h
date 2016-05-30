@@ -40,12 +40,13 @@ protected:
 
 	pixelizeSettings_t*		pixelizeSettings;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "pixel width", TwType::TW_TYPE_FLOAT, &pixelizeSettings->pixelWidth, "min=0 step=0.01");
-		TwAddVarRW(tweakBar, "pixel height", TwType::TW_TYPE_FLOAT, &pixelizeSettings->pixelHeight, "min=0 step=0.01");
-	}*/
+		texturedScene::BuildGUI(io);
+
+		ImGui::SliderFloat("pixel width", &pixelizeSettings->pixelWidth, 0.0f, 100.0f);
+		ImGui::SliderFloat("pixel height", &pixelizeSettings->pixelHeight, 0.0f, 100.0f);
+	}
 
 	void InitializeBuffers() override
 	{

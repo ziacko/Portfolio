@@ -44,6 +44,16 @@ public:
 
 protected:
 
+	void BuildGUI(ImGuiIO io) override
+	{
+		texturedScene::BuildGUI(io);
+		ImGui::Checkbox("enable wireframe", &enableWireframe);
+		
+		ImGui::SliderFloat("Attenuation", &(float)bubbleSettingsBuffer->attenuation, 0.0f, 1.0f);
+		ImGui::SliderFloat("grid dimensions", &(float)bubbleSettingsBuffer->gridDimensions, 0.0f, 1000.0f, "%f");
+		ImGui::SliderFloat("offset", &( float )bubbleSettingsBuffer->offset, 0.0f, 1.0f);
+	}
+
 	/*void CreateGrid()
 	{
 		GLfloat vertStepSize = defaultUniformBuffer->width / bubbleSettingsBuffer->gridDimensions;
@@ -66,17 +76,8 @@ protected:
 
 	static bubbleSettings_t*	bubbleSettingsBuffer;
 	std::vector<glm::vec4>		gridVerts;
-	GLuint						gridDimensions;
-	GLboolean					enableWireframe;
-
-	/*void InitTweakBar() override
-	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "attenuation", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->attenuation, "min=0.01 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "offset", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->offset, "min=-1 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "grid dimensions", TwType::TW_TYPE_FLOAT, &bubbleSettingsBuffer->gridDimensions, "min=1 max=1000");
-		TwAddVarRW(tweakBar, "enable wireframe", TwType::TW_TYPE_BOOL8, &enableWireframe, NULL);
-	}*/
+	int							gridDimensions;
+	bool						enableWireframe;
 
 	void InitializeBuffers() override
 	{
@@ -111,7 +112,7 @@ protected:
 
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(bubbleSettingsBuffer->gridDimensions * bubbleSettingsBuffer->gridDimensions));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//TwDraw();
+		texturedScene::DrawGUI(window->name);
 		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}

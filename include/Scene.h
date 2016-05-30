@@ -1,9 +1,9 @@
 #ifndef SCENE_H
 #define SCENE_H
+#define GLM_SWIZZLE
 #include <iostream>
 #include <stdlib.h>
 #include <TinyExtender.h>
-//using namespace TinyExtender;
 #include <TinyShaders.h>
 #include <TinyWindow.h>
 #include <TinyClock.h>
@@ -15,7 +15,7 @@
 #include <Camera.h>
 #include <DefaultUniformBuffer.h>
 #include <SOIL.h>
-//#include "Utilities.h"
+#include "Utilities.h"
 #include "VertexBuffer.h"
 #include <imgui.h>
 
@@ -74,63 +74,44 @@ public:
 		window->mouseButtonEvent = &scene::HandleMouseClick;
 		window->mouseMoveEvent = &scene::HandleMouseMotion;
 		window->maximizedEvent = &scene::HandleMaximize;
+		window->destroyedEvent = &scene::ShutDown;
 	}
 
-	virtual void ShutDown() const
+	static void ShutDown()
 	{
+		imGUIInvalidateDeviceObject();
 		tinyShaders::Shutdown();
 		manager->ShutDown();
 	}
 
-	virtual void InitImGUI()
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.KeyMap[ImGuiKey_Tab] = TinyWindow::tab;
-		io.KeyMap[ImGuiKey_LeftArrow] = TinyWindow::arrowLeft;
-		io.KeyMap[ImGuiKey_RightArrow] = TinyWindow::arrowRight;
-		io.KeyMap[ImGuiKey_UpArrow] = TinyWindow::arrowUp;
-		io.KeyMap[ImGuiKey_PageUp] = TinyWindow::pageUp;
-		io.KeyMap[ImGuiKey_PageDown] = TinyWindow::pageDown;
-		io.KeyMap[ImGuiKey_Home] = TinyWindow::home;
-		io.KeyMap[ImGuiKey_End] = TinyWindow::end;
-		io.KeyMap[ImGuiKey_Delete] = TinyWindow::del;
-		io.KeyMap[ImGuiKey_Backspace] = TinyWindow::backspace;
-		io.KeyMap[ImGuiKey_Enter] = TinyWindow::enter;
-		io.KeyMap[ImGuiKey_Escape] = TinyWindow::escape;
-		io.KeyMap[ImGuiKey_A] = 'a';
-		io.KeyMap[ImGuiKey_C] = 'c';
-		io.KeyMap[ImGuiKey_V] = 'v';
-		io.KeyMap[ImGuiKey_X] = 'x';
-		io.KeyMap[ImGuiKey_Y] = 'y';
-		io.KeyMap[ImGuiKey_Z] = 'z';
-
-		io.RenderDrawListsFn = RenderImGUIDrawLists;
-	}
-
 	static void RenderImGUIDrawLists(ImDrawData* drawData)
 	{
-		//thjis function might b the culprit
 		ImGuiIO& io = ImGui::GetIO();
-		int framebufferWidth = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
-		int framebufferHeight = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
-
-		if (!framebufferWidth || !framebufferHeight)
-		{
-			return;
-		}
 
 		drawData->ScaleClipRects(io.DisplayFramebufferScale);
 
-		GLint lastProgram;	glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
-		GLint lastTexture;	glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
-		GLint lastArrayBuffer;	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
-		GLint lastElementArrayBuffer;	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &lastElementArrayBuffer);
-		GLint lastVertexArray;	glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVertexArray);
-		GLint lastBlendSrc;	glGetIntegerv(GL_BLEND_SRC, &lastBlendSrc);
-		GLint lastBlendDst;	glGetIntegerv(GL_BLEND_DST, &lastBlendDst);
-		GLint lastBlendEquationRGB;	glGetIntegerv(GL_BLEND_EQUATION_RGB, &lastBlendEquationRGB);
-		GLint lastBlendEquationAlpha;	glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &lastBlendEquationAlpha);
-		GLint lastViewport[4];	glGetIntegerv(GL_VIEWPORT, lastViewport);
+		GLint lastProgram;	
+		GLint lastTexture;	
+		GLint lastArrayBuffer;	
+		GLint lastElementArrayBuffer;	
+		GLint lastVertexArray;	
+		GLint lastBlendSrc;	
+		GLint lastBlendDst;	
+		GLint lastBlendEquationRGB;	
+		GLint lastBlendEquationAlpha;	
+		GLint lastViewport[4];	
+
+		glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
+		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
+		glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &lastElementArrayBuffer);
+		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVertexArray);
+		glGetIntegerv(GL_BLEND_SRC, &lastBlendSrc);
+		glGetIntegerv(GL_BLEND_DST, &lastBlendDst);
+		glGetIntegerv(GL_BLEND_EQUATION_RGB, &lastBlendEquationRGB);
+		glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &lastBlendEquationAlpha);
+		glGetIntegerv(GL_VIEWPORT, lastViewport);
+
 		GLboolean lastEnableBlend = glIsEnabled(GL_BLEND);
 		GLboolean lastEnableCullFace = glIsEnabled(GL_CULL_FACE);
 		GLboolean lastEnableDepthTest = glIsEnabled(GL_DEPTH_TEST);
@@ -144,7 +125,7 @@ public:
 		glEnable(GL_SCISSOR_TEST);
 		glActiveTexture(GL_TEXTURE0);
 
-		glViewport(0, 0, 1280, 720);
+		glViewport(0, 0, window->resolution.width, window->resolution.height);
 		const float orthoProjection[4][4] =
 		{
 			{2.0f / (float)window->resolution.width, 0.0f, 0.0f, 0.0f},
@@ -152,7 +133,7 @@ public:
 			{0.0f, 0.0f, -1.0f, 0.0f},
 			{-1.0f, 1.0f, 0.0f, 1.0f }
 		};
-
+		//glm::mat4 testOrtho = glm::perspective(45.0f, )
 		glUseProgram(imGUIShaderhandle);
 		glUniform1i(imGUITexAttribLocation, 0);
 		glUniformMatrix4fv(imGUIProjMatrixAttribLocation, 1, GL_FALSE, &orthoProjection[0][0]);
@@ -179,7 +160,7 @@ public:
 				else
 				{
 					glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)drawCommand->TextureId);
-					glScissor(0, 0, 1280, 720);
+					glScissor((int)drawCommand->ClipRect.x, (int)(window->resolution.height - drawCommand->ClipRect.w), (int)(drawCommand->ClipRect.z - drawCommand->ClipRect.x), (int)(drawCommand->ClipRect.w - drawCommand->ClipRect.y));
 					glDrawElements(GL_TRIANGLES, (GLsizei)drawCommand->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, indexBufferOffset);
 				}
 				indexBufferOffset += drawCommand->ElemCount;
@@ -200,158 +181,7 @@ public:
 		lastEnableScissorTest ? glEnable(GL_SCISSOR_TEST) : glDisable(GL_SCISSOR_TEST);
 		glViewport(lastViewport[0], lastViewport[1], (GLsizei)lastViewport[2], (GLsizei)lastViewport[3]);
 	}
-
-	void ImGUICreateFontsTexture()
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		unsigned char* pixels;
-		int width, height;
-		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-
-		GLint lastTexture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
-		glGenTextures(1, &imGUIFontTexture);
-		glBindTexture(GL_TEXTURE_2D, imGUIFontTexture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-		//store texture handle
-		io.Fonts->TexID = (void *)(intptr_t)imGUIFontTexture;
-
-		glBindTexture(GL_TEXTURE_2D, lastTexture);
-	}
-
-	void ImGUINewFrame()
-	{
-		if (!imGUIFontTexture)
-		{
-			ImGUICreateDeviceObjects();
-		}
-
-		ImGuiIO& io = ImGui::GetIO();
-
-		io.DisplaySize = ImVec2((float)window->resolution.width, (float)window->resolution.height);
-		io.DisplayFramebufferScale = ImVec2(window->resolution.width > 0 ? ((float)manager->GetScreenResolution().width / window->resolution.width) : 0, window->resolution.height > 0 ? ((float)manager->GetScreenResolution().height / window->resolution.height) : 0);
-		io.DeltaTime = (float)sceneClock->GetDeltaTime();
-		
-		ImGui::NewFrame();
-	}
-
-	void ImGUICreateDeviceObjects()
-	{
-
-		GLint lastTexture, lastArrayBuffer, LastVertexArray;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
-		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
-		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &LastVertexArray);		
-
-		const GLchar *vertex_shader =
-			"#version 330\n"
-			"uniform mat4 ProjMtx;\n"
-			"in vec2 Position;\n"
-			"in vec2 UV;\n"
-			"in vec4 Color;\n"
-			"out vec2 Frag_UV;\n"
-			"out vec4 Frag_Color;\n"
-			"void main()\n"
-			"{\n"
-			"	Frag_UV = UV;\n"
-			"	Frag_Color = Color;\n"
-			"	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-			"}\n";
-
-		const GLchar* fragment_shader =
-			"#version 330\n"
-			"uniform sampler2D Texture;\n"
-			"in vec2 Frag_UV;\n"
-			"in vec4 Frag_Color;\n"
-			"out vec4 Out_Color;\n"
-			"void main()\n"
-			"{\n"
-			"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
-			"}\n";
-
-		imGUIShaderhandle = glCreateProgram();
-		imGUIVertexHandle = glCreateShader(GL_VERTEX_SHADER);
-		imGUIFragmentHandle = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(imGUIVertexHandle, 1, &vertex_shader, 0);
-		glShaderSource(imGUIFragmentHandle, 1, &fragment_shader, 0);
-		glCompileShader(imGUIVertexHandle);
-		glCompileShader(imGUIFragmentHandle);
-		glAttachShader(imGUIShaderhandle, imGUIVertexHandle);
-		glAttachShader(imGUIShaderhandle, imGUIFragmentHandle);
-		glLinkProgram(imGUIShaderhandle);
-
-		imGUITexAttribLocation = glGetUniformLocation(imGUIShaderhandle, "Texture");
-		imGUIProjMatrixAttribLocation = glGetUniformLocation(imGUIShaderhandle, "ProjMtx");
-		imGUIPositionAttribLocation = glGetAttribLocation(imGUIShaderhandle, "Position");
-		imGUIUVAttribLocation = glGetAttribLocation(imGUIShaderhandle, "UV");
-		imGUIColorAttribLocation = glGetAttribLocation(imGUIShaderhandle, "Color");
-
-		glGenBuffers(1, &imGUIVBOHandle);
-		glGenBuffers(1, &imGUIIBOHandle);
-
-		glGenVertexArrays(1, &imGUIVAOHandle);
-		glBindVertexArray(imGUIVAOHandle);
-		glBindBuffer(GL_ARRAY_BUFFER, imGUIVBOHandle);
-		glEnableVertexAttribArray(imGUIPositionAttribLocation);
-		glEnableVertexAttribArray(imGUIUVAttribLocation);
-		glEnableVertexAttribArray(imGUIColorAttribLocation);
-
-#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
-		glVertexAttribPointer(imGUIPositionAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos)); //ffs
-		glVertexAttribPointer(imGUIUVAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
-		glVertexAttribPointer(imGUIColorAttribLocation, 4, GL_FLOAT, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
-#undef OFFSETOF
-
-		ImGUICreateFontsTexture();
-
-		//restore GL state
-		glBindTexture(GL_TEXTURE_2D, lastTexture); //why do the values change?
-		glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer);
-		glBindVertexArray(LastVertexArray);
-	}
-
-	void imGUIInvalidateDeviceObject()
-	{
-		if (imGUIVAOHandle)
-		{
-			glDeleteVertexArrays(1, &imGUIVAOHandle);
-			imGUIVAOHandle = 0;
-		}
-
-		if (imGUIVBOHandle)
-		{
-			glDeleteBuffers(1, &imGUIVBOHandle);
-			imGUIVBOHandle = 0;
-		}
-
-		if (imGUIIBOHandle)
-		{
-			glDeleteBuffers(1, &imGUIIBOHandle);
-			imGUIIBOHandle = 0;
-		}
-
-		glDetachShader(imGUIShaderhandle, imGUIVertexHandle);
-		glDeleteShader(imGUIVertexHandle);
-		imGUIVertexHandle = 0;
-
-		glDetachShader(imGUIShaderhandle, imGUIFragmentHandle);
-		glDeleteShader(imGUIFragmentHandle);
-		imGUIFragmentHandle = 0;
-
-		glDeleteProgram(imGUIShaderhandle);
-		imGUIShaderhandle = 0;
-
-		if (imGUIFontTexture)
-		{
-			glDeleteTextures(1, &imGUIFontTexture);
-			ImGui::GetIO().Fonts->TexID = 0;
-			imGUIFontTexture = 0;
-		}
-	}
-
+	
 protected:
 
 	static windowManager*					manager;
@@ -368,7 +198,7 @@ protected:
 	const GLchar*							tweakBarName;
 	const GLchar*							shaderConfigPath;
 
-	GLuint									imGUIFontTexture;
+	static GLuint							imGUIFontTexture;
 
 	static GLint							imGUIShaderhandle;
 	static GLint							imGUIVertexHandle;
@@ -381,6 +211,8 @@ protected:
 	static GLuint							imGUIVBOHandle;
 	static GLuint							imGUIVAOHandle;
 	static GLuint							imGUIIBOHandle;
+
+	bool									isGUIActive;
 
 	virtual void Update()
 	{
@@ -396,28 +228,34 @@ protected:
 
 	virtual void Draw()
 	{
-		/*glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(this->programGLID);
 
-		glDrawArrays(GL_QUADS, 0, 4);*/
-
-		static const char* blarg = "new whatever";
+		glDrawArrays(GL_QUADS, 0, 4);
 		
-		ImGUINewFrame();
-		ImGui::Text("blarg");
-		static float f = 0.0f;
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-		if (ImGui::Button(blarg))
-		{
-			blarg = "poop";
-		}
-		ImGui::Text("App average FPS %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::Text("total running time %.5f", sceneClock->GetTotalTime());
-		glViewport(0, 0, 1280, 720);
+		glViewport(0, 0, window->resolution.width, window->resolution.height);
+		DrawGUI(window->name);
 		
-		ImGui::Render();
 		window->SwapDrawBuffers();
-		glClear(GL_COLOR_BUFFER_BIT);		
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	virtual void BuildGUI(ImGuiIO io)
+	{
+		ImGui::Text("FPS %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, 1.0f / sceneClock->GetDeltaTime());
+		ImGui::Text("Total running time %.5f", sceneClock->GetTotalTime());
+		ImGui::Text("Mouse coordinates: \t X: %.0f \t Y: %.0f", io.MousePos.x, io.MousePos.y);
+		ImGui::Text("Window size: \t Width: %i \t Height: %i", window->resolution.width, window->resolution.height);
+	}
+
+	void DrawGUI(const char* guiName, ImVec2 beginSize = ImVec2(0, 0))
+	{
+		ImGUINewFrame();
+		ImGuiIO io = ImGui::GetIO();
+		ImGui::Begin(guiName, &isGUIActive, beginSize);
+		BuildGUI(io);
+		ImGui::End();
+		ImGui::Render();
 	}
 
 	virtual void SetupVertexBuffer()
@@ -501,6 +339,10 @@ protected:
 
 		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
 		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);
+
+		//ImGuiIO io = ImGui::GetIO();
+		//io.DisplaySize = ImVec2(dimensions.width, dimensions.height);
+
 	}
 
 	static void HandleMouseMotion(vec2_t<int> windowPosition, vec2_t<int> screenPosition)
@@ -508,7 +350,7 @@ protected:
 		defaultUniformBuffer->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
 		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
 		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = ImVec2((float)screenPosition.x, (float)screenPosition.y);
+		io.MousePos = ImVec2((float)windowPosition.x, (float)windowPosition.y); //why screen co-ordinates?
 	}
 
 	static void HandleMaximize()
@@ -524,6 +366,185 @@ protected:
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_DYNAMIC_DRAW);
 
 		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);		
+	}
+
+	void InitImGUI()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeyMap[ImGuiKey_Tab] = TinyWindow::tab;
+		io.KeyMap[ImGuiKey_LeftArrow] = TinyWindow::arrowLeft;
+		io.KeyMap[ImGuiKey_RightArrow] = TinyWindow::arrowRight;
+		io.KeyMap[ImGuiKey_UpArrow] = TinyWindow::arrowUp;
+		io.KeyMap[ImGuiKey_PageUp] = TinyWindow::pageUp;
+		io.KeyMap[ImGuiKey_PageDown] = TinyWindow::pageDown;
+		io.KeyMap[ImGuiKey_Home] = TinyWindow::home;
+		io.KeyMap[ImGuiKey_End] = TinyWindow::end;
+		io.KeyMap[ImGuiKey_Delete] = TinyWindow::del;
+		io.KeyMap[ImGuiKey_Backspace] = TinyWindow::backspace;
+		io.KeyMap[ImGuiKey_Enter] = TinyWindow::enter;
+		io.KeyMap[ImGuiKey_Escape] = TinyWindow::escape;
+		io.KeyMap[ImGuiKey_A] = 'a';
+		io.KeyMap[ImGuiKey_C] = 'c';
+		io.KeyMap[ImGuiKey_V] = 'v';
+		io.KeyMap[ImGuiKey_X] = 'x';
+		io.KeyMap[ImGuiKey_Y] = 'y';
+		io.KeyMap[ImGuiKey_Z] = 'z';
+
+#if defined(TW_WINDOWS)
+		io.ImeWindowHandle = window->GetWindowHandle();
+#endif
+
+		io.RenderDrawListsFn = RenderImGUIDrawLists;
+	}
+
+	void ImGUICreateFontsTexture()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		unsigned char* pixels;
+		int width, height;
+		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+
+		GLint lastTexture;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
+		glGenTextures(1, &imGUIFontTexture);
+		glBindTexture(GL_TEXTURE_2D, imGUIFontTexture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+		//store texture handle
+		io.Fonts->TexID = (void *)(intptr_t)imGUIFontTexture;
+
+		glBindTexture(GL_TEXTURE_2D, lastTexture);
+	}
+
+	void ImGUINewFrame()
+	{
+		if (!imGUIFontTexture)
+		{
+			ImGUICreateDeviceObjects();
+		}
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2((float)window->resolution.width, (float)window->resolution.height);
+		io.DisplayFramebufferScale = ImVec2(1, 1);
+		io.DeltaTime = (float)sceneClock->GetDeltaTime();
+
+		ImGui::NewFrame();
+	}
+
+	void ImGUICreateDeviceObjects()
+	{
+
+		GLint lastTexture, lastArrayBuffer, LastVertexArray;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
+		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
+		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &LastVertexArray);
+
+		const GLchar *vertex_shader =
+			"#version 330\n"
+			"uniform mat4 ProjMtx;\n"
+			"in vec2 Position;\n"
+			"in vec2 UV;\n"
+			"in vec4 Color;\n"
+			"out vec2 Frag_UV;\n"
+			"out vec4 Frag_Color;\n"
+			"void main()\n"
+			"{\n"
+			"	Frag_UV = UV;\n"
+			"	Frag_Color = Color;\n"
+			"	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
+			"}\n";
+
+		const GLchar* fragment_shader =
+			"#version 330\n"
+			"uniform sampler2D Texture;\n"
+			"in vec2 Frag_UV;\n"
+			"in vec4 Frag_Color;\n"
+			"out vec4 Out_Color;\n"
+			"void main()\n"
+			"{\n"
+			"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
+			"}\n";
+
+		imGUIShaderhandle = glCreateProgram();
+		imGUIVertexHandle = glCreateShader(GL_VERTEX_SHADER);
+		imGUIFragmentHandle = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(imGUIVertexHandle, 1, &vertex_shader, 0);
+		glShaderSource(imGUIFragmentHandle, 1, &fragment_shader, 0);
+		glCompileShader(imGUIVertexHandle);
+		glCompileShader(imGUIFragmentHandle);
+		glAttachShader(imGUIShaderhandle, imGUIVertexHandle);
+		glAttachShader(imGUIShaderhandle, imGUIFragmentHandle);
+		glLinkProgram(imGUIShaderhandle);
+
+		imGUITexAttribLocation = glGetUniformLocation(imGUIShaderhandle, "Texture");
+		imGUIProjMatrixAttribLocation = glGetUniformLocation(imGUIShaderhandle, "ProjMtx");
+		imGUIPositionAttribLocation = glGetAttribLocation(imGUIShaderhandle, "Position");
+		imGUIUVAttribLocation = glGetAttribLocation(imGUIShaderhandle, "UV");
+		imGUIColorAttribLocation = glGetAttribLocation(imGUIShaderhandle, "Color");
+
+		glGenBuffers(1, &imGUIVBOHandle);
+		glGenBuffers(1, &imGUIIBOHandle);
+
+		glGenVertexArrays(1, &imGUIVAOHandle);
+		glBindVertexArray(imGUIVAOHandle);
+		glBindBuffer(GL_ARRAY_BUFFER, imGUIVBOHandle);
+		glEnableVertexAttribArray(imGUIPositionAttribLocation);
+		glEnableVertexAttribArray(imGUIUVAttribLocation);
+		glEnableVertexAttribArray(imGUIColorAttribLocation);
+
+#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
+		glVertexAttribPointer(imGUIPositionAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos)); //ffs
+		glVertexAttribPointer(imGUIUVAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
+		glVertexAttribPointer(imGUIColorAttribLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
+#undef OFFSETOF
+
+		ImGUICreateFontsTexture();
+
+		//restore GL state
+		glBindTexture(GL_TEXTURE_2D, lastTexture); //why do the values change?
+		glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer);
+		glBindVertexArray(LastVertexArray);
+	}
+
+	static void imGUIInvalidateDeviceObject()
+	{
+		if (imGUIVAOHandle)
+		{
+			glDeleteVertexArrays(1, &imGUIVAOHandle);
+			imGUIVAOHandle = 0;
+		}
+
+		if (imGUIVBOHandle)
+		{
+			glDeleteBuffers(1, &imGUIVBOHandle);
+			imGUIVBOHandle = 0;
+		}
+
+		if (imGUIIBOHandle)
+		{
+			glDeleteBuffers(1, &imGUIIBOHandle);
+			imGUIIBOHandle = 0;
+		}
+
+		glDetachShader(imGUIShaderhandle, imGUIVertexHandle);
+		glDeleteShader(imGUIVertexHandle);
+		imGUIVertexHandle = 0;
+
+		glDetachShader(imGUIShaderhandle, imGUIFragmentHandle);
+		glDeleteShader(imGUIFragmentHandle);
+		imGUIFragmentHandle = 0;
+
+		glDeleteProgram(imGUIShaderhandle);
+		imGUIShaderhandle = 0;
+
+		if (imGUIFontTexture)
+		{
+			glDeleteTextures(1, &imGUIFontTexture);
+			ImGui::GetIO().Fonts->TexID = 0;
+			imGUIFontTexture = 0;
+		}
 	}
 };
 
@@ -543,6 +564,7 @@ GLint						scene::imGUIColorAttribLocation = 0;
 GLuint						scene::imGUIVBOHandle = 0;
 GLuint						scene::imGUIVAOHandle = 0;
 GLuint						scene::imGUIIBOHandle = 0;
+GLuint						scene::imGUIFontTexture = 0;
 camera*						scene::sceneCamera = nullptr;
 
 #endif

@@ -4,8 +4,8 @@
 
 struct erosionSettings_t
 {
-	GLfloat			strengthX;
-	GLfloat			strengthY;
+	float			strengthX;
+	float			strengthY;
 
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
@@ -41,12 +41,12 @@ protected:
 
 	erosionSettings_t*		erosionSettings;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "erosion strength X", TwType::TW_TYPE_FLOAT, &erosionSettings->strengthX, "min=0 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "erosion strength Y", TwType::TW_TYPE_FLOAT, &erosionSettings->strengthY, "min=0 max=10 step=0.01");
-	}*/
+		texturedScene::BuildGUI(io);
+		ImGui::SliderFloat("erosion strength X", &erosionSettings->strengthX, 0.0f, 10.0f);
+		ImGui::SliderFloat("erosion strength Y", &erosionSettings->strengthY, 0.0f, 10.0f);
+	}
 
 	void InitializeBuffers() override
 	{

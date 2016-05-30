@@ -4,17 +4,17 @@
 
 struct perlinSettings_t//	: public uniformBuffer_t
 {
-	GLfloat			modValue;
-	GLfloat			permuteValue;
-	GLfloat			taylorInverse;
-	GLfloat			fadeValue1;
-	GLfloat			fadeValue2;
-	GLfloat			fadeValue3;
-	GLuint			numOctaves;
+	float			modValue;
+	float			permuteValue;
+	float			taylorInverse;
+	float			fadeValue1;
+	float			fadeValue2;
+	float			fadeValue3;
+	int				numOctaves;
 
-	GLfloat			noiseValue;
-	GLfloat			noiseValue2;
-	GLuint			colorBias;//20
+	float			noiseValue;
+	float			noiseValue2;
+	int				colorBias;//20
 
 	/*
 	GLfloat			pattern1Value1;//2.5
@@ -29,20 +29,20 @@ struct perlinSettings_t//	: public uniformBuffer_t
 	GLfloat			pattern1Value10;//2.8
 	GLfloat			pattern1Value11;//4.0*/
 
-	GLfloat			pattern2Value1;//0.3
-	GLfloat			pattern2Value2;//0.8
-	GLfloat			pattern2Value3;//5.2
-	GLfloat			pattern2Value4;//1.3
-	GLfloat			pattern2Value5;//4.0
-	GLfloat			pattern2Value6;//1.7
-	GLfloat			pattern2Value7;//9.2
-	GLfloat			pattern2Value8;//4.0
-	GLfloat			pattern2Value9;//8.3
-	GLfloat			pattern2Value10;//2.8
-	GLfloat			pattern2Value11;//4.0
+	float			pattern2Value1;//0.3
+	float			pattern2Value2;//0.8
+	float			pattern2Value3;//5.2
+	float			pattern2Value4;//1.3
+	float			pattern2Value5;//4.0
+	float			pattern2Value6;//1.7
+	float			pattern2Value7;//9.2
+	float			pattern2Value8;//4.0
+	float			pattern2Value9;//8.3
+	float			pattern2Value10;//2.8
+	float			pattern2Value11;//4.0
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
+	unsigned int			bufferHandle;
+	unsigned int 			uniformHandle;
 
 	perlinSettings_t(GLfloat modValue = 289.0f, GLfloat permuteValue = 34.0f,
 		GLfloat taylorInverse = 1.79284291400159f, GLfloat fadeValue1 = 6.0f, GLfloat fadeValue2 = 15.0f,
@@ -127,51 +127,50 @@ protected:
 
 	static perlinSettings_t*		perlinSettingsBuffer;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "mod Value", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->modValue, "min=0.01 max=1000 step=0.1");
-		TwAddVarRW(tweakBar, "permute Value", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->permuteValue, "min=0.01 max=100 step=0.1");
-		TwAddVarRW(tweakBar, "taylor inverse", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->taylorInverse, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "fade value 1", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->fadeValue1, "min=0.01 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "fade value 2", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->fadeValue2, "min=0.01 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "fade value 3", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->fadeValue3, "min=0.01 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "num octaves", TwType::TW_TYPE_INT16, &perlinSettingsBuffer->numOctaves, "min=0 max=100 step=1");
+		scene::BuildGUI(io); 
+
+		ImGui::SliderFloat("modifier value", &perlinSettingsBuffer->modValue, 0.0f, 1000.0f);
+		ImGui::SliderFloat("permutation value", &perlinSettingsBuffer->permuteValue, 0.0f, 100.0f);
+		ImGui::SliderFloat("taylor inverse", &perlinSettingsBuffer->taylorInverse, 0.0f, 10.0f);
+
+		AddGUISpacer();
+
+		ImGui::SliderFloat("fade value 1", &perlinSettingsBuffer->fadeValue1, 0.0f, 100.0f);
+		ImGui::SliderFloat("fade value 2", &perlinSettingsBuffer->fadeValue2, 0.0f, 100.0f);
+		ImGui::SliderFloat("fade value 3", &perlinSettingsBuffer->fadeValue3, 0.0f, 100.0f);
+
+		AddGUISpacer();
+
+		ImGui::SliderInt("num octaves", &perlinSettingsBuffer->numOctaves, 0, 100);
 		
-		TwAddSeparator(tweakBar, "main settings", NULL);
+		AddGUISpacer();
 
-		TwAddVarRW(tweakBar, "noise value 1", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->noiseValue, "min=0.01 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "noise value 2", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->noiseValue2, "min=0.01 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "color bias", TwType::TW_TYPE_INT16, &perlinSettingsBuffer->colorBias, "min=0 max=100 step=1");
+		ImGui::SliderInt("color bias", &perlinSettingsBuffer->colorBias, 0, 100);
 
-		TwAddSeparator(tweakBar, "secondary settings", NULL);
+		AddGUISpacer();
+		ImGui::SliderFloat("pattern value 1", &perlinSettingsBuffer->pattern2Value1, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 2", &perlinSettingsBuffer->pattern2Value2, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 3", &perlinSettingsBuffer->pattern2Value3, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 4", &perlinSettingsBuffer->pattern2Value4, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 5", &perlinSettingsBuffer->pattern2Value5, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 6", &perlinSettingsBuffer->pattern2Value6, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 7", &perlinSettingsBuffer->pattern2Value7, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 8", &perlinSettingsBuffer->pattern2Value8, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 9", &perlinSettingsBuffer->pattern2Value9, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 10", &perlinSettingsBuffer->pattern2Value10, 0.0f, 10.0f);
+		ImGui::SliderFloat("pattern value 11", &perlinSettingsBuffer->pattern2Value11, 0.0f, 10.0f);
+	}
 
-		/ *TwAddVarRW(tweakBar, "pattern 1 value 1", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value1, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 2", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value2, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 3", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value3, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 4", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value4, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 5", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value5, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 6", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value6, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 7", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value7, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 8", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value8, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 9", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value9, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 10", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value10, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern 1 value 11", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern1Value11, "min=0.01 max=10 step=0.01");	* /
-
-		//TwAddSeparator(tweakBar, "tertiary settings", NULL);
-
-		TwAddVarRW(tweakBar, "pattern value 1", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value1, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 2", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value2, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 3", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value3, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 4", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value4, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 5", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value5, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 6", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value6, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 7", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value7, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 8", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value8, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 9", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value9, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 10", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value10, "min=0.01 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "pattern value 11", TwType::TW_TYPE_FLOAT, &perlinSettingsBuffer->pattern2Value11, "min=0.01 max=10 step=0.01");
-	}*/
+	void AddGUISpacer()
+	{
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::Spacing();
+	}
 
 	void InitializeBuffers() override
 	{
@@ -190,8 +189,7 @@ protected:
 		UpdateUniformBuffer<perlinSettings_t>(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle);
 		glUseProgram(this->programGLID);
 		glDrawArrays(GL_QUADS, 0, 4);
-		//TwDraw();
-	//	windowManager::WindowSwapBuffersByIndex(0);
+		DrawGUI(window->name);
 		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}

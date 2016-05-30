@@ -58,19 +58,20 @@ protected:
 
 	sharpenSettings_t*			sharpenSettings;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "kernel 1", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel1, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "kernel 2", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel2, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "kernel 3", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel3, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "kernel 4", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel4, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "kernel 5", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel5, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "kernel 6", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel6, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "kernel 7", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel7, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "kernel 8", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel8, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "kernel 9", TwType::TW_TYPE_FLOAT, &sharpenSettings->kernel9, "min=-100 max=100 step=0.01");
-	}*/
+		texturedScene::BuildGUI(io);
+
+		ImGui::SliderFloat("kernel 1", &sharpenSettings->kernel1, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 2", &sharpenSettings->kernel2, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 3", &sharpenSettings->kernel3, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 4", &sharpenSettings->kernel4, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 5", &sharpenSettings->kernel5, -100.0f, 100.0f);
+		ImGui::SliderFloat("kernel 6", &sharpenSettings->kernel6, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 7", &sharpenSettings->kernel7, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 8", &sharpenSettings->kernel8, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 9", &sharpenSettings->kernel9, -1.0f, 1.0f);
+	}
 
 	void InitializeBuffers() override
 	{

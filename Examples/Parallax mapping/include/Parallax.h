@@ -5,9 +5,9 @@
 
 struct parallaxSettings_t
 {
-	GLfloat			scale;
-	GLfloat			rayHeight;
-	GLuint			numSamples;
+	float			scale;
+	float			rayHeight;
+	int				numSamples;
 
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
@@ -32,7 +32,8 @@ public:
 		texture* heightMap = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (parallax mapping)",
 		camera* parallaxCamera = new camera(),
-		const char* shaderConfigPath = "../../resources/shaders/Parallax.txt") : texturedScene(defaultTexture, windowName, parallaxCamera, shaderConfigPath)
+		const char* shaderConfigPath = "../../resources/shaders/Parallax.txt") : 
+		texturedScene(defaultTexture, windowName, parallaxCamera, shaderConfigPath)
 	{
 		this->parallaxSettingsBuffer = parallaxSettings;
 		this->tweakBarName = windowName;
@@ -51,14 +52,38 @@ protected:
 
 	static parallaxSettings_t*		parallaxSettingsBuffer;
 	texture*						heightMap;
+	int								heightMapIndex = 0;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "parallax scale", TwType::TW_TYPE_FLOAT, &parallaxSettingsBuffer->scale, "min=0 max=10 step=0.001");
-		TwAddVarRW(tweakBar, "ray height", TwType::TW_TYPE_FLOAT, &parallaxSettingsBuffer->rayHeight, "min=0 max=10 step=0.001");
-		TwAddVarRW(tweakBar, "number of samples", TwType::TW_TYPE_INT16, &parallaxSettingsBuffer->numSamples, "min=0 max=1000");
-	}*/
+		//this one's gonna be trickier
+		scene::BuildGUI(io);
+
+		std::vector<const char*> tempTextureDirs;
+		for (unsigned int textureIndex = 0; textureIndex < textureDirs.size(); textureIndex++)
+		{
+			tempTextureDirs.push_back(textureDirs[textureIndex].c_str());
+		}
+
+		if (ImGui::ListBox("textures", &currentTextureIndex, tempTextureDirs.data(), tempTextureDirs.size()))
+		{
+			delete defaultTexture; //remove the old one from memory
+			defaultTexture = new texture(tempTextureDirs[currentTextureIndex], "diffuseMap");
+			defaultTexture->LoadTexture();
+		}
+
+		if (ImGui::ListBox("heightmap", &heightMapIndex, tempTextureDirs.data(), tempTextureDirs.size()))
+		{
+			delete heightMap; //remove the old one from memory
+			heightMap = new texture(tempTextureDirs[heightMapIndex], "heightMap");
+			heightMap->LoadTexture();
+		}
+
+		ImGui::SliderFloat("parallax scale", &parallaxSettingsBuffer->scale, 0.f, 10.0f);
+		ImGui::SliderFloat("ray height", &parallaxSettingsBuffer->rayHeight, 0.0f, 10.0f);
+		ImGui::SliderInt("num samples", &parallaxSettingsBuffer->numSamples, 0, 1000);
+
+	}
 
 	void InitializeBuffers() override
 	{
@@ -80,16 +105,16 @@ protected:
 
 	void Draw() override
 	{
-		UpdateUniformBuffer<parallaxSettings_t>(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle);
+		//UpdateUniformBuffer<parallaxSettings_t>(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle);
+		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(this->programGLID);
-		bindTextures();
+		defaultTexture->GetUniformLocation(this->programGLID);
+		heightMap->GetUniformLocation(this->programGLID);
 		glDrawArrays(GL_QUADS, 0, 4);
-		//TwDraw();
+		DrawGUI(window->name);
 		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
-
-
 };
 
 parallaxSettings_t* parallaxScene::parallaxSettingsBuffer = nullptr;

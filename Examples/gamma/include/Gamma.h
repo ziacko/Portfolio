@@ -38,13 +38,13 @@ protected:
 
 	gammaSettings_t*		gammaSettings;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "gamma red", TwType::TW_TYPE_FLOAT, &gammaSettings->gammaSettings.x, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "gamma green", TwType::TW_TYPE_FLOAT, &gammaSettings->gammaSettings.y, "min=-100 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "gamma blue", TwType::TW_TYPE_FLOAT, &gammaSettings->gammaSettings.z, "min=-100 max=100 step=0.01");
-	}*/
+		texturedScene::BuildGUI(io);
+		ImGui::SliderFloat("gamma red", &gammaSettings->gammaSettings.r, 0.f, 10.0f);
+		ImGui::SliderFloat("gamma green", &gammaSettings->gammaSettings.g, 0.0f, 10.0f);
+		ImGui::SliderFloat("gamma blue", &gammaSettings->gammaSettings.b, 0.0f, 10.0f);
+	}
 
 	void InitializeBuffers() override
 	{

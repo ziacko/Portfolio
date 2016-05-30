@@ -64,6 +64,25 @@ protected:
 
 	sepiaSettings_t*		sepiaSettings;
 
+	void BuildGUI(ImGuiIO io) override
+	{
+		texturedScene::BuildGUI(io);
+
+		ImGui::SliderFloat("factor", &sepiaSettings->factor, 0.0f, 1.0f);
+
+		ImGui::SliderFloat("red modifier 1", &sepiaSettings->redModifier1, 0.0f, 1.0f);
+		ImGui::SliderFloat("red modifier 2", &sepiaSettings->redModifier2, 0.0f, 1.0f);
+		ImGui::SliderFloat("red modifier 3", &sepiaSettings->redModifier3, 0.0f, 1.0f);
+
+		ImGui::SliderFloat("green modifier 1", &sepiaSettings->greenModifier1, 0.0f, 1.0f);
+		ImGui::SliderFloat("green modifier 2", &sepiaSettings->greenModifier2, 0.0f, 1.0f);
+		ImGui::SliderFloat("green modifier 3", &sepiaSettings->greenModifier3, 0.0f, 1.0f);
+
+		ImGui::SliderFloat("blue modifier 1", &sepiaSettings->blueModifier1, 0.0f, 1.0f);
+		ImGui::SliderFloat("blue modifier 2", &sepiaSettings->blueModifier2, 0.0f, 1.0f);
+		ImGui::SliderFloat("blue modifier 3", &sepiaSettings->blueModifier3, 0.0f, 1.0f);
+	}
+
 	/*void InitTweakBar() override
 	{
 		scene::InitTweakBar();

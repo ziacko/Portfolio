@@ -4,8 +4,8 @@
 
 struct dilationSettings_t
 {
-	GLfloat			strengthX;
-	GLfloat			strengthY;
+	float			strengthX;
+	float			strengthY;
 
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
@@ -41,12 +41,12 @@ protected:
 
 	dilationSettings_t*			dilationSettings;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "dilation strength X", TwType::TW_TYPE_FLOAT, &dilationSettings->strengthX, "min=0 max=10 step=0.01");
-		TwAddVarRW(tweakBar, "dilation strength Y", TwType::TW_TYPE_FLOAT, &dilationSettings->strengthY, "min=0 max=10 step=0.01");
-	}*/
+		texturedScene::BuildGUI(io);
+		ImGui::SliderFloat("dilation strength X", &dilationSettings->strengthX, 0.0f, 10.0f);
+		ImGui::SliderFloat("dilation strength Y", &dilationSettings->strengthY, 0.0f, 10.0f);
+	}
 
 	void InitializeBuffers() override
 	{

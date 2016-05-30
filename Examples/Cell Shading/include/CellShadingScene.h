@@ -4,10 +4,10 @@
 
 struct cellShadeSettings_t
 {
-	GLfloat		redModifier;
-	GLfloat		greenModifier;
-	GLfloat		blueModifier;
-	GLfloat		cellDistance;
+	float		redModifier;
+	float		greenModifier;
+	float		blueModifier;
+	float		cellDistance;
 
 	GLuint		bufferHandle;
 	GLuint		uniformHandle;
@@ -44,15 +44,14 @@ protected:
 
 	cellShadeSettings_t*		cellShadeSettingsBuffer;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "red modifier", TwType::TW_TYPE_FLOAT, &cellShadeSettingsBuffer->redModifier, "min=-1 max=1 step=0.0001");
-		TwAddVarRW(tweakBar, "green modifier", TwType::TW_TYPE_FLOAT, &cellShadeSettingsBuffer->greenModifier, "min=-1 max=1 step=0.0001");
-		TwAddVarRW(tweakBar, "blue modifier", TwType::TW_TYPE_FLOAT, &cellShadeSettingsBuffer->blueModifier, "min=-1 max=1 step=0.0001");
-		TwAddVarRW(tweakBar, "cell distance", TwType::TW_TYPE_FLOAT, &cellShadeSettingsBuffer->cellDistance, "min=-1 max=1 step=0.0001");
+		texturedScene::BuildGUI(io);
+		ImGui::SliderFloat("red modifier", &cellShadeSettingsBuffer->redModifier, -1.0f, 1.0f);
+		ImGui::SliderFloat("green modifier", &cellShadeSettingsBuffer->greenModifier, -1.0f, 1.0f);
+		ImGui::SliderFloat("blue modifier", &cellShadeSettingsBuffer->blueModifier, -1.0f, 1.0f);
+		ImGui::SliderFloat("cell distance", &cellShadeSettingsBuffer->cellDistance, -1.0f, 1.0f);
 	}
-*/
 
 	void InitializeBuffers() override
 	{

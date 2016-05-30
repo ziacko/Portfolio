@@ -5,7 +5,7 @@
 
 struct contrastSettings_t
 {
-	GLfloat			contrast;
+	float			contrast;
 
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
@@ -39,11 +39,12 @@ protected:
 
 	contrastSettings_t*			contrastSettings;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "contrast", TwType::TW_TYPE_FLOAT, &contrastSettings->contrast, "min=0 max=10 step=0.01");
-	}*/
+		texturedScene::BuildGUI(io);
+		ImGui::SliderFloat("contrast level", &contrastSettings->contrast, -1.0f, 10.0f);
+	}
+
 
 	void InitializeBuffers() override
 	{

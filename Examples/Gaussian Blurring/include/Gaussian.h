@@ -4,8 +4,8 @@
 
 struct gaussianSettings_t
 {
-	GLuint		numOffsets;
-	GLfloat		weight;
+	int			numOffsets;
+	float		weight;
 
 	GLuint		bufferHandle;
 	GLuint		uniformHandle;
@@ -38,6 +38,14 @@ public:
 protected:
 
 	static	gaussianSettings_t*		gaussianSettingsBuffer;
+
+	void BuildGUI(ImGuiIO io) override
+	{
+		texturedScene::BuildGUI(io);
+		//need to come back and set up a 2 render pass system for proper gaussian blurring
+		//ImGui::SliderInt("num offsets", &gaussianSettingsBuffer->numOffsets, 0, 100);
+		ImGui::SliderFloat("weight", &gaussianSettingsBuffer->weight, 0.0f, 1.0f);
+	}
 
 	/*void InitTweakBar() override
 	{

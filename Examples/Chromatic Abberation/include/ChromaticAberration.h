@@ -4,9 +4,9 @@
 
 struct chromaticSettings_t
 {
-	GLfloat			redOffset;
-	GLfloat			blueOffset;
-	GLfloat			greenOffset;
+	float			redOffset;
+	float			blueOffset;
+	float			greenOffset;
 
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
@@ -35,8 +35,6 @@ public:
 	{
 		this->tweakBarName = windowName;
 		this->chromaticSettingsBuffer = chromaticSettings;
-
-		chromaticSettingsBuffer->blueOffset = 0.015f;
 	}
 
 	~chromaticScene( void ){}
@@ -45,13 +43,14 @@ protected:
 
 	static chromaticSettings_t*		chromaticSettingsBuffer;
 
-	/*void InitTweakBar() override
+	void BuildGUI(ImGuiIO io) override
 	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "red offset", TwType::TW_TYPE_FLOAT, &chromaticSettingsBuffer->redOffset, "min=-1 max=1 step=0.0001");
-		TwAddVarRW(tweakBar, "green offset", TwType::TW_TYPE_FLOAT, &chromaticSettingsBuffer->greenOffset, "min=-1 max=1 step=0.0001");
-		TwAddVarRW(tweakBar, "blue offset", TwType::TW_TYPE_FLOAT, &chromaticSettingsBuffer->blueOffset, "min=-1 max=1 step=0.0001");
-	}*/
+		texturedScene::BuildGUI(io);
+
+		ImGui::SliderFloat("red offset", &chromaticSettingsBuffer->redOffset, -1.0f, 1.0f, "%0.10f");
+		ImGui::SliderFloat("green offset", &chromaticSettingsBuffer->greenOffset, -1.0f, 1.0f, "%0.10f");
+		ImGui::SliderFloat("blue offset", &chromaticSettingsBuffer->blueOffset, -1.0f, 1.0f, "%0.10f");
+	}
 
 	void SetupChromaticBuffer()
 	{
@@ -76,6 +75,5 @@ protected:
 };
 
 chromaticSettings_t* chromaticScene::chromaticSettingsBuffer = nullptr;
-
 
 #endif

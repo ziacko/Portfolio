@@ -3,8 +3,7 @@
 int main()
 {
 	
-	sharpenScene* exampleScene = new sharpenScene(
-		new sharpenSettings_t(), new texture("./textures/stalker.jpg"));
+	sharpenScene* exampleScene = new sharpenScene();
 	exampleScene->Initialize();
 	exampleScene->Run();
 

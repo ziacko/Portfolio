@@ -4,11 +4,11 @@
 
 struct radialBlur_t
 {
-	GLfloat			exposure;
-	GLfloat			decay;
-	GLfloat			density;
-	GLfloat			weight;
-	GLuint			samples;
+	GLfloat		exposure;
+	GLfloat		decay;
+	GLfloat		density;
+	GLfloat		weight;
+	int			samples;
 
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
@@ -45,6 +45,16 @@ public:
 protected:
 
 	static radialBlur_t*		radialBlurSettingsBuffer;
+
+	void BuildGUI(ImGuiIO io) override
+	{
+		texturedScene::BuildGUI(io);
+		ImGui::SliderFloat("exposure", &radialBlurSettingsBuffer->exposure, 0.0f, 1.0f);
+		ImGui::SliderFloat("decay", &radialBlurSettingsBuffer->decay, 0.0f, 1.0f);
+		ImGui::SliderFloat("density", &radialBlurSettingsBuffer->density, 0.0f, 0.01f, "%.10f", 100.0f);
+		ImGui::SliderFloat("weight", &radialBlurSettingsBuffer->weight, 0.0f, 10.0f);
+		ImGui::SliderInt("samples", &radialBlurSettingsBuffer->samples, 0, 1000);
+	}
 
 	/*void InitTweakBar() override
 	{

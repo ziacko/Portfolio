@@ -14,6 +14,9 @@ public:
 		scene(windowName, textureCamera, shaderConfigPath)
 	{
 		this->defaultTexture = defaultTexture;
+
+		//find all textures in dir
+		GetFilesInDirectory(textureDirs, "../../resources/textures");
 	}
 
 	virtual void Initialize() override
@@ -22,22 +25,44 @@ public:
 		defaultTexture->LoadTexture();
 	}
 
+	virtual void BuildGUI(ImGuiIO io) override
+	{
+		scene::BuildGUI(io);
+
+		std::vector<const char*> tempTextureDirs;
+		for (unsigned int textureIndex = 0; textureIndex < textureDirs.size(); textureIndex++)
+		{
+			tempTextureDirs.push_back(textureDirs[textureIndex].c_str());
+		}
+		
+		if (ImGui::ListBox("textures", &currentTextureIndex, tempTextureDirs.data(), tempTextureDirs.size()))
+		{
+			delete defaultTexture; //remove the old one from memory
+			defaultTexture = new texture(tempTextureDirs[currentTextureIndex]);
+			defaultTexture->LoadTexture();
+		}
+	}
+
 	virtual void Draw() override
 	{
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(this->programGLID);
 		defaultTexture->GetUniformLocation(this->programGLID);
-		
-		glPointSize(20.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDrawArrays(GL_QUADS, 0, 4);
+
+		DrawGUI(window->name);
+
 		window->SwapDrawBuffers();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 protected:
 
-	static texture*		defaultTexture;
+	static texture*							defaultTexture;
+	static std::vector<std::string>			textureDirs;
+	int										currentTextureIndex;
 };
 
 texture* texturedScene::defaultTexture = nullptr;
+std::vector<std::string> texturedScene::textureDirs;
 #endif
