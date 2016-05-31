@@ -9,6 +9,5 @@ int main()
 
 	exampleScene->ShutDown();
 
-
 	return 0;
 }
