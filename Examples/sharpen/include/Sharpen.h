@@ -76,13 +76,13 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<sharpenSettings_t>(sharpenSettings, sharpenSettings->bufferHandle, 1);
+		SetupBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<sharpenSettings_t>(sharpenSettings, sharpenSettings->bufferHandle);
+		UpdateBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 };
 

@@ -57,7 +57,7 @@ add_subdirectory("./Examples/Cell Shading/")
 add_subdirectory("./Examples/Chromatic Abberation/")
 add_subdirectory("./Examples/Contrast/")
 add_subdirectory("./Examples/Dilation")
-add_subdirectory("./Examples/Edge detection") #FIX!
+add_subdirectory("./Examples/Edge detection")
 add_subdirectory("./Examples/Erosion")
 add_subdirectory("./Examples/Gamma")
 add_subdirectory("./Examples/Gaussian Blurring")
@@ -67,4 +67,6 @@ add_subdirectory("./Examples/Pixelize")
 add_subdirectory("./Examples/radial blur")
 add_subdirectory("./Examples/sepia") #FIX!
 add_subdirectory("./Examples/sharpen")
-add_subdirectory("./Examples/texture settings") #FIX!
+add_subdirectory("./Examples/texture settings")
+add_subdirectory("./Examples/Game of life")
+add_subdirectory("./Examples/Model")

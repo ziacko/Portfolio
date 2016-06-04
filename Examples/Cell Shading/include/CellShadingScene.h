@@ -47,22 +47,22 @@ protected:
 	void BuildGUI(ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(io);
-		ImGui::SliderFloat("red modifier", &cellShadeSettingsBuffer->redModifier, -1.0f, 1.0f);
-		ImGui::SliderFloat("green modifier", &cellShadeSettingsBuffer->greenModifier, -1.0f, 1.0f);
-		ImGui::SliderFloat("blue modifier", &cellShadeSettingsBuffer->blueModifier, -1.0f, 1.0f);
-		ImGui::SliderFloat("cell distance", &cellShadeSettingsBuffer->cellDistance, -1.0f, 1.0f);
+		ImGui::SliderFloat("red modifier", &cellShadeSettingsBuffer->redModifier, 0.0f, 1.0f);
+		ImGui::SliderFloat("green modifier", &cellShadeSettingsBuffer->greenModifier, 0.0f, 1.0f);
+		ImGui::SliderFloat("blue modifier", &cellShadeSettingsBuffer->blueModifier, 0.0f, 1.0f);
+		ImGui::SliderFloat("cell distance", &cellShadeSettingsBuffer->cellDistance, 0.0f, 1.0f);
 	}
 
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<cellShadeSettings_t>(cellShadeSettingsBuffer, cellShadeSettingsBuffer->bufferHandle, 1);
+		SetupBuffer(cellShadeSettingsBuffer, cellShadeSettingsBuffer->bufferHandle, sizeof(*cellShadeSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<cellShadeSettings_t>(cellShadeSettingsBuffer, cellShadeSettingsBuffer->bufferHandle);
+		UpdateBuffer(cellShadeSettingsBuffer, cellShadeSettingsBuffer->bufferHandle, sizeof(*cellShadeSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 };
 

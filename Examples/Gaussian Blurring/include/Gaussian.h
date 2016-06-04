@@ -56,13 +56,13 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<gaussianSettings_t>(gaussianSettingsBuffer, gaussianSettingsBuffer->bufferHandle, 1);
+		SetupBuffer(gaussianSettingsBuffer, gaussianSettingsBuffer->bufferHandle, sizeof(*gaussianSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<gaussianSettings_t>(gaussianSettingsBuffer, gaussianSettingsBuffer->bufferHandle);
+		UpdateBuffer(gaussianSettingsBuffer, gaussianSettingsBuffer->bufferHandle, sizeof(*gaussianSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 };
 

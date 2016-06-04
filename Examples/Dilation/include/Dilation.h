@@ -51,13 +51,13 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<dilationSettings_t>(dilationSettings, dilationSettings->bufferHandle, 1);
+		SetupBuffer(dilationSettings, dilationSettings->bufferHandle, sizeof(*dilationSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<dilationSettings_t>(dilationSettings, dilationSettings->bufferHandle);
+		UpdateBuffer(dilationSettings, dilationSettings->bufferHandle, sizeof(*dilationSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 };
 

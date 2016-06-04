@@ -37,50 +37,36 @@ public:
 		const char* shaderConfigPath = "../../resources/shaders/radialBlurring.txt") :
 		texturedScene(defaultTexture, windowName, radialCamera, shaderConfigPath)
 	{
-		this->radialBlurSettingsBuffer = radial;
+		this->radialBlur = radial;
+		radialBlur = new radialBlur_t();
 	}
 
 	~radialScene(){};
 
 protected:
 
-	static radialBlur_t*		radialBlurSettingsBuffer;
+	radialBlur_t*		radialBlur;
 
 	void BuildGUI(ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(io);
-		ImGui::SliderFloat("exposure", &radialBlurSettingsBuffer->exposure, 0.0f, 1.0f);
-		ImGui::SliderFloat("decay", &radialBlurSettingsBuffer->decay, 0.0f, 1.0f);
-		ImGui::SliderFloat("density", &radialBlurSettingsBuffer->density, 0.0f, 0.01f, "%.10f", 100.0f);
-		ImGui::SliderFloat("weight", &radialBlurSettingsBuffer->weight, 0.0f, 10.0f);
-		ImGui::SliderInt("samples", &radialBlurSettingsBuffer->samples, 0, 1000);
+		ImGui::SliderFloat("exposure", &radialBlur->exposure, 0.0f, 1.0f);
+		ImGui::SliderFloat("decay", &radialBlur->decay, 0.0f, 1.0f);
+		ImGui::SliderFloat("density", &radialBlur->density, 0.0f, 0.01f, "%.10f", 100.0f);
+		ImGui::SliderFloat("weight", &radialBlur->weight, 0.0f, 10.0f);
+		ImGui::SliderInt("samples", &radialBlur->samples, 0, 1000);
 	}
-
-	/*void InitTweakBar() override
-	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "exposure", TwType::TW_TYPE_FLOAT, &radialBlurSettingsBuffer->exposure, "min=0 max=1 step=0.001");
-		TwAddVarRW(tweakBar, "decay", TwType::TW_TYPE_FLOAT, &radialBlurSettingsBuffer->decay, "min=0 max=1 step=0.001");
-		TwAddVarRW(tweakBar, "density", TwType::TW_TYPE_FLOAT, &radialBlurSettingsBuffer->density, "min=0 max=1 step=0.00001");
-		TwAddVarRW(tweakBar, "weight", TwType::TW_TYPE_FLOAT, &radialBlurSettingsBuffer->weight, "min=0 max=1 step=0.001");
-		//TwAddVarRW(tweakBar, "attenuation", TwType::TW_TYPE_FLOAT, &radialBlurSettingsBuffer->attenuation, "min=0 max=100 step=0.01");
-		TwAddVarRW(tweakBar, "samples", TwType::TW_TYPE_UINT16, &radialBlurSettingsBuffer->samples, "min=0 max=1000");
-	}*/
 
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<radialBlur_t>(radialBlurSettingsBuffer, radialBlurSettingsBuffer->bufferHandle, 1);
+		SetupBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<radialBlur_t>(radialBlurSettingsBuffer, radialBlurSettingsBuffer->bufferHandle);
+		UpdateBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 };
-
-radialBlur_t* radialScene::radialBlurSettingsBuffer = nullptr;
-
-
 #endif

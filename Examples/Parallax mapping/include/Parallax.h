@@ -88,7 +88,7 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<parallaxSettings_t>(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle, 1);
+		SetupBuffer(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle, sizeof(*parallaxSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void SetupParallaxUniforms()
@@ -105,7 +105,7 @@ protected:
 
 	void Draw() override
 	{
-		//UpdateUniformBuffer<parallaxSettings_t>(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle);
+		//UpdateBuffer<parallaxSettings_t>(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle);
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(this->programGLID);
 		defaultTexture->GetUniformLocation(this->programGLID);

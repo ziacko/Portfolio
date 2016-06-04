@@ -51,13 +51,13 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<erosionSettings_t>(erosionSettings, erosionSettings->bufferHandle, 1);
+		SetupBuffer(erosionSettings, erosionSettings->bufferHandle, sizeof(*erosionSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<erosionSettings_t>(erosionSettings, erosionSettings->bufferHandle);
+		UpdateBuffer(erosionSettings, erosionSettings->bufferHandle, sizeof(*erosionSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 };
 

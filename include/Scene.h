@@ -223,7 +223,7 @@ protected:
 		defaultUniformBuffer->totalTime = sceneClock->GetTotalTime();
 		
 		defaultUniformBuffer->framesPerSec = 1.0 / sceneClock->GetDeltaTime();
-		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
+		UpdateBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(*defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	virtual void Draw()
@@ -271,20 +271,17 @@ protected:
 		};
 	}
 
-	template<class Type>
-	static void SetupUniformBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferUniformHandle)
+	static void SetupBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferSize, GLuint bufferUniformHandle, GLenum target, GLenum usage)
 	{
 		glGenBuffers(1, &bufferHandle);
-		glBindBuffer(GL_UNIFORM_BUFFER, bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(Type), buffer, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, bufferUniformHandle, bufferHandle);
+		UpdateBuffer(buffer, bufferHandle, bufferSize, target, usage);
+		glBindBufferBase(target, bufferUniformHandle, bufferHandle);
 	}
-
-	template<class Type>
-	static void UpdateUniformBuffer(void* buffer, GLuint bufferHandle)
+	//fuh. ill do it AFTER i've fixed GOL
+	static void UpdateBuffer(void* buffer, GLuint bufferHandle, GLuint bufferSize, GLenum target, GLenum usage)
 	{
-		glBindBuffer(GL_UNIFORM_BUFFER, bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(Type), buffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(target, bufferHandle);
+		glBufferData(target, bufferSize, buffer, usage);
 	}
 
 	virtual void InitializeBuffers()
@@ -296,7 +293,7 @@ protected:
 		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
 
 		SetupVertexBuffer();
-		SetupUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, 0);
+		SetupBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(*defaultUniformBuffer), 0, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void SetupDefaultUniforms()
@@ -337,18 +334,14 @@ protected:
 		defaultUniformBuffer->resolution = glm::vec2(dimensions.width, dimensions.height);
 		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
 
-		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
+		UpdateBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);
-
-		//ImGuiIO io = ImGui::GetIO();
-		//io.DisplaySize = ImVec2(dimensions.width, dimensions.height);
-
 	}
 
 	static void HandleMouseMotion(vec2_t<int> windowPosition, vec2_t<int> screenPosition)
 	{
 		defaultUniformBuffer->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
-		UpdateUniformBuffer<defaultUniformBuffer_t>(defaultUniformBuffer, defaultUniformBuffer->bufferHandle);
+		UpdateBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		ImGuiIO& io = ImGui::GetIO();
 		io.MousePos = ImVec2((float)windowPosition.x, (float)windowPosition.y); //why screen co-ordinates?
 	}

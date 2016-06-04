@@ -44,20 +44,20 @@ protected:
 	{
 		texturedScene::BuildGUI(io);
 
-		ImGui::SliderFloat("pixel width", &pixelizeSettings->pixelWidth, 0.0f, 100.0f);
-		ImGui::SliderFloat("pixel height", &pixelizeSettings->pixelHeight, 0.0f, 100.0f);
+		ImGui::SliderFloat("pixel width", &pixelizeSettings->pixelWidth, 0.0f, 100.0f, "%.0f");
+		ImGui::SliderFloat("pixel height", &pixelizeSettings->pixelHeight, 0.0f, 100.0f, "%.0f");
 	}
 
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<pixelizeSettings_t>(pixelizeSettings, pixelizeSettings->bufferHandle, 1);
+		SetupBuffer(pixelizeSettings, pixelizeSettings->bufferHandle, sizeof(*pixelizeSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<pixelizeSettings_t>(pixelizeSettings, pixelizeSettings->bufferHandle);
+		UpdateBuffer(pixelizeSettings, pixelizeSettings->bufferHandle, sizeof(*pixelizeSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 };

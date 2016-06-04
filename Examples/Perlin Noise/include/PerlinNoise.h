@@ -175,7 +175,7 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<perlinSettings_t>(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle, 1);
+		SetupBuffer(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle, sizeof(*perlinSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void SetPerlinUniforms()
@@ -186,7 +186,7 @@ protected:
 
 	void Draw()	override
 	{
-		UpdateUniformBuffer<perlinSettings_t>(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle);
+		UpdateBuffer(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle, sizeof(*perlinSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		glUseProgram(this->programGLID);
 		glDrawArrays(GL_QUADS, 0, 4);
 		DrawGUI(window->name);

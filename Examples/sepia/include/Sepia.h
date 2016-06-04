@@ -83,35 +83,16 @@ protected:
 		ImGui::SliderFloat("blue modifier 3", &sepiaSettings->blueModifier3, 0.0f, 1.0f);
 	}
 
-	/*void InitTweakBar() override
-	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "factor", TwType::TW_TYPE_FLOAT, &sepiaSettings->factor, "min=0 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "red modifier 1", TwType::TW_TYPE_FLOAT, &sepiaSettings->redModifier1, "min=0 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "red modifier 2 ", TwType::TW_TYPE_FLOAT, &sepiaSettings->redModifier2, "min=0 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "red modifier 3", TwType::TW_TYPE_FLOAT, &sepiaSettings->redModifier3, "min=0 max=1 step=0.01");
-
-		TwAddVarRW(tweakBar, "green modifier 1", TwType::TW_TYPE_FLOAT, &sepiaSettings->greenModifier1, "min=0 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "green modifier 2", TwType::TW_TYPE_FLOAT, &sepiaSettings->greenModifier2, "min=0 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "green modifier 3", TwType::TW_TYPE_FLOAT, &sepiaSettings->greenModifier3, "min=0 max=1 step=0.01");
-
-		TwAddVarRW(tweakBar, "blue modifier 1", TwType::TW_TYPE_FLOAT, &sepiaSettings->blueModifier1, "min=0 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "blue modifier 2", TwType::TW_TYPE_FLOAT, &sepiaSettings->blueModifier2, "min=0 max=1 step=0.01");
-		TwAddVarRW(tweakBar, "blue modifier 3", TwType::TW_TYPE_FLOAT, &sepiaSettings->blueModifier3, "min=0 max=1 step=0.01");
-	}*/
-
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<sepiaSettings_t>(sepiaSettings, sepiaSettings->bufferHandle, 1);
+		SetupBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<sepiaSettings_t>(sepiaSettings, sepiaSettings->bufferHandle);
+		UpdateBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 };
-
-
 #endif

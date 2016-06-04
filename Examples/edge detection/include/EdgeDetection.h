@@ -108,7 +108,7 @@ public:
 
 		//don't bother with the switch. just create them all at once. only 4 types
 		sobelSettingsBuffer = new sobelSettings_t();
-		laplacianSettinsBuffer = new laplacianSettings_t();
+		laplacianSettingsBuffer = new laplacianSettings_t();
 		prewittSettingsBuffer = new prewittSettings_t();
 		freiChenSettingsBuffer = new freiChenSettings_t();
 	}
@@ -116,12 +116,11 @@ public:
 	void Initialize() override
 	{
 		scene::Initialize();
-		this->laplacianProgramGLID = tinyShaders::GetShaderProgramByIndex(1)->handle;
-		this->prewittProgramGLID = tinyShaders::GetShaderProgramByIndex(2)->handle;
-		this->freiChenProgramGLID = tinyShaders::GetShaderProgramByIndex(3)->handle;
-		SetupUniformBuffer<laplacianSettings_t>(laplacianSettinsBuffer, laplacianSettinsBuffer->bufferHandle, 2);
-		SetupUniformBuffer<prewittSettings_t>(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, 3);
-		SetupUniformBuffer<freiChenSettings_t>(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle, 4);
+		laplacianProgramGLID = tinyShaders::GetShaderProgramByIndex(1)->handle;
+		prewittProgramGLID = tinyShaders::GetShaderProgramByIndex(2)->handle;
+		freiChenProgramGLID = tinyShaders::GetShaderProgramByIndex(3)->handle;
+
+		InitializeBuffers();
 	}
 
 	void BuildGUI(ImGuiIO io) override
@@ -175,42 +174,40 @@ public:
 	void BuildLaplacianGUI()
 	{
 		ImGui::Begin("laplacian settings");
-		ImGui::SliderFloat("kernel 1", &laplacianSettinsBuffer->kernel1, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 2", &laplacianSettinsBuffer->kernel2, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 3", &laplacianSettinsBuffer->kernel3, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 4", &laplacianSettinsBuffer->kernel4, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 5", &laplacianSettinsBuffer->kernel5, -10.0f, 10.0f);
-		ImGui::SliderFloat("kernel 6", &laplacianSettinsBuffer->kernel6, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 7", &laplacianSettinsBuffer->kernel7, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 8", &laplacianSettinsBuffer->kernel8, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 9", &laplacianSettinsBuffer->kernel9, -1.0f, 1.0f);
-		ImGui::SliderFloat("filter level", &laplacianSettinsBuffer->filterLevel, 0.0f, 1.0f);
+		ImGui::SliderFloat("kernel 1", &laplacianSettingsBuffer->kernel1, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 2", &laplacianSettingsBuffer->kernel2, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 3", &laplacianSettingsBuffer->kernel3, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 4", &laplacianSettingsBuffer->kernel4, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 5", &laplacianSettingsBuffer->kernel5, -10.0f, 10.0f);
+		ImGui::SliderFloat("kernel 6", &laplacianSettingsBuffer->kernel6, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 7", &laplacianSettingsBuffer->kernel7, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 8", &laplacianSettingsBuffer->kernel8, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 9", &laplacianSettingsBuffer->kernel9, -1.0f, 1.0f);
+		ImGui::SliderFloat("filter level", &laplacianSettingsBuffer->filterLevel, 0.0f, 1.0f);
 		ImGui::End();
 	}
 
 	void BuildPrewittGUI()
 	{
 		ImGui::Begin("prewitt settings");
-		ImGui::SliderFloat("offset 1", &prewittSettingsBuffer->filterLevel, 0.0f, 1.0f);
+		ImGui::SliderFloat("filter level", &prewittSettingsBuffer->filterLevel, 0.0f, 1.0f);
 		ImGui::End();
 	}
 
 	void BuildFreiChen()
 	{
 		ImGui::Begin("frei-chen settings");
-		ImGui::SliderFloat("offset 1", &freiChenSettingsBuffer->filterLevel, 0.0f, 1.0f);
+		ImGui::SliderFloat("filter level", &freiChenSettingsBuffer->filterLevel, 0.0f, 1.0f);
 		ImGui::End();
 	}
 
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		//bind appropriate GL program FIRST!!!!
-		glUseProgram(programGLID);
-		SetupUniformBuffer<sobelSettings_t>(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle, 1);
-		SetupUniformBuffer<laplacianSettings_t>(laplacianSettinsBuffer, laplacianSettinsBuffer->bufferHandle, 2);
-		SetupUniformBuffer<prewittSettings_t>(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, 3);
-		SetupUniformBuffer<freiChenSettings_t>(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle, 4);
+		SetupBuffer(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle, sizeof(*sobelSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(laplacianSettingsBuffer, laplacianSettingsBuffer->bufferHandle, sizeof(*laplacianSettingsBuffer), 2, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, sizeof(*prewittSettingsBuffer), 3, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle, sizeof(*freiChenSettingsBuffer), 4, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		
 	}
 
@@ -222,28 +219,28 @@ public:
 		case SOBEL:
 		{
 			glUseProgram(programGLID);
-			UpdateUniformBuffer<sobelSettings_t>(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle);
+			UpdateBuffer(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle, sizeof(*sobelSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 			break;
 		}
 
 		case LAPLACIAN:
 		{
 			glUseProgram(laplacianProgramGLID);
-			UpdateUniformBuffer<laplacianSettings_t>(laplacianSettinsBuffer, laplacianSettinsBuffer->bufferHandle);
+			UpdateBuffer(laplacianSettingsBuffer, laplacianSettingsBuffer->bufferHandle, sizeof(*laplacianSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 			break;
 		}
 
 		case PREWITT:
 		{
 			glUseProgram(prewittProgramGLID);
-			UpdateUniformBuffer<prewittSettings_t>(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle);
+			UpdateBuffer(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, sizeof(*prewittSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 			break;
 		}
 
 		case FREI_CHEN:
 		{
 			glUseProgram(freiChenProgramGLID);
-			UpdateUniformBuffer<freiChenSettings_t>(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle);
+			UpdateBuffer(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle, sizeof(*freiChenSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 			break;
 		}
 		}
@@ -293,7 +290,7 @@ public:
 protected:
 
 	sobelSettings_t*				sobelSettingsBuffer;
-	laplacianSettings_t*			laplacianSettinsBuffer;
+	laplacianSettings_t*			laplacianSettingsBuffer;
 	prewittSettings_t*				prewittSettingsBuffer;
 	freiChenSettings_t*				freiChenSettingsBuffer;
 	std::vector<const char*>		edgeDetectionSettings = { "sobel", "laplacian", "prewitt", "frei chen" };

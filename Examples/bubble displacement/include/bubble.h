@@ -5,9 +5,9 @@
 
 struct bubbleSettings_t
 {
-	GLfloat			attenuation;
-	GLfloat			offset;
-	GLfloat			gridDimensions;
+	float			attenuation;
+	float			offset;
+	float			gridDimensions;
 
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
@@ -49,9 +49,9 @@ protected:
 		texturedScene::BuildGUI(io);
 		ImGui::Checkbox("enable wireframe", &enableWireframe);
 		
-		ImGui::SliderFloat("Attenuation", &(float)bubbleSettingsBuffer->attenuation, 0.0f, 1.0f);
-		ImGui::SliderFloat("grid dimensions", &(float)bubbleSettingsBuffer->gridDimensions, 0.0f, 1000.0f, "%f");
-		ImGui::SliderFloat("offset", &( float )bubbleSettingsBuffer->offset, 0.0f, 1.0f);
+		ImGui::SliderFloat("Attenuation", &bubbleSettingsBuffer->attenuation, 0.0f, 1.0f);
+		ImGui::SliderFloat("grid dimensions", &bubbleSettingsBuffer->gridDimensions, 0.0f, 1000.0f, "%.0f");
+		ImGui::SliderFloat("offset", &bubbleSettingsBuffer->offset, 0.0f, 1.0f);
 	}
 
 	/*void CreateGrid()
@@ -83,7 +83,7 @@ protected:
 	{
 		//SetupVertexBuffer();
 		scene::InitializeBuffers();
-		SetupUniformBuffer<bubbleSettings_t>(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle, 1);
+		SetupBuffer(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle, sizeof(*bubbleSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void SetupVertexBuffer() override
@@ -102,7 +102,7 @@ protected:
 
 	void Draw()	override
 	{
-		UpdateUniformBuffer<bubbleSettings_t>(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle);
+		UpdateBuffer(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle, sizeof(*bubbleSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		defaultTexture->GetUniformLocation(programGLID);
 		glUseProgram(this->programGLID);
 		if (enableWireframe)

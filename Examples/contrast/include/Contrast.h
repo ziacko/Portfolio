@@ -42,20 +42,20 @@ protected:
 	void BuildGUI(ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(io);
-		ImGui::SliderFloat("contrast level", &contrastSettings->contrast, -1.0f, 10.0f);
+		ImGui::SliderFloat("contrast level", &contrastSettings->contrast, 0.0f, 10.0f);
 	}
 
 
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupUniformBuffer<contrastSettings_t>(contrastSettings, contrastSettings->bufferHandle, 1);
+		SetupBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateUniformBuffer<contrastSettings_t>(contrastSettings, contrastSettings->bufferHandle);
+		UpdateBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 };
