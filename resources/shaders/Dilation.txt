@@ -8,7 +8,7 @@ outColor
 2
 DefaultVertex
 Vertex
-../../resources/Shaders/Default.vert
+../../resources/shaders/Default.vert
 DilationFragment
 Fragment
-../../resources/Shaders/Dilation.frag
+../../resources/shaders/Dilation.frag

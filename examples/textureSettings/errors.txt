@@ -1,0 +1,104 @@
+In file included from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h:6:0,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/./include/TextureSettings.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/source/TextureSettings.cpp:1:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyextender/Include/TinyExtender.h: In static member function ‘static GLvoid TinyExtender::InitializeExtensions()’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyextender/Include/TinyExtender.h:3137:46: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+   if (Version_Major > 2 || (Version_Minor >= 0 && Version_Major >= 2))
+                                              ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyextender/Include/TinyExtender.h:3159:46: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+   if (Version_Major > 3 || (Version_Minor >= 0 && Version_Major >= 3))
+                                              ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyextender/Include/TinyExtender.h:3203:46: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+   if (Version_Major > 4 || (Version_Minor >= 0 && Version_Major >= 4))
+                                              ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyextender/Include/TinyExtender.h: In static member function ‘static GLvoid TinyExtender::InitializeExtensionsSpecific(GLbitfield)’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyextender/Include/TinyExtender.h:3306:47: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    if (Version_Major > 2 || (Version_Minor >= 0 && Version_Major >= 2))
+                                               ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyextender/Include/TinyExtender.h:3326:47: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    if (Version_Major > 3 || (Version_Minor >= 0 && Version_Major >= 3))
+                                               ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyextender/Include/TinyExtender.h:3366:47: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    if (Version_Major > 4 || (Version_Minor >= 0 && Version_Major >= 4))
+                                               ^
+In file included from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h:7:0,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/./include/TextureSettings.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/source/TextureSettings.cpp:1:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyshaders/Include/TinyShaders.h: In static member function ‘static void tinyShaders::LoadShader(const GLchar*, const GLchar*, GLuint)’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyshaders/Include/TinyShaders.h:300:17: warning: unused variable ‘newShader’ [-Wunused-variable]
+       shader_t* newShader = new shader_t( name, shaderType, shaderFile );
+                 ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyshaders/Include/TinyShaders.h: In static member function ‘static void tinyShaders::LoadShaderProgramsFromConfigFile(const GLchar*, bool)’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyshaders/Include/TinyShaders.h:394:59: warning: too many arguments for format [-Wformat-extra-args]
+          fscanf( pConfigFile, "%*[^\n]\n %*[^\n]\n", NULL );
+                                                           ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyshaders/Include/TinyShaders.h:400:25: warning: unused variable ‘newShaderProgram’ [-Wunused-variable]
+        shaderProgram_t* newShaderProgram = new shaderProgram_t( programName, inputs, outputs, shaders, saveBinary);
+                         ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyshaders/Include/TinyShaders.h: In static member function ‘static void tinyShaders::LoadProgramBinariesFromConfigFile(const GLchar*)’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyshaders/Include/TinyShaders.h:424:50: warning: too many arguments for format [-Wformat-extra-args]
+    fscanf(configFile, "%*[^\n]\n %*[^\n]\n", NULL);
+                                                  ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../dependencies/tinyshaders/Include/TinyShaders.h:434:12: warning: unused variable ‘size’ [-Wunused-variable]
+     GLuint size = 0;
+            ^
+In file included from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/DefaultUniformBuffer.h:3:0,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h:16,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/./include/TextureSettings.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/source/TextureSettings.cpp:1:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/UniformBuffer.h: In constructor ‘uniformBuffer_t::uniformBuffer_t()’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/UniformBuffer.h:12:16: warning: converting to non-pointer type ‘GLuint {aka unsigned int}’ from NULL [-Wconversion-null]
+   bufferHandle = NULL;
+                ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/UniformBuffer.h:13:17: warning: converting to non-pointer type ‘GLuint {aka unsigned int}’ from NULL [-Wconversion-null]
+   uniformHandle = NULL;
+                 ^
+In file included from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h:18:0,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/./include/TextureSettings.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/source/TextureSettings.cpp:1:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Utilities.h: At global scope:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Utilities.h:5:6: warning: unused parameter ‘output’ [-Wunused-parameter]
+ void GetFilesInDirectory(std::vector<std::string>& output, std::string directory)
+      ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Utilities.h:5:6: warning: unused parameter ‘directory’ [-Wunused-parameter]
+In file included from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/./include/TextureSettings.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/source/TextureSettings.cpp:1:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h: In member function ‘virtual void scene::SetupVertexBuffer()’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h:265:11: warning: unused variable ‘quadVerts’ [-Wunused-variable]
+   GLfloat quadVerts[16] =
+           ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h: In static member function ‘static void scene::HandleMouseClick(TinyWindow::mouseButton_t, TinyWindow::buttonState_t)’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h:309:10: warning: enumeration value ‘last’ not handled in switch [-Wswitch]
+   switch (button)
+          ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h: At global scope:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Scene.h:341:14: warning: unused parameter ‘screenPosition’ [-Wunused-parameter]
+  static void HandleMouseMotion(vec2_t<int> windowPosition, vec2_t<int> screenPosition)
+              ^
+In file included from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/TexturedScene.h:4:0,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/./include/TextureSettings.h:3,
+                 from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/source/TextureSettings.cpp:1:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Texture.h: In member function ‘void texture::UnbindTexture()’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Texture.h:57:29: warning: passing NULL to non-pointer argument 2 of ‘void glBindTexture(GLenum, GLuint)’ [-Wconversion-null]
+   glBindTexture(target, NULL);
+                             ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Texture.h: In member function ‘void texture::LoadTexture()’:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Texture.h:102:7: warning: unused variable ‘width’ [-Wunused-variable]
+   int width = 0;
+       ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Texture.h:103:7: warning: unused variable ‘height’ [-Wunused-variable]
+   int height = 0;
+       ^
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/../../include/Texture.h:104:7: warning: unused variable ‘channels’ [-Wunused-variable]
+   int channels = 0;
+       ^
+In file included from /home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/source/TextureSettings.cpp:1:0:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/./include/TextureSettings.h: At global scope:
+/home/ziyad/Documents/Projects/Portfolio/examples/textureSettings/./include/TextureSettings.h:21:7: warning: unused parameter ‘io’ [-Wunused-parameter]
+  void BuildGUI(ImGuiIO io) override //it's not virtual because i don't really want anything to inherit from it at this point. 
+       ^

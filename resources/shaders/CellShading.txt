@@ -1,0 +1,14 @@
+1
+CellShadingProgram
+2
+position
+uV
+1
+outColor
+2
+DefaultVertex
+Vertex
+../../resources/shaders/Default.vert
+CellShaderFragment
+Fragment
+../../resources/shaders/CellShading.frag

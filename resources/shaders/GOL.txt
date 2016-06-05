@@ -8,7 +8,7 @@ outColor
 2
 GOLVertex
 Vertex
-../../resources/Shaders/GOL.vert
+../../resources/shaders/GOL.vert
 GOLFragment
 Fragment
-../../resources/Shaders/GOL.frag
+../../resources/shaders/GOL.frag

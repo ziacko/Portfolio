@@ -1,0 +1,14 @@
+1
+RadialBlurringProgram
+2
+position
+UV
+1
+outColor
+2
+DefaultVertex
+Vertex
+../../resources/shaders/Default.vert
+RadialBlurFragment
+Fragment
+../../resources/shaders/RadialBlur.frag

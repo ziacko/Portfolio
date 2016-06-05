@@ -16,7 +16,7 @@ public:
 		this->defaultTexture = defaultTexture;
 
 		//find all textures in dir
-		GetFilesInDirectory(textureDirs, "../../resources/textures");
+		//GetFilesInDirectory(textureDirs, "../../resources/textures");
 	}
 
 	virtual void Initialize() override
@@ -29,7 +29,7 @@ public:
 	{
 		scene::BuildGUI(io);
 
-		std::vector<const char*> tempTextureDirs;
+		/*std::vector<const char*> tempTextureDirs;
 		for (unsigned int textureIndex = 0; textureIndex < textureDirs.size(); textureIndex++)
 		{
 			tempTextureDirs.push_back(textureDirs[textureIndex].c_str());
@@ -40,7 +40,7 @@ public:
 			delete defaultTexture; //remove the old one from memory
 			defaultTexture = new texture(tempTextureDirs[currentTextureIndex]);
 			defaultTexture->LoadTexture();
-		}
+		}*/
 	}
 
 	virtual void Draw() override
@@ -58,11 +58,8 @@ public:
 
 protected:
 
-	static texture*							defaultTexture;
-	static std::vector<std::string>			textureDirs;
-	int										currentTextureIndex;
+	texture*							defaultTexture;
+	std::vector<std::string>			textureDirs;
+	int									currentTextureIndex;
 };
-
-texture* texturedScene::defaultTexture = nullptr;
-std::vector<std::string> texturedScene::textureDirs;
 #endif

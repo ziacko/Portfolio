@@ -8,7 +8,7 @@ outColor
 2
 DefaultVertex
 Vertex
-../../resources/Shaders/Default.vert
+../../resources/shaders/Default.vert
 SobelFragment
 Fragment
 ../../resources/shaders/Sobel.frag
@@ -22,10 +22,10 @@ outColor
 2
 DefaultVertex
 Vertex
-../../resources/Shaders/Default.vert
+../../resources/shaders/Default.vert
 LaplacianFragment
 Fragment
-../../resources/Shaders/Laplacian.frag
+../../resources/shaders/Laplacian.frag
 
 PrewittProgram
 2
@@ -36,10 +36,10 @@ outColor
 2
 DefaultVertex
 Vertex
-../../resources/Shaders/Default.vert
+../../resources/shaders/Default.vert
 PrewittFragment
 Fragment
-../../resources/Shaders/Prewitt.frag
+../../resources/shaders/Prewitt.frag
 
 FreiChenProgram
 2
@@ -50,7 +50,7 @@ outColor
 2
 DefaultVertex
 Vertex
-../../resources/Shaders/Default.vert
+../../resources/shaders/Default.vert
 FreiChenFragment
 Fragment
-../../resources/Shaders/FreiChen.frag
+../../resources/shaders/FreiChen.frag

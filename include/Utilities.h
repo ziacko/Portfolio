@@ -1,6 +1,5 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
-
 /* Returns a list of files in a directory (except the ones that begin with a dot) */
 
 void GetFilesInDirectory(std::vector<std::string>& output, std::string directory)
@@ -43,14 +42,14 @@ void GetFilesInDirectory(std::vector<std::string>& output, std::string directory
 
 	FindClose(dir);
 #else
-	DIR *dir;
+	/*DIR *dir;
 	class dirent *ent;
-	class stat st;
+	class stat* st;
 
-	dir = opendir(directory);
+	dir = opendir(directory.c_str());
 	while ((ent = readdir(dir)) != NULL) {
-		const string file_name = ent->d_name;
-		const string full_file_name = directory + "/" + file_name;
+		const std::string file_name = ent->d_name;
+		const std::string full_file_name = directory + "/" + file_name;
 
 		if (file_name[0] == '.')
 			continue;
@@ -65,7 +64,7 @@ void GetFilesInDirectory(std::vector<std::string>& output, std::string directory
 
 		out.push_back(full_file_name);
 	}
-	closedir(dir);
+	closedir(dir);*/
 #endif
 } // GetFilesInDirectory
 

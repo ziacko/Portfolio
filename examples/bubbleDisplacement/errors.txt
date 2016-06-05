@@ -1,0 +1,62 @@
+cc1: warning: command line option ‘-std=c++11’ is valid for C++/ObjC++ but not for C [enabled by default]
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_1’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1311:37: warning: unused parameter ‘out’ [-Wunused-parameter]
+ static uint8 *resample_row_1(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                     ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1311:65: warning: unused parameter ‘in_far’ [-Wunused-parameter]
+ static uint8 *resample_row_1(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                                                 ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1311:77: warning: unused parameter ‘w’ [-Wunused-parameter]
+ static uint8 *resample_row_1(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                                                             ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1311:84: warning: unused parameter ‘hs’ [-Wunused-parameter]
+ static uint8 *resample_row_1(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                                                                    ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_v_2’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1316:86: warning: unused parameter ‘hs’ [-Wunused-parameter]
+ static uint8* resample_row_v_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                                                                      ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_h_2’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1325:68: warning: unused parameter ‘in_far’ [-Wunused-parameter]
+ static uint8*  resample_row_h_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                                                    ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1325:87: warning: unused parameter ‘hs’ [-Wunused-parameter]
+ static uint8*  resample_row_h_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                                                                       ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_hv_2’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1350:87: warning: unused parameter ‘hs’ [-Wunused-parameter]
+ static uint8 *resample_row_hv_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                                                                       ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_generic’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1371:71: warning: unused parameter ‘in_far’ [-Wunused-parameter]
+ static uint8 *resample_row_generic(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
+                                                                       ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘expand_palette’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:2174:55: warning: unused parameter ‘len’ [-Wunused-parameter]
+ static int expand_palette(png *a, uint8 *palette, int len, int pal_img_n)
+                                                       ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘parse_png_file’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:2341:28: warning: variable ‘invalid_chunk’ set but not used [-Wunused-but-set-variable]
+                static char invalid_chunk[] = "XXXX chunk not known";
+                            ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘bmp_load’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:2671:51: warning: signed and unsigned type in conditional expression [-Wsign-compare]
+                uint32 v = (bpp == 16 ? get16le(s) : get32le(s));
+                                                   ^
+In file included from /home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:3681:0:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h: In function ‘dds_load’:
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:290:31: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  if( (header.dwFlags & flags) != flags ) return NULL;
+                               ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:362:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     if( ref_x + 4 > s->img_x )
+                   ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:366:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     if( ref_y + 4 > s->img_y )
+                   ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:390:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     for( i = 1; i < header.dwMipMapCount; ++i )
+                   ^
+/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:427:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     for( i = 1; i < header.dwMipMapCount; ++i )
+                   ^

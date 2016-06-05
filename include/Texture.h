@@ -377,6 +377,6 @@ protected:
 	GLenum			wrapRSetting;
 
 	GLuint			bitsPerPixel;
-	byte*			data;
+	char*			data;
 };
 #endif

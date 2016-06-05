@@ -1,0 +1,14 @@
+1
+ModelProgram
+2
+position
+uv
+1
+outColor
+2
+ModelVertex
+Vertex
+../../resources/shaders/Model.vert
+ModelFragment
+Fragment
+../../resources/shaders/Model.frag

@@ -1,0 +1,1 @@
+/home/ziyad/Documents/Projects/Portfolio/examples/texturedScene/CMakeFiles/TexturedScene.dir
