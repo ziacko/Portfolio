@@ -5,3 +5,6 @@
 *.idb
 *.sdf
 *.sln
+CMakeFiles/
+vcxproj.filters
+*.filters

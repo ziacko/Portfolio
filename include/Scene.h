@@ -7,11 +7,12 @@
 #include <TinyShaders.h>
 #include <TinyWindow.h>
 #include <TinyClock.h>
-#include <fwd.hpp>
-#include <glm.hpp>
-#include <matrix.hpp>
-#include <vec4.hpp>
-#include <gtc/matrix_transform.hpp>
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+#include <glm/matrix.hpp>
+#include <glm/vec4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+//#include <gli/gli.hpp>
 #include <Camera.h>
 #include <DefaultUniformBuffer.h>
 #include <SOIL.h>
@@ -38,7 +39,7 @@ public:
 		imGUIFontTexture = 0;
 
 		manager = new windowManager();
-		window = manager->AddWindow(windowName);
+		window = manager->AddWindow(windowName, this);
 		sceneClock = new tinyClock_t();
 	}
 
@@ -70,36 +71,267 @@ public:
 
 	virtual void SetupCallbacks()
 	{
-		window->resizeEvent = &scene::HandleWindowResize;
-		window->mouseButtonEvent = &scene::HandleMouseClick;
-		window->mouseMoveEvent = &scene::HandleMouseMotion;
-		window->maximizedEvent = &scene::HandleMaximize;
-		window->destroyedEvent = &scene::ShutDown;
+		manager->resizeEvent = &scene::HandleWindowResize;
+		manager->mouseButtonEvent = &scene::HandleMouseClick;
+		manager->mouseMoveEvent = &scene::HandleMouseMotion;
+		manager->maximizedEvent = &scene::HandleMaximize;
+		manager->destroyedEvent = &scene::ShutDown;
 	}
 
-	static void ShutDown()
+	static void ShutDown(tWindow* window)
 	{
-		imGUIInvalidateDeviceObject();
+		scene* thisScene = (scene*)window->userData;
+		thisScene->imGUIInvalidateDeviceObject();
 		tinyShaders::Shutdown();
-		manager->ShutDown();
+		thisScene->manager->ShutDown();
 	}
 
 	static void RenderImGUIDrawLists(ImDrawData* drawData)
 	{
+		
+	}
+	
+protected:
+
+	windowManager*				manager;
+	tWindow*					window;
+
+	tinyClock_t*				sceneClock;
+
+	defaultUniformBuffer_t*		defaultUniformBuffer;
+	vertexBuffer_t*				defaultVertexBuffer;
+
+	camera*						sceneCamera;
+	const GLchar*				windowName;
+	GLuint						programGLID;
+	const GLchar*				tweakBarName;
+	const GLchar*				shaderConfigPath;
+
+	GLuint					imGUIFontTexture;
+	GLint					imGUIShaderhandle;
+	GLint					imGUIVertexHandle;
+	GLint					imGUIFragmentHandle;
+	GLint					imGUITexAttribLocation;
+	GLint					imGUIProjMatrixAttribLocation;
+	GLint					imGUIPositionAttribLocation;
+	GLint					imGUIUVAttribLocation;
+	GLint					imGUIColorAttribLocation;
+	GLuint					imGUIVBOHandle;
+	GLuint					imGUIVAOHandle;
+	GLuint					imGUIIBOHandle;
+
+	bool					isGUIActive;
+
+	virtual void Update()
+	{
+		manager->PollForEvents();
+		sceneCamera->Update();
+		sceneClock->UpdateClockAdaptive();
+		defaultUniformBuffer->deltaTime = sceneClock->GetDeltaTime();
+		defaultUniformBuffer->totalTime = sceneClock->GetTotalTime();
+		
+		defaultUniformBuffer->framesPerSec = 1.0 / sceneClock->GetDeltaTime();
+		UpdateBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(*defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+	}
+
+	virtual void Draw()
+	{
+		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+		glUseProgram(this->programGLID);
+
+		glDrawArrays(GL_QUADS, 0, 4);
+		
+		glViewport(0, 0, window->resolution.width, window->resolution.height);
+		DrawGUI(window->name);
+		
+		window->SwapDrawBuffers();
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	virtual void BuildGUI(ImGuiIO io)
+	{
+		ImGui::Text("FPS %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, 1.0f / sceneClock->GetDeltaTime());
+		ImGui::Text("Total running time %.5f", sceneClock->GetTotalTime());
+		ImGui::Text("Mouse coordinates: \t X: %.0f \t Y: %.0f", io.MousePos.x, io.MousePos.y);
+		ImGui::Text("Window size: \t Width: %i \t Height: %i", window->resolution.width, window->resolution.height);
+	}
+
+	void DrawGUI(const char* guiName, ImVec2 beginSize = ImVec2(0, 0))
+	{
+		ImGUINewFrame();
+		ImGuiIO io = ImGui::GetIO();
+		ImGui::Begin(guiName, &isGUIActive, beginSize);
+		BuildGUI(io);
+		ImGui::End();
+		ImGui::Render();
+		HandleImGUIRender();
+	}
+
+	virtual void SetupVertexBuffer()
+	{
+		defaultVertexBuffer = new vertexBuffer_t(defaultUniformBuffer->resolution);
+
+		GLfloat quadVerts[16] =
+		{
+			0.0f, 0.0f, 1.0f, 1.0f,
+			sceneCamera->resolution.x, 0.0f, 1.0f, 1.0f,
+			sceneCamera->resolution.x, sceneCamera->resolution.y, 1.0f, 1.0f,
+			0.0f, sceneCamera->resolution.y, 1.0f, 1.0f
+		};
+	}
+
+	static void SetupBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferSize, GLuint bufferUniformHandle, GLenum target, GLenum usage)
+	{
+		glGenBuffers(1, &bufferHandle);
+		UpdateBuffer(buffer, bufferHandle, bufferSize, target, usage);
+		glBindBufferBase(target, bufferUniformHandle, bufferHandle);
+	}
+	//fuh. ill do it AFTER i've fixed GOL
+	static void UpdateBuffer(void* buffer, GLuint bufferHandle, GLuint bufferSize, GLenum target, GLenum usage)
+	{
+		glBindBuffer(target, bufferHandle);
+		glBufferData(target, bufferSize, buffer, usage);
+	}
+
+	virtual void InitializeBuffers()
+	{
+		defaultUniformBuffer = new defaultUniformBuffer_t(this->sceneCamera);
+		glViewport(0, 0, window->resolution.width, window->resolution.height);
+		//glEnable(GL_DEPTH_TEST);
+		defaultUniformBuffer->resolution = glm::vec2(window->resolution.width, window->resolution.height);
+		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
+
+		SetupVertexBuffer();
+		SetupBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(*defaultUniformBuffer), 0, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+	}
+
+	void SetupDefaultUniforms()
+	{
+		defaultUniformBuffer->uniformHandle = glGetUniformBlockIndex(this->programGLID, "defaultSettings");
+		glUniformBlockBinding(this->programGLID, defaultUniformBuffer->uniformHandle, 0);
+	}
+
+	static void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		switch (button)
+		{
+			case mouseButton_t::left:
+			{
+				state == buttonState_t::down ? io.MouseDown[0] = true : io.MouseDown[0] = false;
+				break;
+			}
+
+			case mouseButton_t::right:
+			{
+				state == buttonState_t::down ? io.MouseDown[1] = true : io.MouseDown[1] = false;
+				break;
+			}
+
+			case mouseButton_t::middle:
+			{
+				state == buttonState_t::down ? io.MouseDown[2] = true : io.MouseDown[2] = false;
+				break;
+			}
+		}
+	}
+
+	static void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions)
+	{
+		scene* thisScene = (scene*)window->userData;
+
+		glViewport(0, 0, dimensions.width, dimensions.height);
+		thisScene->defaultUniformBuffer->resolution = glm::vec2(dimensions.width, dimensions.height);
+		thisScene->defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
+
+		UpdateBuffer(thisScene->defaultUniformBuffer, thisScene->defaultUniformBuffer->bufferHandle, sizeof(defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		thisScene->defaultVertexBuffer->UpdateBuffer(thisScene->defaultUniformBuffer->resolution);
+	}
+
+	static void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition)
+	{
+		scene* thisScene = (scene*)window->userData;
+
+		thisScene->defaultUniformBuffer->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
+		UpdateBuffer(thisScene->defaultUniformBuffer, thisScene->defaultUniformBuffer->bufferHandle, sizeof(defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		ImGuiIO& io = ImGui::GetIO();
+		io.MousePos = ImVec2((float)windowPosition.x, (float)windowPosition.y); //why screen co-ordinates?
+	}
+
+	static void HandleMaximize(tWindow* window)
+	{
+		scene* thisScene = (scene*)window->userData;
+
+		glViewport(0, 0, window->resolution.width, window->resolution.height);
+		thisScene->defaultUniformBuffer->resolution = glm::vec2(window->resolution.width, window->resolution.height);
+		thisScene->defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
+
+		//bind the uniform buffer and refill it
+		glBindBuffer(GL_UNIFORM_BUFFER, thisScene->defaultUniformBuffer->bufferHandle);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), thisScene->defaultUniformBuffer, GL_DYNAMIC_DRAW);
+
+		thisScene->defaultVertexBuffer->UpdateBuffer(thisScene->defaultUniformBuffer->resolution);
+	}
+
+	void InitImGUI()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeyMap[ImGuiKey_Tab] = TinyWindow::tab;
+		io.KeyMap[ImGuiKey_LeftArrow] = TinyWindow::arrowLeft;
+		io.KeyMap[ImGuiKey_RightArrow] = TinyWindow::arrowRight;
+		io.KeyMap[ImGuiKey_UpArrow] = TinyWindow::arrowUp;
+		io.KeyMap[ImGuiKey_PageUp] = TinyWindow::pageUp;
+		io.KeyMap[ImGuiKey_PageDown] = TinyWindow::pageDown;
+		io.KeyMap[ImGuiKey_Home] = TinyWindow::home;
+		io.KeyMap[ImGuiKey_End] = TinyWindow::end;
+		io.KeyMap[ImGuiKey_Delete] = TinyWindow::del;
+		io.KeyMap[ImGuiKey_Backspace] = TinyWindow::backspace;
+		io.KeyMap[ImGuiKey_Enter] = TinyWindow::enter;
+		io.KeyMap[ImGuiKey_Escape] = TinyWindow::escape;
+		io.KeyMap[ImGuiKey_A] = 'a';
+		io.KeyMap[ImGuiKey_C] = 'c';
+		io.KeyMap[ImGuiKey_V] = 'v';
+		io.KeyMap[ImGuiKey_X] = 'x';
+		io.KeyMap[ImGuiKey_Y] = 'y';
+		io.KeyMap[ImGuiKey_Z] = 'z';
+
+#if defined(TW_WINDOWS)
+		io.ImeWindowHandle = window->GetWindowHandle();
+#endif
+
+		imGUIShaderhandle = 0;
+		imGUIVertexHandle = 0;
+		imGUIFragmentHandle = 0;
+		imGUITexAttribLocation = 0;
+		imGUIProjMatrixAttribLocation = 0;
+		imGUIPositionAttribLocation = 0;
+		imGUIUVAttribLocation = 0;
+		imGUIColorAttribLocation = 0;
+		imGUIVBOHandle = 0;
+		imGUIVAOHandle = 0;
+		imGUIIBOHandle = 0;
+		imGUIFontTexture = 0;
+	}
+
+	void HandleImGUIRender()
+	{
+		ImDrawData* drawData = ImGui::GetDrawData();
+
 		ImGuiIO& io = ImGui::GetIO();
 
 		drawData->ScaleClipRects(io.DisplayFramebufferScale);
 
-		GLint lastProgram;	
-		GLint lastTexture;	
-		GLint lastArrayBuffer;	
-		GLint lastElementArrayBuffer;	
-		GLint lastVertexArray;	
-		GLint lastBlendSrc;	
-		GLint lastBlendDst;	
-		GLint lastBlendEquationRGB;	
-		GLint lastBlendEquationAlpha;	
-		GLint lastViewport[4];	
+		GLint lastProgram;
+		GLint lastTexture;
+		GLint lastArrayBuffer;
+		GLint lastElementArrayBuffer;
+		GLint lastVertexArray;
+		GLint lastBlendSrc;
+		GLint lastBlendDst;
+		GLint lastBlendEquationRGB;
+		GLint lastBlendEquationAlpha;
+		GLint lastViewport[4];
 
 		glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
@@ -128,10 +360,10 @@ public:
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
 		const float orthoProjection[4][4] =
 		{
-			{2.0f / (float)window->resolution.width, 0.0f, 0.0f, 0.0f},
-			{0.0f, 2.0f / -(float)window->resolution.height, 0.0f, 0.0f },
-			{0.0f, 0.0f, -1.0f, 0.0f},
-			{-1.0f, 1.0f, 0.0f, 1.0f }
+			{ 2.0f / (float)window->resolution.width, 0.0f, 0.0f, 0.0f },
+			{ 0.0f, 2.0f / -(float)window->resolution.height, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, -1.0f, 0.0f },
+			{ -1.0f, 1.0f, 0.0f, 1.0f }
 		};
 		//glm::mat4 testOrtho = glm::perspective(45.0f, )
 		glUseProgram(imGUIShaderhandle);
@@ -180,214 +412,7 @@ public:
 		lastEnableDepthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
 		lastEnableScissorTest ? glEnable(GL_SCISSOR_TEST) : glDisable(GL_SCISSOR_TEST);
 		glViewport(lastViewport[0], lastViewport[1], (GLsizei)lastViewport[2], (GLsizei)lastViewport[3]);
-	}
-	
-protected:
 
-	static windowManager*					manager;
-	static tWindow*							window;
-
-	tinyClock_t*							sceneClock;
-
-	static defaultUniformBuffer_t*			defaultUniformBuffer;
-	static vertexBuffer_t*					defaultVertexBuffer;
-
-	static camera*							sceneCamera;
-	const GLchar*							windowName;
-	GLuint									programGLID;
-	const GLchar*							tweakBarName;
-	const GLchar*							shaderConfigPath;
-
-	static GLuint							imGUIFontTexture;
-
-	static GLint							imGUIShaderhandle;
-	static GLint							imGUIVertexHandle;
-	static GLint							imGUIFragmentHandle;
-	static GLint							imGUITexAttribLocation;
-	static GLint							imGUIProjMatrixAttribLocation;
-	static GLint							imGUIPositionAttribLocation;
-	static GLint							imGUIUVAttribLocation;
-	static GLint							imGUIColorAttribLocation;
-	static GLuint							imGUIVBOHandle;
-	static GLuint							imGUIVAOHandle;
-	static GLuint							imGUIIBOHandle;
-
-	bool									isGUIActive;
-
-	virtual void Update()
-	{
-		manager->PollForEvents();
-		sceneCamera->Update();
-		sceneClock->UpdateClockAdaptive();
-		defaultUniformBuffer->deltaTime = sceneClock->GetDeltaTime();
-		defaultUniformBuffer->totalTime = sceneClock->GetTotalTime();
-		
-		defaultUniformBuffer->framesPerSec = 1.0 / sceneClock->GetDeltaTime();
-		UpdateBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(*defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-	}
-
-	virtual void Draw()
-	{
-		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glUseProgram(this->programGLID);
-
-		glDrawArrays(GL_QUADS, 0, 4);
-		
-		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		DrawGUI(window->name);
-		
-		window->SwapDrawBuffers();
-		glClear(GL_COLOR_BUFFER_BIT);
-	}
-
-	virtual void BuildGUI(ImGuiIO io)
-	{
-		ImGui::Text("FPS %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, 1.0f / sceneClock->GetDeltaTime());
-		ImGui::Text("Total running time %.5f", sceneClock->GetTotalTime());
-		ImGui::Text("Mouse coordinates: \t X: %.0f \t Y: %.0f", io.MousePos.x, io.MousePos.y);
-		ImGui::Text("Window size: \t Width: %i \t Height: %i", window->resolution.width, window->resolution.height);
-	}
-
-	void DrawGUI(const char* guiName, ImVec2 beginSize = ImVec2(0, 0))
-	{
-		ImGUINewFrame();
-		ImGuiIO io = ImGui::GetIO();
-		ImGui::Begin(guiName, &isGUIActive, beginSize);
-		BuildGUI(io);
-		ImGui::End();
-		ImGui::Render();
-	}
-
-	virtual void SetupVertexBuffer()
-	{
-		defaultVertexBuffer = new vertexBuffer_t(defaultUniformBuffer->resolution);
-
-		GLfloat quadVerts[16] =
-		{
-			0.0f, 0.0f, 1.0f, 1.0f,
-			sceneCamera->resolution.x, 0.0f, 1.0f, 1.0f,
-			sceneCamera->resolution.x, sceneCamera->resolution.y, 1.0f, 1.0f,
-			0.0f, sceneCamera->resolution.y, 1.0f, 1.0f
-		};
-	}
-
-	static void SetupBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferSize, GLuint bufferUniformHandle, GLenum target, GLenum usage)
-	{
-		glGenBuffers(1, &bufferHandle);
-		UpdateBuffer(buffer, bufferHandle, bufferSize, target, usage);
-		glBindBufferBase(target, bufferUniformHandle, bufferHandle);
-	}
-	//fuh. ill do it AFTER i've fixed GOL
-	static void UpdateBuffer(void* buffer, GLuint bufferHandle, GLuint bufferSize, GLenum target, GLenum usage)
-	{
-		glBindBuffer(target, bufferHandle);
-		glBufferData(target, bufferSize, buffer, usage);
-	}
-
-	virtual void InitializeBuffers()
-	{
-		defaultUniformBuffer = new defaultUniformBuffer_t(this->sceneCamera);
-		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		//glEnable(GL_DEPTH_TEST);
-		defaultUniformBuffer->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
-
-		SetupVertexBuffer();
-		SetupBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(*defaultUniformBuffer), 0, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-	}
-
-	void SetupDefaultUniforms()
-	{
-		defaultUniformBuffer->uniformHandle = glGetUniformBlockIndex(this->programGLID, "defaultSettings");
-		glUniformBlockBinding(this->programGLID, defaultUniformBuffer->uniformHandle, 0);
-	}
-
-	static void HandleMouseClick(mouseButton_t button, buttonState_t state)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-
-		switch (button)
-		{
-			case mouseButton_t::left:
-			{
-				state == buttonState_t::down ? io.MouseDown[0] = true : io.MouseDown[0] = false;
-				break;
-			}
-
-			case mouseButton_t::right:
-			{
-				state == buttonState_t::down ? io.MouseDown[1] = true : io.MouseDown[1] = false;
-				break;
-			}
-
-			case mouseButton_t::middle:
-			{
-				state == buttonState_t::down ? io.MouseDown[2] = true : io.MouseDown[2] = false;
-				break;
-			}
-		}
-	}
-
-	static void HandleWindowResize(TinyWindow::vec2_t<unsigned int> dimensions)
-	{
-		glViewport(0, 0, dimensions.width, dimensions.height);
-		defaultUniformBuffer->resolution = glm::vec2(dimensions.width, dimensions.height);
-		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
-
-		UpdateBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);
-	}
-
-	static void HandleMouseMotion(vec2_t<int> windowPosition, vec2_t<int> screenPosition)
-	{
-		defaultUniformBuffer->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
-		UpdateBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = ImVec2((float)windowPosition.x, (float)windowPosition.y); //why screen co-ordinates?
-	}
-
-	static void HandleMaximize()
-	{
-		glViewport(0, 0, window->resolution.width, window->resolution.height);
-
-		defaultUniformBuffer->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-
-		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
-
-		//bind the uniform buffer and refill it
-		glBindBuffer(GL_UNIFORM_BUFFER, defaultUniformBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), defaultUniformBuffer, GL_DYNAMIC_DRAW);
-
-		defaultVertexBuffer->UpdateBuffer(defaultUniformBuffer->resolution);		
-	}
-
-	void InitImGUI()
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.KeyMap[ImGuiKey_Tab] = TinyWindow::tab;
-		io.KeyMap[ImGuiKey_LeftArrow] = TinyWindow::arrowLeft;
-		io.KeyMap[ImGuiKey_RightArrow] = TinyWindow::arrowRight;
-		io.KeyMap[ImGuiKey_UpArrow] = TinyWindow::arrowUp;
-		io.KeyMap[ImGuiKey_PageUp] = TinyWindow::pageUp;
-		io.KeyMap[ImGuiKey_PageDown] = TinyWindow::pageDown;
-		io.KeyMap[ImGuiKey_Home] = TinyWindow::home;
-		io.KeyMap[ImGuiKey_End] = TinyWindow::end;
-		io.KeyMap[ImGuiKey_Delete] = TinyWindow::del;
-		io.KeyMap[ImGuiKey_Backspace] = TinyWindow::backspace;
-		io.KeyMap[ImGuiKey_Enter] = TinyWindow::enter;
-		io.KeyMap[ImGuiKey_Escape] = TinyWindow::escape;
-		io.KeyMap[ImGuiKey_A] = 'a';
-		io.KeyMap[ImGuiKey_C] = 'c';
-		io.KeyMap[ImGuiKey_V] = 'v';
-		io.KeyMap[ImGuiKey_X] = 'x';
-		io.KeyMap[ImGuiKey_Y] = 'y';
-		io.KeyMap[ImGuiKey_Z] = 'z';
-
-#if defined(TW_WINDOWS)
-		io.ImeWindowHandle = window->GetWindowHandle();
-#endif
-
-		io.RenderDrawListsFn = RenderImGUIDrawLists;
 	}
 
 	void ImGUICreateFontsTexture()
@@ -501,7 +526,7 @@ protected:
 		glBindVertexArray(LastVertexArray);
 	}
 
-	static void imGUIInvalidateDeviceObject()
+	void imGUIInvalidateDeviceObject()
 	{
 		if (imGUIVAOHandle)
 		{
@@ -541,23 +566,6 @@ protected:
 	}
 };
 
-defaultUniformBuffer_t*		scene::defaultUniformBuffer = nullptr;
-vertexBuffer_t*				scene::defaultVertexBuffer = nullptr;
-windowManager*				scene::manager = nullptr;
-tWindow*					scene::window = nullptr;
 
-GLint						scene::imGUIShaderhandle = 0;
-GLint						scene::imGUIVertexHandle = 0;
-GLint						scene::imGUIFragmentHandle = 0;
-GLint						scene::imGUITexAttribLocation = 0;
-GLint						scene::imGUIProjMatrixAttribLocation = 0;
-GLint						scene::imGUIPositionAttribLocation = 0;
-GLint						scene::imGUIUVAttribLocation = 0;
-GLint						scene::imGUIColorAttribLocation = 0;
-GLuint						scene::imGUIVBOHandle = 0;
-GLuint						scene::imGUIVAOHandle = 0;
-GLuint						scene::imGUIIBOHandle = 0;
-GLuint						scene::imGUIFontTexture = 0;
-camera*						scene::sceneCamera = nullptr;
 
 #endif

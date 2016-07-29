@@ -9,7 +9,6 @@ int main()
 
 	exampleScene->Initialize();
 	exampleScene->Run();
-	exampleScene->ShutDown();
 
 	return 0;
 }

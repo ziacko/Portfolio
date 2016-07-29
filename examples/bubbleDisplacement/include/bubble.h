@@ -12,7 +12,6 @@ struct bubbleSettings_t
 
 	bubbleSettings_t(GLfloat attenuation = 0.25f, GLfloat offset = 0.1f, GLfloat gridDimensions = 100)
 	{
-		printf("poop");
 		this->attenuation = attenuation;
 		this->offset = offset;
 		this->gridDimensions = gridDimensions;

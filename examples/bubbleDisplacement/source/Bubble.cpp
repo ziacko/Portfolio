@@ -6,8 +6,5 @@ int main()
 	bubble->Initialize();
 	bubble->Run();
 
-	bubble->ShutDown();
-
-
 	return 0;
 }

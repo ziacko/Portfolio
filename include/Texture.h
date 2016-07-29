@@ -106,6 +106,8 @@ public:
 		//data = SOIL_load_image(path, &width, &height, &channels, SOIL_LOAD_RGBA);
 
 		handle = SOIL_load_OGL_texture(path, SOIL_LOAD_RGBA, handle, SOIL_FLAG_INVERT_Y);
+		//gli::texture test(gli::load(path));
+		//gli::load
 
 	/*	glGenTextures(1, &handle);
 		glBindTexture(target, handle);
@@ -351,6 +353,8 @@ public:
 	}
 
 protected:
+
+	//gli::texture	data;
 
 	GLuint			handle;
 	const char*		path;

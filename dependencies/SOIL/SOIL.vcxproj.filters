@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\SOIL.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\image_DXT.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\image_helper.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\SOIL.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\stb_image_aug.c">
@@ -15,22 +15,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\SOIL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\image_DXT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\image_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\SOIL.h">
+    <ClInclude Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\stb_image_aug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\stbi_DDS_aug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\stbi_DDS_aug_c.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Users\ziyad\Documents\Portfolio\dependencies\SOIL\src\stb_image_aug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
