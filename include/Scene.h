@@ -1,6 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 #define GLM_SWIZZLE
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <iostream>
 #include <stdlib.h>
 #include <TinyExtender.h>
@@ -12,14 +14,16 @@
 #include <glm/matrix.hpp>
 #include <glm/vec4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-//#include <gli/gli.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/constants.hpp>
 #include <Camera.h>
-#include <DefaultUniformBuffer.h>
-#include <SOIL.h>
+#include <DefaultUniformBuffer.h> 
+//#include <FreeImage.h>
 #include "Utilities.h"
 #include "VertexBuffer.h"
 #include <imgui.h>
-
+#include <stb_image.h>
+#include <stb_image_write.h>
 using namespace TinyWindow;
 
 class scene
@@ -35,11 +39,13 @@ public:
 		this->shaderConfigPath = shaderConfigPath;
 		this->tweakBarName = windowName;
 		defaultVertexBuffer = nullptr;
-		defaultUniformBuffer = nullptr;
+		defaultUniform = nullptr;
 		imGUIFontTexture = 0;
 
 		manager = new windowManager();
-		window = manager->AddWindow(windowName, this);
+		window = manager->AddWindow(windowName, this, 
+			TinyWindow::vec2_t<unsigned int>(bufferCamera->resolution.x, bufferCamera->resolution.y),
+			4, 5, TinyWindow::profile_t::core);
 		sceneClock = new tinyClock_t();
 	}
 
@@ -57,6 +63,12 @@ public:
 	virtual void Initialize()
 	{
 		TinyExtender::InitializeExtensions();
+
+		glDebugMessageCallback(&OpenGLDebugCallback, NULL);
+
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
+			GL_DONT_CARE, 0, NULL, GL_TRUE);
+		glEnable(GL_DEPTH_TEST);
 		InitImGUI();
 		tinyShaders::LoadShaderProgramsFromConfigFile(this->shaderConfigPath);
 		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
@@ -74,7 +86,9 @@ public:
 		manager->resizeEvent = &scene::HandleWindowResize;
 		manager->mouseButtonEvent = &scene::HandleMouseClick;
 		manager->mouseMoveEvent = &scene::HandleMouseMotion;
+		manager->mouseWheelEvent = &scene::HandleMouseWheel;
 		manager->maximizedEvent = &scene::HandleMaximize;
+		manager->keyEvent = &scene::HandleKey;
 		manager->destroyedEvent = &scene::ShutDown;
 	}
 
@@ -98,7 +112,7 @@ protected:
 
 	tinyClock_t*				sceneClock;
 
-	defaultUniformBuffer_t*		defaultUniformBuffer;
+	defaultUniformBuffer*		defaultUniform;
 	vertexBuffer_t*				defaultVertexBuffer;
 
 	camera*						sceneCamera;
@@ -127,11 +141,11 @@ protected:
 		manager->PollForEvents();
 		sceneCamera->Update();
 		sceneClock->UpdateClockAdaptive();
-		defaultUniformBuffer->deltaTime = sceneClock->GetDeltaTime();
-		defaultUniformBuffer->totalTime = sceneClock->GetTotalTime();
+		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
 		
-		defaultUniformBuffer->framesPerSec = 1.0 / sceneClock->GetDeltaTime();
-		UpdateBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(*defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 	}
 
 	virtual void Draw()
@@ -139,7 +153,7 @@ protected:
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(this->programGLID);
 
-		glDrawArrays(GL_QUADS, 0, 4);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
 		DrawGUI(window->name);
@@ -154,9 +168,15 @@ protected:
 		ImGui::Text("Total running time %.5f", sceneClock->GetTotalTime());
 		ImGui::Text("Mouse coordinates: \t X: %.0f \t Y: %.0f", io.MousePos.x, io.MousePos.y);
 		ImGui::Text("Window size: \t Width: %i \t Height: %i", window->resolution.width, window->resolution.height);
+		
+		static int interval = 0;
+		if (ImGui::SliderInt("Swap Interval", &interval, 0, 3))
+		{
+			manager->SetWindowSwapInterval(window, interval);
+		}
 	}
 
-	void DrawGUI(const char* guiName, ImVec2 beginSize = ImVec2(0, 0))
+	virtual void DrawGUI(const char* guiName, ImVec2 beginSize = ImVec2(0, 0))
 	{
 		ImGUINewFrame();
 		ImGuiIO io = ImGui::GetIO();
@@ -169,7 +189,7 @@ protected:
 
 	virtual void SetupVertexBuffer()
 	{
-		defaultVertexBuffer = new vertexBuffer_t(defaultUniformBuffer->resolution);
+		defaultVertexBuffer = new vertexBuffer_t(defaultUniform->resolution);
 
 		GLfloat quadVerts[16] =
 		{
@@ -186,6 +206,7 @@ protected:
 		UpdateBuffer(buffer, bufferHandle, bufferSize, target, usage);
 		glBindBufferBase(target, bufferUniformHandle, bufferHandle);
 	}
+
 	//fuh. ill do it AFTER i've fixed GOL
 	static void UpdateBuffer(void* buffer, GLuint bufferHandle, GLuint bufferSize, GLenum target, GLenum usage)
 	{
@@ -195,20 +216,20 @@ protected:
 
 	virtual void InitializeBuffers()
 	{
-		defaultUniformBuffer = new defaultUniformBuffer_t(this->sceneCamera);
+		defaultUniform = new defaultUniformBuffer(this->sceneCamera);
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		//glEnable(GL_DEPTH_TEST);
-		defaultUniformBuffer->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
+		defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
+		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
 
 		SetupVertexBuffer();
-		SetupBuffer(defaultUniformBuffer, defaultUniformBuffer->bufferHandle, sizeof(*defaultUniformBuffer), 0, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), 0, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		//void* blarg = 
 	}
 
 	void SetupDefaultUniforms()
 	{
-		defaultUniformBuffer->uniformHandle = glGetUniformBlockIndex(this->programGLID, "defaultSettings");
-		glUniformBlockBinding(this->programGLID, defaultUniformBuffer->uniformHandle, 0);
+		defaultUniform->uniformHandle = glGetUniformBlockIndex(this->programGLID, "defaultSettings");
+		glUniformBlockBinding(this->programGLID, defaultUniform->uniformHandle, 0);
 	}
 
 	static void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state)
@@ -242,19 +263,19 @@ protected:
 		scene* thisScene = (scene*)window->userData;
 
 		glViewport(0, 0, dimensions.width, dimensions.height);
-		thisScene->defaultUniformBuffer->resolution = glm::vec2(dimensions.width, dimensions.height);
-		thisScene->defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
+		thisScene->defaultUniform->resolution = glm::vec2(dimensions.width, dimensions.height);
+		thisScene->defaultUniform->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
 
-		UpdateBuffer(thisScene->defaultUniformBuffer, thisScene->defaultUniformBuffer->bufferHandle, sizeof(defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		thisScene->defaultVertexBuffer->UpdateBuffer(thisScene->defaultUniformBuffer->resolution);
+		UpdateBuffer(thisScene->defaultUniform, thisScene->defaultUniform->bufferHandle, sizeof(*defaultUniform), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		thisScene->defaultVertexBuffer->UpdateBuffer(thisScene->defaultUniform->resolution);
 	}
 
 	static void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition)
 	{
 		scene* thisScene = (scene*)window->userData;
 
-		thisScene->defaultUniformBuffer->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
-		UpdateBuffer(thisScene->defaultUniformBuffer, thisScene->defaultUniformBuffer->bufferHandle, sizeof(defaultUniformBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		thisScene->defaultUniform->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
+		UpdateBuffer(thisScene->defaultUniform, thisScene->defaultUniform->bufferHandle, sizeof(*defaultUniform), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		ImGuiIO& io = ImGui::GetIO();
 		io.MousePos = ImVec2((float)windowPosition.x, (float)windowPosition.y); //why screen co-ordinates?
 	}
@@ -264,19 +285,54 @@ protected:
 		scene* thisScene = (scene*)window->userData;
 
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		thisScene->defaultUniformBuffer->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		thisScene->defaultUniformBuffer->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
+		thisScene->defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
+		thisScene->defaultUniform->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
 
 		//bind the uniform buffer and refill it
-		glBindBuffer(GL_UNIFORM_BUFFER, thisScene->defaultUniformBuffer->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(defaultUniformBuffer_t), thisScene->defaultUniformBuffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, thisScene->defaultUniform->bufferHandle);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(*defaultUniform), thisScene->defaultUniform, GL_DYNAMIC_DRAW);
 
-		thisScene->defaultVertexBuffer->UpdateBuffer(thisScene->defaultUniformBuffer->resolution);
+		thisScene->defaultVertexBuffer->UpdateBuffer(thisScene->defaultUniform->resolution);
+	}
+
+	static void HandleMouseWheel(tWindow* window, mouseScroll_t scroll)
+	{
+		scene* thisScene = (scene*)window->userData;
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseWheel += (float)((scroll == mouseScroll_t::down) ? -1 : 1);
+	}
+
+	static void HandleKey(tWindow* window, int key, keyState_t keyState)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		if (key < 255 && keyState == keyState_t::down)
+		{
+			io.AddInputCharacter(key);
+		}
+
+		else
+		{
+			switch (keyState)
+			{
+			case keyState_t::up:
+			{
+				io.KeysDown[key] = false;
+				break;
+			}
+
+			case keyState_t::down:
+			{
+				io.KeysDown[key] = true;
+				break;
+			}
+			}
+		}
 	}
 
 	void InitImGUI()
 	{
 		ImGuiIO& io = ImGui::GetIO();
+
 		io.KeyMap[ImGuiKey_Tab] = TinyWindow::tab;
 		io.KeyMap[ImGuiKey_LeftArrow] = TinyWindow::arrowLeft;
 		io.KeyMap[ImGuiKey_RightArrow] = TinyWindow::arrowRight;
@@ -412,7 +468,6 @@ protected:
 		lastEnableDepthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
 		lastEnableScissorTest ? glEnable(GL_SCISSOR_TEST) : glDisable(GL_SCISSOR_TEST);
 		glViewport(lastViewport[0], lastViewport[1], (GLsizei)lastViewport[2], (GLsizei)lastViewport[3]);
-
 	}
 
 	void ImGUICreateFontsTexture()
@@ -564,8 +619,143 @@ protected:
 			imGUIFontTexture = 0;
 		}
 	}
+
+	static void APIENTRY OpenGLDebugCallback(GLenum source,
+		GLenum type,
+		GLuint id,
+		GLenum severity,
+		GLsizei length,
+		const GLchar* message,
+		const void* userParam)
+	{
+		printf("---------------------opengl-callback-start------------\n");
+		printf("type: ");
+		switch (type)
+		{
+		case GL_DEBUG_TYPE_ERROR:
+		{
+			printf("error\n");
+			break;
+		}
+
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		{
+			printf("deprecated behavior\n");
+			break;
+		}
+
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		{
+			printf("undefined behavior\n");
+			break;
+		}
+
+		case GL_DEBUG_TYPE_PERFORMANCE:
+		{
+			printf("performance\n");
+			break;
+		}
+
+		case GL_DEBUG_TYPE_PORTABILITY:
+		{
+			printf("portability\n");
+			break;
+		}
+		
+		case GL_DEBUG_TYPE_MARKER:
+		{
+			printf("marker\n");
+			break;
+		}
+
+		case GL_DEBUG_TYPE_PUSH_GROUP:
+		{
+			printf("push group\n");
+			break;
+		}
+
+		case GL_DEBUG_TYPE_POP_GROUP:
+		{
+			printf("pop group\n");
+			break;
+		}
+		
+		case GL_DEBUG_TYPE_OTHER:
+		{
+			printf("other\n");
+			break;
+		}
+		}
+
+		printf("ID: %i\n", id);
+
+		printf("severity: ");
+		switch (severity)
+		{
+
+		case GL_DEBUG_SEVERITY_LOW:
+		{
+			printf("low \n");
+			break;
+		}
+
+		case GL_DEBUG_SEVERITY_MEDIUM:
+		{
+			printf("medium \n");
+			break;
+		}
+
+		case GL_DEBUG_SEVERITY_HIGH:
+		{
+			printf("high \n");
+			break;
+		}
+		}
+
+		printf("Source: ");
+		switch (source)
+		{
+		case GL_DEBUG_SOURCE_API:
+		{
+			printf("API\n");
+			break;
+		}
+
+		case GL_DEBUG_SOURCE_SHADER_COMPILER:
+		{
+			printf("shader compiler\n");
+			break;
+		}
+
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+		{
+			printf("window system\n");
+			break;
+		}
+
+		case GL_DEBUG_SOURCE_THIRD_PARTY:
+		{
+			printf("third party\n");
+			break;
+		}
+
+		case GL_DEBUG_SOURCE_APPLICATION:
+		{
+			printf("application\n");
+			break;
+		}
+
+		case GL_DEBUG_SOURCE_OTHER:
+		{
+			printf("other\n");
+			break;
+		}
+		}
+
+		printf("Message: \n");
+		printf("%s \n", message);
+
+		printf("---------------------opengl-callback-end--------------\n");
+	}
 };
-
-
-
 #endif

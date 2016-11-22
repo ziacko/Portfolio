@@ -13,13 +13,14 @@ public:
 		DEAD
 	};
 
-	struct golSettings_t
+	class golSettings_t// : public uniformBuffer_t
 	{
-		float							dimensions; // change to vec2 for more flexibility
-		glm::vec4						emptyColor;
+	public:
+		
 		glm::vec4						aliveColor;
 		glm::vec4						deadColor;
-		
+		glm::vec4						emptyColor;
+		float							dimensions; // change to vec2 for more flexibility
 
 		GLuint							bufferHandle;
 		GLuint							uniformHandle;
@@ -28,8 +29,9 @@ public:
 			unsigned int dimensions = 100, glm::vec4 aliveColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), //green
 			glm::vec4 deadColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), //red
 			glm::vec4 emptyColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)) //blue
+			//: uniformBuffer_t()
 		{
-			this->dimensions = dimensions;
+			this->dimensions = (float)dimensions;
 
 			this->aliveColor = aliveColor;
 			this->deadColor = deadColor;
@@ -92,7 +94,7 @@ protected:
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(golSettingsBuffer), GL_UNIFORM_BUFFER, GL_STATIC_DRAW);
+		UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		UpdateBuffer(cellBuffer->cells.data(), cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), GL_SHADER_STORAGE_BUFFER, GL_DYNAMIC_DRAW);
 /*
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, cellBuffer->bufferHandle);
@@ -111,7 +113,7 @@ protected:
 
 	void Draw() override
 	{
-		UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(golSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		//UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(golSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		glUseProgram(this->programGLID);
 		glDrawArraysInstanced(GL_QUADS, 0, 4, (GLsizei)(golSettingsBuffer->dimensions * golSettingsBuffer->dimensions));
 		DrawGUI(window->name);
@@ -161,7 +163,7 @@ protected:
 			unsigned int neighborCount = 0;
 			unsigned int deadNeighborCount = 0;
 			//for convenience
-			unsigned int dimensionMinOne = golSettingsBuffer->dimensions - 1;
+			unsigned int dimensionMinOne = (unsigned int)golSettingsBuffer->dimensions - 1;
 
 			if (cellIndex < golSettingsBuffer->dimensions)
 			{
@@ -297,9 +299,7 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(golSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
 		SetupBuffer(cellBuffer, cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), 0, GL_SHADER_STORAGE_BUFFER, GL_DYNAMIC_DRAW);
 	}
-
-
 };

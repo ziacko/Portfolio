@@ -47,8 +47,23 @@ public:
 		const char* windowName = "Ziyad Barakat's portfolio (sharpen)",
 		camera* sharpencamera = new camera(),
 		const char* shaderConfigPath = "../../resources/shaders/Sharpen.txt")
-		: texturedScene(defaultTexture, windowName, sharpencamera, shaderConfigPath)
+		//: texturedScene(defaultTexture, windowName, sharpencamera, shaderConfigPath)
 	{
+		this->windowName = windowName;
+		this->sceneCamera = sharpencamera;
+		this->shaderConfigPath = shaderConfigPath;
+		this->tweakBarName = windowName;
+		defaultVertexBuffer = nullptr;
+		defaultUniform = nullptr;
+		imGUIFontTexture = 0;
+
+		manager = new windowManager();
+		window = manager->AddWindow(windowName, this,
+			TinyWindow::vec2_t<unsigned int>(sharpencamera->resolution.x, sharpencamera->resolution.y),
+			4, 5, TinyWindow::profile_t::compatibility);
+		sceneClock = new tinyClock_t();
+
+		this->defaultTexture = defaultTexture;
 		this->sharpenSettings = sharpenSettings;
 	}
 

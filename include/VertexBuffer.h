@@ -48,9 +48,7 @@ public:
 
 		glBindBuffer(GL_ARRAY_BUFFER, bufferHandle);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, newVerts, GL_STATIC_DRAW);
-
 	}
-
 };
 
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CaptureSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Options>
+    <AllowVSync>true</AllowVSync>
+    <AllowFullscreen>true</AllowFullscreen>
+    <APIValidation>true</APIValidation>
+    <CaptureCallstacks>true</CaptureCallstacks>
+    <CaptureCallstacksOnlyDraws>false</CaptureCallstacksOnlyDraws>
+    <DelayForDebugger>0</DelayForDebugger>
+    <VerifyMapWrites>false</VerifyMapWrites>
+    <HookIntoChildren>false</HookIntoChildren>
+    <RefAllResources>true</RefAllResources>
+    <SaveAllInitials>true</SaveAllInitials>
+    <CaptureAllCmdLists>true</CaptureAllCmdLists>
+    <DebugOutputMute>true</DebugOutputMute>
+  </Options>
+  <Inject>false</Inject>
+  <AutoStart>false</AutoStart>
+  <Executable>C:\Users\ziyad\Documents\Portfolio\examples\waves\Debug\waves.exe</Executable>
+  <WorkingDir>C:\Users\ziyad\Documents\Portfolio\examples\waves</WorkingDir>
+  <CmdLine />
+  <Environment />
+</CaptureSettings>

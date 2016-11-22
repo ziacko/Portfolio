@@ -14,6 +14,7 @@ public:
 		scene(windowName, textureCamera, shaderConfigPath)
 	{
 		this->defaultTexture = defaultTexture;
+		//FreeImage_Initialise();
 
 		//find all textures in dir
 		//GetFilesInDirectory(textureDirs, "../../resources/textures");

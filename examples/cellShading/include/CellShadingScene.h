@@ -38,7 +38,7 @@ public:
 		this->cellShadeSettingsBuffer = cellShade;
 	}
 
-	~cellShadingScene(void){};
+	~cellShadingScene(){};
 
 protected:
 

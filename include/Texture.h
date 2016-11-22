@@ -6,7 +6,7 @@ class texture
 public:
 
 	texture(const char* path = "../../resources/textures/earth_diffuse.tga", const char* uniformName = "defaultTexture",
-		GLenum format = GL_RGBA, GLint internalFormat = GL_RGBA, GLenum target = GL_TEXTURE_2D,
+		GLint internalFormat = GL_RGBA, GLenum target = GL_TEXTURE_2D,
 		GLint currentMipmapLevel = 0, GLint mipmapLevels = 0, GLint border = 0, GLenum dataType = GL_UNSIGNED_BYTE,
 		GLenum internalDataType = GL_RGBA32F, GLint xOffset = 0, GLint yOffset = 0,
 		GLenum minFilterSetting = GL_LINEAR, GLenum magFilterSetting = GL_LINEAR,
@@ -16,7 +16,8 @@ public:
 		this->uniformName = uniformName;
 		this->width = 0;
 		this->height = 0;
-		this->format = format;
+		this->channels = 0;
+		this->format = 0;
 		this->internalFormat = internalFormat;
 		this->target = target;
 		this->currentMipmapLevel = currentMipmapLevel;
@@ -59,6 +60,36 @@ public:
 
 	void LoadTexture()
 	{
+		stbi_set_flip_vertically_on_load(true);
+		char* data = (char*)stbi_load(path, &this->width, &this->height, &channels, 0);
+
+		switch (channels)
+		{
+		case 1:
+		{
+			format = GL_R;
+			break;
+		}
+
+		case 2:
+		{
+			format = GL_RG;
+			break;
+		}
+
+		case 3:
+		{
+			format = GL_RGB;
+			break;
+		}
+
+		case 4:
+		{
+			format = GL_RGBA;
+			break;
+		}
+		}
+
 		/*FIBITMAP* bitmap = nullptr;
 		//printf(" error: could not load bitmap: %s \n", path);
 		FREE_IMAGE_FORMAT FIformat = FreeImage_GetFileType(path, 0);
@@ -97,19 +128,16 @@ public:
 			colorType = FreeImage_GetColorType(bitmap);
 		}
 
-		data = FreeImage_GetBits(bitmap);
+		data = (char*)FreeImage_GetBits(bitmap);
 		FREE_IMAGE_TYPE imageType = FreeImage_GetImageType(bitmap);*/
-		int width = 0;
-		int height = 0;
-		int channels = 0;
 
 		//data = SOIL_load_image(path, &width, &height, &channels, SOIL_LOAD_RGBA);
-
-		handle = SOIL_load_OGL_texture(path, SOIL_LOAD_RGBA, handle, SOIL_FLAG_INVERT_Y);
+		//glGetStringi(GL_EXTENSIONS, 1);
+		//handle = SOIL_load_OGL_texture(path, SOIL_LOAD_RGBA, handle, SOIL_FLAG_INVERT_Y);
 		//gli::texture test(gli::load(path));
 		//gli::load
 
-	/*	glGenTextures(1, &handle);
+		glGenTextures(1, &handle);
 		glBindTexture(target, handle);
 
 		switch (target)
@@ -186,7 +214,7 @@ public:
 		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilterSetting);
 		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilterSetting);
 
-		UnbindTexture();*/
+		UnbindTexture();
 	}
 
 	void SetMinFilter(GLenum minFilterSetting)
@@ -361,8 +389,8 @@ protected:
 	GLuint			uniformHandle;
 	const char*		uniformName;
 
-	GLuint			width;
-	GLuint			height;
+	GLint			width;
+	GLint			height;
 	GLenum			format;
 	GLint			internalFormat;
 	GLenum			target;
@@ -373,6 +401,8 @@ protected:
 	GLenum			internalDataType;
 	GLint			xOffset;
 	GLint			yOffset;
+
+	GLint			channels;
 
 	GLenum			minFilterSetting;
 	GLenum			magFilterSetting;

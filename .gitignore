@@ -8,3 +8,9 @@
 CMakeFiles/
 vcxproj.filters
 *.filters
+*.db
+*.editorconfig
+*.cmake
+*.in
+*.csv
+*.rdc

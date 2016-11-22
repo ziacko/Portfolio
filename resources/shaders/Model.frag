@@ -15,11 +15,12 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4 		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSec;
 };
 
 void main()
 {
-	outColor = vec4(inBlock.UV.x, 0, 0, 1);
+	outColor = vec4(1, 0, 0, 1);
 }

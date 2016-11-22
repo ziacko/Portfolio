@@ -39,7 +39,7 @@ set (TINYWINDOW_EXAMPLE_DIR "./dependencies/tinywindow/Example")
 set (TINYEXTENDER_EXAMPLE_DIR "./dependencies/tinyextender/Example")
 set (TINYSHADERS_EXAMPLE_DIR "./dependencies/tinyshaders/Example")
 set (TINYCLOCK_EXAMPLE_DIR "./dependencies/tinyclock/Example")
-set (SOIL_DIR "./dependencies/SOIL")
+#set (SOIL_DIR "./dependencies/SOIL")
 
 #build dependencies
 add_subdirectory("${TINYWINDOW_EXAMPLE_DIR}")
@@ -47,7 +47,7 @@ add_subdirectory("${TINYWINDOW_EXAMPLE_DIR}")
 add_subdirectory("${TINYEXTENDER_EXAMPLE_DIR}")
 add_subdirectory("${TINYSHADERS_EXAMPLE_DIR}")
 add_subdirectory("${TINYCLOCK_EXAMPLE_DIR}")
-add_subdirectory("${SOIL_DIR}")
+#add_subdirectory("${SOIL_DIR}")
 
 #build examples
 add_subdirectory("./examples/scene/")
@@ -69,4 +69,7 @@ add_subdirectory("./examples/sepia") #FIX!
 add_subdirectory("./examples/sharpen")
 add_subdirectory("./examples/textureSettings")
 add_subdirectory("./examples/gameOfLife")
+add_subdirectory("./examples/3DScene")
+add_subdirectory("./examples/waves")
 #add_subdirectory("./examples/model")
+add_subdirectory("./examples/lazerTest")

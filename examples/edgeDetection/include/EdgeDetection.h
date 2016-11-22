@@ -115,12 +115,12 @@ public:
 
 	void Initialize() override
 	{
-		scene::Initialize();
+		texturedScene::Initialize();
 		laplacianProgramGLID = tinyShaders::GetShaderProgramByIndex(1)->handle;
 		prewittProgramGLID = tinyShaders::GetShaderProgramByIndex(2)->handle;
 		freiChenProgramGLID = tinyShaders::GetShaderProgramByIndex(3)->handle;
 
-		InitializeBuffers();
+		//InitializeBuffers();
 	}
 
 	void BuildGUI(ImGuiIO io) override
@@ -278,6 +278,7 @@ public:
 		default:
 			break;
 		}
+		defaultTexture->GetUniformLocation(this->programGLID);
 
 		glDrawArrays(GL_QUADS, 0, 4);
 
