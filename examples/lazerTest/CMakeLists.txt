@@ -37,7 +37,6 @@ set (TINYSHADERS_INCLUDE_DIR "../../dependencies/tinyshaders/Include")
 set (TINYCLOCK_INCLUDE_DIR "../../dependencies/tinyclock/Include")
 set (GLM_INCLUDE_DIR "../../dependencies/glm/")
 set (IMGUI_INCLUDE_DIR "../../dependencies/imgui/")
-#set (SOIL_INCLUDE_DIR "../../dependencies/SOIL/src")
 set (STB_INCLUDE_DIR "../../dependencies/stb")
 set (SCENE_INCLUDE_DIR "./include")
 
@@ -61,7 +60,6 @@ include_directories("${TINYSHADERS_INCLUDE_DIR}")
 include_directories("${TINYCLOCK_INCLUDE_DIR}")
 include_directories("${IMGUI_INCLUDE_DIR}")
 include_directories("${GLM_INCLUDE_DIR}")
-#include_directories("${SOIL_INCLUDE_DIR}")
 include_directories("${STB_INCLUDE_DIR}")
 include_directories("${SCENE_INCLUDE_DIR}")
 
@@ -71,7 +69,5 @@ link_libraries (${LIBS})
 
 set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp")
 
-#set (SOIL_SOURCES "${SOIL_INCLUDE_DIR}/SOIL.c" "${SOIL_INCLUDE_DIR}/image_DXT.c" "${SOIL_INCLUDE_DIR}/image_helper.c" "${SOIL_INCLUDE_DIR}/stb_image_aug.c")
-
 add_executable(lazerTest ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
-set_property(TARGET lazerTest PROPERTY OUTPUT_NAME "Scene")
+set_property(TARGET lazerTest PROPERTY OUTPUT_NAME "laser Editor")

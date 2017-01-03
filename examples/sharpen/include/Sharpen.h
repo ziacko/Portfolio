@@ -56,7 +56,6 @@ public:
 		defaultVertexBuffer = nullptr;
 		defaultUniform = nullptr;
 		imGUIFontTexture = 0;
-
 		manager = new windowManager();
 		window = manager->AddWindow(windowName, this,
 			TinyWindow::vec2_t<unsigned int>(sharpencamera->resolution.x, sharpencamera->resolution.y),

@@ -1,0 +1,4 @@
+In file included from /home/ziyad/Documents/Portfolio/examples/gameOfLife/./include/gameOfLife.h:1:0,
+                 from /home/ziyad/Documents/Portfolio/examples/gameOfLife/source/scene.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/gameOfLife/../../include/Scene.h:24:23: fatal error: stb_image.h: No such file or directory
+compilation terminated.

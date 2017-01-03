@@ -30,9 +30,16 @@ flags = [
     '-isystem', '/System/Library/Frameworks/Python.framework/Headers',
     '-isystem', '/usr/local/include',
     '-isystem', '/usr/local/include/eigen3',
-    '-I', 'include', '-I./dependencies', '-I./dependencies/glm/glm/',
-    '-I./dependencies/tinyextender/include/', '-I./dependencies/tinyshaders/include',
-    '-I./dependencies/tinywindow/include/', '-I./include/'
+    '-I', 'include', '-I./dependencies', 
+    '-I./dependencies/glm/glm/', 
+    '-I./dependencies/stb', 
+    '-I./dependencies/imgui', 
+    '-I./dependencies/assimp/include/assimp/', 
+    '-I./dependencies/tinyextender/Include/', 
+    '-I./dependencies/tinyshaders/Include', 
+    '-I./dependencies/tinywindow/Include/', 
+    '-I./dependencies/tinyclock/Include/', 
+    '-I./include/' 
 ]
 
 # Set this to the absolute path to the folder (NOT the file!) containing the

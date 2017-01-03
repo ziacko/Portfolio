@@ -1,0 +1,5 @@
+In file included from /home/ziyad/Documents/Portfolio/examples/sharpen/source/Sharpen.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/sharpen/./include/Sharpen.h: In constructor ‘sharpenScene::sharpenScene(sharpenSettings_t*, texture*, const char*, camera*, const char*)’:
+/home/ziyad/Documents/Portfolio/examples/sharpen/./include/Sharpen.h:62:22: error: ‘TinyWindow::profile_t’ has not been declared
+    4, 5, TinyWindow::profile_t::compatibility);
+                      ^

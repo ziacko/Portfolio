@@ -1,1 +1,3 @@
-/home/ziyad/Documents/Projects/Portfolio/examples/texturedScene/CMakeFiles/TexturedScene.dir
+/home/ziyad/Documents/Portfolio/examples/texturedScene/CMakeFiles/edit_cache.dir
+/home/ziyad/Documents/Portfolio/examples/texturedScene/CMakeFiles/rebuild_cache.dir
+/home/ziyad/Documents/Portfolio/examples/texturedScene/CMakeFiles/TexturedScene.dir

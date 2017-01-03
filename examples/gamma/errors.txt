@@ -1,0 +1,5 @@
+In file included from /home/ziyad/Documents/Portfolio/examples/gamma/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/gamma/./include/Gamma.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/gamma/source/Gamma.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/gamma/../../include/Scene.h:25:23: fatal error: stb_image.h: No such file or directory
+compilation terminated.

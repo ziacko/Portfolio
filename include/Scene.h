@@ -1,6 +1,5 @@
 #ifndef SCENE_H
 #define SCENE_H
-#define GLM_SWIZZLE
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <iostream>
@@ -45,7 +44,7 @@ public:
 		manager = new windowManager();
 		window = manager->AddWindow(windowName, this, 
 			TinyWindow::vec2_t<unsigned int>(bufferCamera->resolution.x, bufferCamera->resolution.y),
-			4, 5, TinyWindow::profile_t::core);
+			4, 5);
 		sceneClock = new tinyClock_t();
 	}
 
@@ -172,7 +171,7 @@ protected:
 		static int interval = 0;
 		if (ImGui::SliderInt("Swap Interval", &interval, 0, 3))
 		{
-			manager->SetWindowSwapInterval(window, interval);
+			//manager->SetWindowSwapInterval(window, interval);
 		}
 	}
 

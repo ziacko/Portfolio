@@ -1,62 +1,150 @@
-cc1: warning: command line option ‘-std=c++11’ is valid for C++/ObjC++ but not for C [enabled by default]
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_1’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1311:37: warning: unused parameter ‘out’ [-Wunused-parameter]
- static uint8 *resample_row_1(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                     ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1311:65: warning: unused parameter ‘in_far’ [-Wunused-parameter]
- static uint8 *resample_row_1(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                                                 ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1311:77: warning: unused parameter ‘w’ [-Wunused-parameter]
- static uint8 *resample_row_1(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                                                             ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1311:84: warning: unused parameter ‘hs’ [-Wunused-parameter]
- static uint8 *resample_row_1(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                                                                    ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_v_2’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1316:86: warning: unused parameter ‘hs’ [-Wunused-parameter]
- static uint8* resample_row_v_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                                                                      ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_h_2’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1325:68: warning: unused parameter ‘in_far’ [-Wunused-parameter]
- static uint8*  resample_row_h_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                                                    ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1325:87: warning: unused parameter ‘hs’ [-Wunused-parameter]
- static uint8*  resample_row_h_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                                                                       ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_hv_2’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1350:87: warning: unused parameter ‘hs’ [-Wunused-parameter]
- static uint8 *resample_row_hv_2(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                                                                       ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘resample_row_generic’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:1371:71: warning: unused parameter ‘in_far’ [-Wunused-parameter]
- static uint8 *resample_row_generic(uint8 *out, uint8 *in_near, uint8 *in_far, int w, int hs)
-                                                                       ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘expand_palette’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:2174:55: warning: unused parameter ‘len’ [-Wunused-parameter]
- static int expand_palette(png *a, uint8 *palette, int len, int pal_img_n)
-                                                       ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘parse_png_file’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:2341:28: warning: variable ‘invalid_chunk’ set but not used [-Wunused-but-set-variable]
-                static char invalid_chunk[] = "XXXX chunk not known";
-                            ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c: In function ‘bmp_load’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:2671:51: warning: signed and unsigned type in conditional expression [-Wsign-compare]
-                uint32 v = (bpp == 16 ? get16le(s) : get32le(s));
-                                                   ^
-In file included from /home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stb_image_aug.c:3681:0:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h: In function ‘dds_load’:
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:290:31: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-  if( (header.dwFlags & flags) != flags ) return NULL;
-                               ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:362:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-     if( ref_x + 4 > s->img_x )
-                   ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:366:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-     if( ref_y + 4 > s->img_y )
-                   ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:390:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-     for( i = 1; i < header.dwMipMapCount; ++i )
-                   ^
-/home/ziyad/Documents/Projects/Portfolio/dependencies/SOIL/src/stbi_DDS_aug_c.h:427:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-     for( i = 1; i < header.dwMipMapCount; ++i )
-                   ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:7:0,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:1,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h: In static member function ‘static GLvoid TinyExtender::InitializeExtensions()’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h:3137:43: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+   if (Version_Major > 2 || (Version_Minor >= 0 && Version_Major >= 2))
+                                           ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h:3159:43: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+   if (Version_Major > 3 || (Version_Minor >= 0 && Version_Major >= 3))
+                                           ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h:3203:43: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+   if (Version_Major > 4 || (Version_Minor >= 0 && Version_Major >= 4))
+                                           ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h: In static member function ‘static GLvoid TinyExtender::InitializeExtensionsSpecific(GLbitfield)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h:3306:44: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    if (Version_Major > 2 || (Version_Minor >= 0 && Version_Major >= 2))
+                                            ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h:3326:44: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    if (Version_Major > 3 || (Version_Minor >= 0 && Version_Major >= 3))
+                                            ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h:3366:44: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
+    if (Version_Major > 4 || (Version_Minor >= 0 && Version_Major >= 4))
+                                            ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h: In static member function ‘static void* TinyExtender::GetProcAddress(const GLubyte*)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyextender/Include/TinyExtender.h:4122:27: error: invalid conversion from ‘void (*)()’ to ‘void*’ [-fpermissive]
+   return glXGetProcAddress(ProcName);
+                           ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:1,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyshaders/Include/TinyShaders.h: In static member function ‘static void tinyShaders::LoadShader(const GLchar*, const GLchar*, GLuint)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyshaders/Include/TinyShaders.h:300:17: warning: unused variable ‘newShader’ [-Wunused-variable]
+       shader_t* newShader = new shader_t( name, shaderType, shaderFile );
+                 ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyshaders/Include/TinyShaders.h: In static member function ‘static void tinyShaders::LoadShaderProgramsFromConfigFile(const GLchar*, bool)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyshaders/Include/TinyShaders.h:395:59: warning: too many arguments for format [-Wformat-extra-args]
+          fscanf( pConfigFile, "%*[^\n]\n %*[^\n]\n", NULL );
+                                                           ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyshaders/Include/TinyShaders.h:401:25: warning: unused variable ‘newShaderProgram’ [-Wunused-variable]
+        shaderProgram_t* newShaderProgram = new shaderProgram_t( programName, inputs, outputs, shaders, saveBinary);
+                         ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyshaders/Include/TinyShaders.h: In static member function ‘static void tinyShaders::LoadProgramBinariesFromConfigFile(const GLchar*)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyshaders/Include/TinyShaders.h:425:50: warning: too many arguments for format [-Wformat-extra-args]
+    fscanf(configFile, "%*[^\n]\n %*[^\n]\n", NULL);
+                                                  ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../dependencies/tinyshaders/Include/TinyShaders.h:435:12: warning: unused variable ‘size’ [-Wunused-variable]
+     GLuint size = 0;
+            ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/DefaultUniformBuffer.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:19,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:1,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/UniformBuffer.h: In constructor ‘uniformBuffer_t::uniformBuffer_t()’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/UniformBuffer.h:16:16: warning: converting to non-pointer type ‘GLuint {aka unsigned int}’ from NULL [-Wconversion-null]
+   bufferHandle = NULL;
+                ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/UniformBuffer.h:17:17: warning: converting to non-pointer type ‘GLuint {aka unsigned int}’ from NULL [-Wconversion-null]
+   uniformHandle = NULL;
+                 ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/UniformBuffer.h: At global scope:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/UniformBuffer.h:22:105: warning: unused parameter ‘usage’ [-Wunused-parameter]
+  void Update(void* data, GLuint bufferHandle, GLintptr offset, GLuint bufferSize, GLenum target, GLenum usage)
+                                                                                                         ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:21:0,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:1,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Utilities.h:5:52: warning: unused parameter ‘output’ [-Wunused-parameter]
+ void GetFilesInDirectory(std::vector<std::string>& output, std::string directory)
+                                                    ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Utilities.h:5:72: warning: unused parameter ‘directory’ [-Wunused-parameter]
+ void GetFilesInDirectory(std::vector<std::string>& output, std::string directory)
+                                                                        ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:1,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: In constructor ‘scene::scene(const char*, camera*, const GLchar*)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:47:22: error: ‘TinyWindow::profile_t’ has not been declared
+    4, 5, TinyWindow::profile_t::core);
+                      ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: At global scope:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:102:47: warning: unused parameter ‘drawData’ [-Wunused-parameter]
+  static void RenderImGUIDrawLists(ImDrawData* drawData)
+                                               ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: In member function ‘virtual void scene::BuildGUI(ImGuiIO)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:174:13: error: ‘class TinyWindow::windowManager’ has no member named ‘SetWindowSwapInterval’
+    manager->SetWindowSwapInterval(window, interval);
+             ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: In member function ‘virtual void scene::SetupVertexBuffer()’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:193:11: warning: unused variable ‘quadVerts’ [-Wunused-variable]
+   GLfloat quadVerts[16] =
+           ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:1,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: In static member function ‘static void scene::HandleMouseClick(TinyWindow::tWindow*, TinyWindow::mouseButton_t, TinyWindow::buttonState_t)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:238:10: warning: enumeration value ‘last’ not handled in switch [-Wswitch]
+   switch (button)
+          ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: At global scope:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:234:40: warning: unused parameter ‘window’ [-Wunused-parameter]
+  static void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state)
+                                        ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:272:89: warning: unused parameter ‘screenPosition’ [-Wunused-parameter]
+  static void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition)
+                                                                                         ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: In static member function ‘static void scene::HandleMouseWheel(TinyWindow::tWindow*, TinyWindow::mouseScroll_t)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:299:10: warning: unused variable ‘thisScene’ [-Wunused-variable]
+   scene* thisScene = (scene*)window->userData;
+          ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: In static member function ‘static void scene::HandleKey(TinyWindow::tWindow*, int, TinyWindow::keyState_t)’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:314:11: warning: enumeration value ‘bad’ not handled in switch [-Wswitch]
+    switch (keyState)
+           ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h: At global scope:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:304:33: warning: unused parameter ‘window’ [-Wunused-parameter]
+  static void HandleKey(tWindow* window, int key, keyState_t keyState)
+                                 ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:626:11: warning: unused parameter ‘length’ [-Wunused-parameter]
+   GLsizei length,
+           ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Scene.h:628:15: warning: unused parameter ‘userParam’ [-Wunused-parameter]
+   const void* userParam)
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/TexturedScene.h:4:0,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:1,
+                 from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Texture.h: In member function ‘void texture::UnbindTexture()’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/../../include/Texture.h:58:29: warning: passing NULL to non-pointer argument 2 of ‘void glBindTexture(GLenum, GLuint)’ [-Wconversion-null]
+   glBindTexture(target, NULL);
+                             ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h: At global scope:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:35:94: warning: unused parameter ‘attenuation’ [-Wunused-parameter]
+   const char* shaderConfigPath = "../../resources/shaders/Bubble.txt", GLfloat attenuation = 1.0f, 
+                                                                                              ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:36:20: warning: unused parameter ‘offset’ [-Wunused-parameter]
+   GLfloat offset = 1.0f) : texturedScene(defaultTexture, windowName, bubbleCamera, shaderConfigPath)
+                    ^
+In file included from /home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/source/Bubble.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h: In member function ‘virtual void bubbleScene::SetupVertexBuffer()’:
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:93:43: error: expected primary-expression before ‘->’ token
+   GLfloat cellWidth = defaultUniformBuffer->resolution.x / bubbleSettingsBuffer->gridDimensions;
+                                           ^
+/home/ziyad/Documents/Portfolio/examples/bubbleDisplacement/./include/bubble.h:94:44: error: expected primary-expression before ‘->’ token
+   GLfloat cellHeight = defaultUniformBuffer->resolution.y / bubbleSettingsBuffer->gridDimensions;
+                                            ^

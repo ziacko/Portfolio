@@ -74,7 +74,6 @@ link_directories (${LINK_DIRECTORY})
 link_libraries (${LIBS})
 
 set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo")
-#set (SOIL_SOURCES "${SOIL_INCLUDE_DIR}/SOIL.c" "${SOIL_INCLUDE_DIR}/image_DXT.c" "${SOIL_INCLUDE_DIR}/image_helper.c" "${SOIL_INCLUDE_DIR}/stb_image_aug.c")
 
 file(GLOB_RECURSE RES_FILES *.vert *.frag *.geom *.tesc *.tese *.glsl *.txt)
 

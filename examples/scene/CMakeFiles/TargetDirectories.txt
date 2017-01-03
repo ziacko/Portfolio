@@ -1,1 +1,3 @@
-/home/ziyad/Documents/Projects/Portfolio/examples/scene/CMakeFiles/Scene.dir
+/home/ziyad/Documents/Portfolio/examples/scene/CMakeFiles/edit_cache.dir
+/home/ziyad/Documents/Portfolio/examples/scene/CMakeFiles/rebuild_cache.dir
+/home/ziyad/Documents/Portfolio/examples/scene/CMakeFiles/Scene.dir

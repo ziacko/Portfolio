@@ -68,7 +68,5 @@ link_libraries (${LIBS})
 
 set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp")
 
-#set (SOIL_SOURCES "${SOIL_INCLUDE_DIR}/SOIL.c" "${SOIL_INCLUDE_DIR}/image_DXT.c" "${SOIL_INCLUDE_DIR}/image_helper.c" "${SOIL_INCLUDE_DIR}/stb_image_aug.c")
-
 add_executable(EdgeDetection ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET EdgeDetection PROPERTY OUTPUT_NAME "Scene")

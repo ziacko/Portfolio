@@ -1,0 +1,1256 @@
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h: In static member function ‘static void tinyShaders::LoadProgramBinariesFromConfigFile(const GLchar*)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:447:44: error: ‘glCreateProgram’ was not declared in this scope
+     GLuint programHandle = glCreateProgram();
+                                            ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:447:44: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:431:17: note:   ‘TinyExtender::glCreateProgram’
+  extern GLuint(*glCreateProgram) (void);
+                 ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:448:74: error: ‘glProgramBinary’ was not declared in this scope
+     glProgramBinary(programHandle, binaryFormat, binaryBuffer, binarySize);    
+                                                                          ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:448:74: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:1329:15: note:   ‘TinyExtender::glProgramBinary’
+  extern void(*glProgramBinary) (GLuint program, GLenum binaryFormat, const void *binary, GLsizei length);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:452:64: error: ‘glGetProgramiv’ was not declared in this scope
+     glGetProgramiv(programHandle, GL_LINK_STATUS, &isSuccessful);
+                                                                ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:452:64: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:442:15: note:   ‘TinyExtender::glGetProgramiv’
+  extern void(*glGetProgramiv) (GLuint program, GLenum pname, GLint *params);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h: In member function ‘void tinyShaders::shader_t::Compile(const GLchar*)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:700:37: error: ‘glCreateShader’ was not declared in this scope
+       handle = glCreateShader( type );
+                                     ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:700:37: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:432:17: note:   ‘TinyExtender::glCreateShader’
+  extern GLuint(*glCreateShader) (GLenum type);
+                 ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:701:63: error: ‘glShaderSource’ was not declared in this scope
+       glShaderSource( handle, 1, ( const GLchar** )&source, 0 );
+                                                               ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:701:63: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:457:15: note:   ‘TinyExtender::glShaderSource’
+  extern void(*glShaderSource) (GLuint shader, GLsizei count, const GLchar** string, const GLint *length);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:702:31: error: ‘glCompileShader’ was not declared in this scope
+       glCompileShader( handle );
+                               ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:702:31: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:430:15: note:   ‘TinyExtender::glCompileShader’
+  extern void(*glCompileShader) (GLuint shader);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:704:61: error: ‘glGetShaderiv’ was not declared in this scope
+       glGetShaderiv( handle, GL_COMPILE_STATUS, &successful );
+                                                             ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:704:61: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:444:15: note:   ‘TinyExtender::glGetShaderiv’
+  extern void(*glGetShaderiv) (GLuint shader, GLenum pname, GLint *params);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:705:67: error: ‘glGetShaderInfoLog’ was not declared in this scope
+       glGetShaderInfoLog( handle, sizeof( errorLog ), 0, errorLog );
+                                                                   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:705:67: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:445:15: note:   ‘TinyExtender::glGetShaderInfoLog’
+  extern void(*glGetShaderInfoLog) (GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h: In member function ‘void tinyShaders::shader_t::Shutdown()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:737:28: error: ‘glDeleteShader’ was not declared in this scope
+     glDeleteShader( handle );
+                            ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:737:28: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:434:15: note:   ‘TinyExtender::glDeleteShader’
+  extern void(*glDeleteShader) (GLuint shader);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h: In member function ‘void tinyShaders::shaderProgram_t::Shutdown()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:803:30: error: ‘glDeleteProgram’ was not declared in this scope
+      glDeleteProgram( handle );
+                              ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:803:30: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:433:15: note:   ‘TinyExtender::glDeleteProgram’
+  extern void(*glDeleteProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h: In member function ‘GLboolean tinyShaders::shaderProgram_t::Compile(bool)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:819:31: error: ‘glCreateProgram’ was not declared in this scope
+      handle = glCreateProgram();
+                               ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:819:31: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:431:17: note:   ‘TinyExtender::glCreateProgram’
+  extern GLuint(*glCreateProgram) (void);
+                 ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:828:59: error: ‘glAttachShader’ was not declared in this scope
+         glAttachShader( handle, shaders[iterator]->handle );
+                                                           ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:828:59: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:428:15: note:   ‘TinyExtender::glAttachShader’
+  extern void(*glAttachShader) (GLuint program, GLuint shader);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:835:51: error: ‘glBindAttribLocation’ was not declared in this scope
+        glBindAttribLocation( handle, i, inputs[i] );
+                                                   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:835:51: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:429:15: note:   ‘TinyExtender::glBindAttribLocation’
+  extern void(*glBindAttribLocation) (GLuint program, GLuint index, const GLchar *name);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:841:54: error: ‘glBindFragDataLocation’ was not declared in this scope
+        glBindFragDataLocation( handle, i, outputs[i] );
+                                                      ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:841:54: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:679:15: note:   ‘TinyExtender::glBindFragDataLocation’
+  extern void(*glBindFragDataLocation) (GLuint program, GLuint color, const GLchar *name);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:846:79: error: ‘glProgramParameteri’ was not declared in this scope
+        glProgramParameteri(handle, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+                                                                               ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:846:79: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:1330:15: note:   ‘TinyExtender::glProgramParameteri’
+  extern void(*glProgramParameteri) (GLuint program, GLenum pname, GLint value);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:849:29: error: ‘glLinkProgram’ was not declared in this scope
+       glLinkProgram( handle );
+                             ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:849:29: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:456:15: note:   ‘TinyExtender::glLinkProgram’
+  extern void(*glLinkProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:850:59: error: ‘glGetProgramiv’ was not declared in this scope
+       glGetProgramiv( handle, GL_LINK_STATUS, &successful );
+                                                           ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:850:59: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:442:15: note:   ‘TinyExtender::glGetProgramiv’
+  extern void(*glGetProgramiv) (GLuint program, GLenum pname, GLint *params);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:855:65: error: ‘glGetProgramInfoLog’ was not declared in this scope
+        glGetProgramInfoLog(handle, sizeof(errorLog), 0, errorLog);
+                                                                 ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:855:65: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:443:15: note:   ‘TinyExtender::glGetProgramInfoLog’
+  extern void(*glGetProgramInfoLog) (GLuint program, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:9:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:871:74: error: ‘glGetProgramBinary’ was not declared in this scope
+        glGetProgramBinary(handle, binarySize, NULL, &binaryFormat, buffer);
+                                                                          ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyshaders/Include/TinyShaders.h:871:74: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:1328:15: note:   ‘TinyExtender::glGetProgramBinary’
+  extern void(*glGetProgramBinary) (GLuint program, GLsizei bufSize, GLsizei *length, GLenum *binaryFormat, void *binary);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/DefaultUniformBuffer.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:20,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h: In member function ‘void uniformBuffer_t::Update(void*, GLuint, GLintptr, GLuint, GLenum, GLenum)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h:24:36: error: ‘glBindBuffer’ was not declared in this scope
+   glBindBuffer(target, bufferHandle);
+                                    ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h:24:36: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:356:15: note:   ‘TinyExtender::glBindBuffer’
+  extern void(*glBindBuffer) (GLenum target, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/DefaultUniformBuffer.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:20,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h:25:51: error: ‘glBufferSubData’ was not declared in this scope
+   glBufferSubData(target, offset, bufferSize, data);
+                                                   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h:25:51: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:361:15: note:   ‘TinyExtender::glBufferSubData’
+  extern void(*glBufferSubData) (GLenum target, GLintptr offset, GLsizeiptr size, const void *data);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/DefaultUniformBuffer.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:20,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h: In member function ‘void uniformBuffer_t::Setup(void*, GLuint&, GLintptr, GLuint, GLuint, GLenum, GLenum)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h:30:32: error: ‘glGenBuffers’ was not declared in this scope
+   glGenBuffers(1, &bufferHandle);
+                                ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h:30:32: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:358:15: note:   ‘TinyExtender::glGenBuffers’
+  extern void(*glGenBuffers) (GLsizei n, GLuint *buffers);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/DefaultUniformBuffer.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:20,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h:32:55: error: ‘glBindBufferBase’ was not declared in this scope
+   glBindBufferBase(target, uniformHandle, bufferHandle);
+                                                       ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/UniformBuffer.h:32:55: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:649:15: note:   ‘TinyExtender::glBindBufferBase’
+  extern void(*glBindBufferBase) (GLenum target, GLuint index, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h: In constructor ‘vertexBuffer_t::vertexBuffer_t(glm::vec2)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:28:32: error: ‘glGenBuffers’ was not declared in this scope
+   glGenBuffers(1, &bufferHandle);
+                                ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:28:32: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:358:15: note:   ‘TinyExtender::glGenBuffers’
+  extern void(*glGenBuffers) (GLsizei n, GLuint *buffers);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:29:42: error: ‘glGenVertexArrays’ was not declared in this scope
+   glGenVertexArrays(1, &vertexArrayHandle);
+                                          ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:29:42: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:722:15: note:   ‘TinyExtender::glGenVertexArrays’
+  extern void(*glGenVertexArrays) (GLsizei n, GLuint *arrays);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:30:33: error: ‘glBindVertexArray’ was not declared in this scope
+   glBindVertexArray(bufferHandle);
+                                 ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:30:33: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:720:15: note:   ‘TinyExtender::glBindVertexArray’
+  extern void(*glBindVertexArray) (GLuint array);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:32:45: error: ‘glBindBuffer’ was not declared in this scope
+   glBindBuffer(GL_ARRAY_BUFFER, bufferHandle);
+                                             ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:32:45: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:356:15: note:   ‘TinyExtender::glBindBuffer’
+  extern void(*glBindBuffer) (GLenum target, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:33:78: error: ‘glBufferData’ was not declared in this scope
+   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, quadVerts, GL_STATIC_DRAW);
+                                                                              ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:33:78: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:360:15: note:   ‘TinyExtender::glBufferData’
+  extern void(*glBufferData) (GLenum target, GLsizeiptr size, const void *data, GLenum usage);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:34:30: error: ‘glEnableVertexAttribArray’ was not declared in this scope
+   glEnableVertexAttribArray(0);
+                              ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:34:30: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:437:15: note:   ‘TinyExtender::glEnableVertexAttribArray’
+  extern void(*glEnableVertexAttribArray) (GLuint index);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:35:71: error: ‘glVertexAttribPointer’ was not declared in this scope
+   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
+                                                                       ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:35:71: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:515:15: note:   ‘TinyExtender::glVertexAttribPointer’
+  extern void(*glVertexAttribPointer) (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h: In member function ‘void vertexBuffer_t::UpdateBuffer(glm::vec2)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:49:45: error: ‘glBindBuffer’ was not declared in this scope
+   glBindBuffer(GL_ARRAY_BUFFER, bufferHandle);
+                                             ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:49:45: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:356:15: note:   ‘TinyExtender::glBindBuffer’
+  extern void(*glBindBuffer) (GLenum target, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:23:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:50:77: error: ‘glBufferData’ was not declared in this scope
+   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, newVerts, GL_STATIC_DRAW);
+                                                                             ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/VertexBuffer.h:50:77: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:360:15: note:   ‘TinyExtender::glBufferData’
+  extern void(*glBufferData) (GLenum target, GLsizeiptr size, const void *data, GLenum usage);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In constructor ‘scene::scene(const char*, camera*, const GLchar*)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:48:22: error: ‘TinyWindow::profile_t’ has not been declared
+    4, 5, TinyWindow::profile_t::core);
+                      ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In member function ‘virtual void scene::Initialize()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:65:3: error: ‘InitializeExtensions’ is not a member of ‘TinyExtender’
+   TinyExtender::InitializeExtensions();
+   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:67:52: error: ‘glDebugMessageCallback’ was not declared in this scope
+   glDebugMessageCallback(&OpenGLDebugCallback, NULL);
+                                                    ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:67:52: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:1608:15: note:   ‘TinyExtender::glDebugMessageCallback’
+  extern void(*glDebugMessageCallback) (glDebug callback, const void *userParam);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:70:34: error: ‘glDebugMessageControl’ was not declared in this scope
+    GL_DONT_CARE, 0, NULL, GL_TRUE);
+                                  ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:70:34: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:1606:15: note:   ‘TinyExtender::glDebugMessageControl’
+  extern void(*glDebugMessageControl) (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:76:33: error: ‘glUseProgram’ was not declared in this scope
+   glUseProgram(this->programGLID);
+                                 ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:76:33: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In member function ‘virtual void scene::Draw()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:153:59: error: ‘glBindVertexArray’ was not declared in this scope
+   glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+                                                           ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:153:59: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:720:15: note:   ‘TinyExtender::glBindVertexArray’
+  extern void(*glBindVertexArray) (GLuint array);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:154:33: error: ‘glUseProgram’ was not declared in this scope
+   glUseProgram(this->programGLID);
+                                 ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:154:33: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In member function ‘virtual void scene::BuildGUI(ImGuiIO)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:175:13: error: ‘class TinyWindow::windowManager’ has no member named ‘SetWindowSwapInterval’
+    manager->SetWindowSwapInterval(window, interval);
+             ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In static member function ‘static void scene::SetupBuffer(void*, GLuint&, GLuint, GLuint, GLenum, GLenum)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:205:32: error: ‘glGenBuffers’ was not declared in this scope
+   glGenBuffers(1, &bufferHandle);
+                                ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:205:32: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:358:15: note:   ‘TinyExtender::glGenBuffers’
+  extern void(*glGenBuffers) (GLsizei n, GLuint *buffers);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:207:61: error: ‘glBindBufferBase’ was not declared in this scope
+   glBindBufferBase(target, bufferUniformHandle, bufferHandle);
+                                                             ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:207:61: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:649:15: note:   ‘TinyExtender::glBindBufferBase’
+  extern void(*glBindBufferBase) (GLenum target, GLuint index, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In static member function ‘static void scene::UpdateBuffer(void*, GLuint, GLuint, GLenum, GLenum)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:213:36: error: ‘glBindBuffer’ was not declared in this scope
+   glBindBuffer(target, bufferHandle);
+                                    ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:213:36: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:356:15: note:   ‘TinyExtender::glBindBuffer’
+  extern void(*glBindBuffer) (GLenum target, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:214:49: error: ‘glBufferData’ was not declared in this scope
+   glBufferData(target, bufferSize, buffer, usage);
+                                                 ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:214:49: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:360:15: note:   ‘TinyExtender::glBufferData’
+  extern void(*glBufferData) (GLenum target, GLsizeiptr size, const void *data, GLenum usage);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In member function ‘void scene::SetupDefaultUniforms()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:231:94: error: ‘glGetUniformBlockIndex’ was not declared in this scope
+   defaultUniform->uniformHandle = glGetUniformBlockIndex(this->programGLID, "defaultSettings");
+                                                                                              ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:231:94: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:958:17: note:   ‘TinyExtender::glGetUniformBlockIndex’
+  extern GLuint(*glGetUniformBlockIndex) (GLuint program, const GLchar *uniformBlockName);
+                 ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:232:76: error: ‘glUniformBlockBinding’ was not declared in this scope
+   glUniformBlockBinding(this->programGLID, defaultUniform->uniformHandle, 0);
+                                                                            ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:232:76: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:961:15: note:   ‘TinyExtender::glUniformBlockBinding’
+  extern void(*glUniformBlockBinding) (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In static member function ‘static void scene::HandleMaximize(TinyWindow::tWindow*)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:292:74: error: ‘glBindBuffer’ was not declared in this scope
+   glBindBuffer(GL_UNIFORM_BUFFER, thisScene->defaultUniform->bufferHandle);
+                                                                          ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:292:74: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:356:15: note:   ‘TinyExtender::glBindBuffer’
+  extern void(*glBindBuffer) (GLenum target, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:293:102: error: ‘glBufferData’ was not declared in this scope
+   glBufferData(GL_UNIFORM_BUFFER, sizeof(*defaultUniform), thisScene->defaultUniform, GL_DYNAMIC_DRAW);
+                                                                                                      ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:293:102: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:360:15: note:   ‘TinyExtender::glBufferData’
+  extern void(*glBufferData) (GLenum target, GLsizeiptr size, const void *data, GLenum usage);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In member function ‘void scene::HandleImGUIRender()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:425:33: error: ‘glUseProgram’ was not declared in this scope
+   glUseProgram(imGUIShaderhandle);
+                                 ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:425:33: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:426:40: error: ‘glUniform1i’ was not declared in this scope
+   glUniform1i(imGUITexAttribLocation, 0);
+                                        ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:426:40: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:463:15: note:   ‘TinyExtender::glUniform1i’
+  extern void(*glUniform1i) (GLint location, GLint v0);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:427:88: error: ‘glUniformMatrix4fv’ was not declared in this scope
+   glUniformMatrix4fv(imGUIProjMatrixAttribLocation, 1, GL_FALSE, &orthoProjection[0][0]);
+                                                                                        ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:427:88: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:477:15: note:   ‘TinyExtender::glUniformMatrix4fv’
+  extern void(*glUniformMatrix4fv) (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:428:35: error: ‘glBindVertexArray’ was not declared in this scope
+   glBindVertexArray(imGUIVAOHandle);
+                                   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:428:35: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:720:15: note:   ‘TinyExtender::glBindVertexArray’
+  extern void(*glBindVertexArray) (GLuint array);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:435:48: error: ‘glBindBuffer’ was not declared in this scope
+    glBindBuffer(GL_ARRAY_BUFFER, imGUIVBOHandle);
+                                                ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:435:48: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:356:15: note:   ‘TinyExtender::glBindBuffer’
+  extern void(*glBindBuffer) (GLenum target, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:436:154: error: ‘glBufferData’ was not declared in this scope
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)commandList->VtxBuffer.size() * sizeof(ImDrawVert), (GLvoid*)&commandList->VtxBuffer.front(), GL_STREAM_DRAW);
+                                                                                                                                                          ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:436:154: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:360:15: note:   ‘TinyExtender::glBufferData’
+  extern void(*glBufferData) (GLenum target, GLsizeiptr size, const void *data, GLenum usage);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:462:48: error: ‘glBindBuffer’ was not declared in this scope
+   glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer);
+                                                ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:462:48: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:356:15: note:   ‘TinyExtender::glBindBuffer’
+  extern void(*glBindBuffer) (GLenum target, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:464:71: error: ‘glBlendEquationSeparate’ was not declared in this scope
+   glBlendEquationSeparate(lastBlendEquationRGB, lastBlendEquationAlpha);
+                                                                       ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:464:71: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:423:15: note:   ‘TinyExtender::glBlendEquationSeparate’
+  extern void(*glBlendEquationSeparate) (GLenum modeRGB, GLenum modeAlpha);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In member function ‘void scene::ImGUICreateDeviceObjects()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:543:39: error: ‘glCreateProgram’ was not declared in this scope
+   imGUIShaderhandle = glCreateProgram();
+                                       ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:543:39: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:431:17: note:   ‘TinyExtender::glCreateProgram’
+  extern GLuint(*glCreateProgram) (void);
+                 ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:544:54: error: ‘glCreateShader’ was not declared in this scope
+   imGUIVertexHandle = glCreateShader(GL_VERTEX_SHADER);
+                                                      ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:544:54: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:432:17: note:   ‘TinyExtender::glCreateShader’
+  extern GLuint(*glCreateShader) (GLenum type);
+                 ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:546:57: error: ‘glShaderSource’ was not declared in this scope
+   glShaderSource(imGUIVertexHandle, 1, &vertex_shader, 0);
+                                                         ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:546:57: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:457:15: note:   ‘TinyExtender::glShaderSource’
+  extern void(*glShaderSource) (GLuint shader, GLsizei count, const GLchar** string, const GLint *length);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:548:36: error: ‘glCompileShader’ was not declared in this scope
+   glCompileShader(imGUIVertexHandle);
+                                    ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:548:36: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:430:15: note:   ‘TinyExtender::glCompileShader’
+  extern void(*glCompileShader) (GLuint shader);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:550:54: error: ‘glAttachShader’ was not declared in this scope
+   glAttachShader(imGUIShaderhandle, imGUIVertexHandle);
+                                                      ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:550:54: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:428:15: note:   ‘TinyExtender::glAttachShader’
+  extern void(*glAttachShader) (GLuint program, GLuint shader);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:552:34: error: ‘glLinkProgram’ was not declared in this scope
+   glLinkProgram(imGUIShaderhandle);
+                                  ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:552:34: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:456:15: note:   ‘TinyExtender::glLinkProgram’
+  extern void(*glLinkProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:554:77: error: ‘glGetUniformLocation’ was not declared in this scope
+   imGUITexAttribLocation = glGetUniformLocation(imGUIShaderhandle, "Texture");
+                                                                             ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:554:77: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:447:16: note:   ‘TinyExtender::glGetUniformLocation’
+  extern GLint(*glGetUniformLocation) (GLuint program, const GLchar *name);
+                ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:556:82: error: ‘glGetAttribLocation’ was not declared in this scope
+   imGUIPositionAttribLocation = glGetAttribLocation(imGUIShaderhandle, "Position");
+                                                                                  ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:556:82: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:441:16: note:   ‘TinyExtender::glGetAttribLocation’
+  extern GLint(*glGetAttribLocation) (GLuint program, const GLchar *name);
+                ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:560:34: error: ‘glGenBuffers’ was not declared in this scope
+   glGenBuffers(1, &imGUIVBOHandle);
+                                  ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:560:34: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:358:15: note:   ‘TinyExtender::glGenBuffers’
+  extern void(*glGenBuffers) (GLsizei n, GLuint *buffers);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:563:39: error: ‘glGenVertexArrays’ was not declared in this scope
+   glGenVertexArrays(1, &imGUIVAOHandle);
+                                       ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:563:39: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:722:15: note:   ‘TinyExtender::glGenVertexArrays’
+  extern void(*glGenVertexArrays) (GLsizei n, GLuint *arrays);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:564:35: error: ‘glBindVertexArray’ was not declared in this scope
+   glBindVertexArray(imGUIVAOHandle);
+                                   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:564:35: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:720:15: note:   ‘TinyExtender::glBindVertexArray’
+  extern void(*glBindVertexArray) (GLuint array);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:565:47: error: ‘glBindBuffer’ was not declared in this scope
+   glBindBuffer(GL_ARRAY_BUFFER, imGUIVBOHandle);
+                                               ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:565:47: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:356:15: note:   ‘TinyExtender::glBindBuffer’
+  extern void(*glBindBuffer) (GLenum target, GLuint buffer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:566:56: error: ‘glEnableVertexAttribArray’ was not declared in this scope
+   glEnableVertexAttribArray(imGUIPositionAttribLocation);
+                                                        ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:566:56: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:437:15: note:   ‘TinyExtender::glEnableVertexAttribArray’
+  extern void(*glEnableVertexAttribArray) (GLuint index);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:571:131: error: ‘glVertexAttribPointer’ was not declared in this scope
+   glVertexAttribPointer(imGUIPositionAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos)); //ffs
+                                                                                                                                   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:571:131: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:515:15: note:   ‘TinyExtender::glVertexAttribPointer’
+  extern void(*glVertexAttribPointer) (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h: In member function ‘void scene::imGUIInvalidateDeviceObject()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:588:43: error: ‘glDeleteVertexArrays’ was not declared in this scope
+    glDeleteVertexArrays(1, &imGUIVAOHandle);
+                                           ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:588:43: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:721:15: note:   ‘TinyExtender::glDeleteVertexArrays’
+  extern void(*glDeleteVertexArrays) (GLsizei n, const GLuint *arrays);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:594:38: error: ‘glDeleteBuffers’ was not declared in this scope
+    glDeleteBuffers(1, &imGUIVBOHandle);
+                                      ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:594:38: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:357:15: note:   ‘TinyExtender::glDeleteBuffers’
+  extern void(*glDeleteBuffers) (GLsizei n, const GLuint *buffers);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:600:38: error: ‘glDeleteBuffers’ was not declared in this scope
+    glDeleteBuffers(1, &imGUIIBOHandle);
+                                      ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:600:38: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:357:15: note:   ‘TinyExtender::glDeleteBuffers’
+  extern void(*glDeleteBuffers) (GLsizei n, const GLuint *buffers);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:604:54: error: ‘glDetachShader’ was not declared in this scope
+   glDetachShader(imGUIShaderhandle, imGUIVertexHandle);
+                                                      ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:604:54: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:435:15: note:   ‘TinyExtender::glDetachShader’
+  extern void(*glDetachShader) (GLuint program, GLuint shader);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:605:35: error: ‘glDeleteShader’ was not declared in this scope
+   glDeleteShader(imGUIVertexHandle);
+                                   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:605:35: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:434:15: note:   ‘TinyExtender::glDeleteShader’
+  extern void(*glDeleteShader) (GLuint shader);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:612:36: error: ‘glDeleteProgram’ was not declared in this scope
+   glDeleteProgram(imGUIShaderhandle);
+                                    ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:612:36: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:433:15: note:   ‘TinyExtender::glDeleteProgram’
+  extern void(*glDeleteProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:4:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Texture.h: In member function ‘void texture::GetUniformLocation(GLuint)’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Texture.h:49:66: error: ‘glGetUniformLocation’ was not declared in this scope
+   uniformHandle = glGetUniformLocation(programHandle, uniformName);
+                                                                  ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Texture.h:49:66: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:447:16: note:   ‘TinyExtender::glGetUniformLocation’
+  extern GLint(*glGetUniformLocation) (GLuint program, const GLchar *name);
+                ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:4:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Texture.h:50:36: error: ‘glUniform1i’ was not declared in this scope
+   glUniform1i(uniformHandle, handle);
+                                    ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Texture.h:50:36: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:463:15: note:   ‘TinyExtender::glUniform1i’
+  extern void(*glUniform1i) (GLint location, GLint v0);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h: In member function ‘virtual void texturedScene::Draw()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:49:59: error: ‘glBindVertexArray’ was not declared in this scope
+   glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+                                                           ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:49:59: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:720:15: note:   ‘TinyExtender::glBindVertexArray’
+  extern void(*glBindVertexArray) (GLuint array);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:50:33: error: ‘glUseProgram’ was not declared in this scope
+   glUseProgram(this->programGLID);
+                                 ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:50:33: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h: In member function ‘virtual void edgeDetectionScene::Update()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:221:28: error: ‘glUseProgram’ was not declared in this scope
+    glUseProgram(programGLID);
+                            ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:221:28: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:228:37: error: ‘glUseProgram’ was not declared in this scope
+    glUseProgram(laplacianProgramGLID);
+                                     ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:228:37: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:235:35: error: ‘glUseProgram’ was not declared in this scope
+    glUseProgram(prewittProgramGLID);
+                                   ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:235:35: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:242:36: error: ‘glUseProgram’ was not declared in this scope
+    glUseProgram(freiChenProgramGLID);
+                                    ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:242:36: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h: In member function ‘virtual void edgeDetectionScene::Draw()’:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:252:59: error: ‘glBindVertexArray’ was not declared in this scope
+   glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+                                                           ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:252:59: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:720:15: note:   ‘TinyExtender::glBindVertexArray’
+  extern void(*glBindVertexArray) (GLuint array);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:257:34: error: ‘glUseProgram’ was not declared in this scope
+    glUseProgram(this->programGLID);
+                                  ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:257:34: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:263:43: error: ‘glUseProgram’ was not declared in this scope
+    glUseProgram(this->laplacianProgramGLID);
+                                           ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:263:43: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:269:41: error: ‘glUseProgram’ was not declared in this scope
+    glUseProgram(this->prewittProgramGLID);
+                                         ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:269:41: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:0:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:275:42: error: ‘glUseProgram’ was not declared in this scope
+    glUseProgram(this->freiChenProgramGLID);
+                                          ^
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:275:42: note: suggested alternative:
+In file included from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/Scene.h:8:0,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/../../include/TexturedScene.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/./include/EdgeDetection.h:3,
+                 from /home/ziyad/Documents/Portfolio/examples/edgeDetection/source/textured.cpp:1:
+/home/ziyad/Documents/Portfolio/examples/edgeDetection/../../dependencies/tinyextender/Include/TinyExtender.h:458:15: note:   ‘TinyExtender::glUseProgram’
+  extern void(*glUseProgram) (GLuint program);
+               ^
