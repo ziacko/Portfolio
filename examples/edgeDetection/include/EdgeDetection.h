@@ -204,10 +204,10 @@ public:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupBuffer(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle, sizeof(*sobelSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		SetupBuffer(laplacianSettingsBuffer, laplacianSettingsBuffer->bufferHandle, sizeof(*laplacianSettingsBuffer), 2, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		SetupBuffer(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, sizeof(*prewittSettingsBuffer), 3, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		SetupBuffer(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle, sizeof(*freiChenSettingsBuffer), 4, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle, sizeof(*sobelSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
+		SetupBuffer(laplacianSettingsBuffer, laplacianSettingsBuffer->bufferHandle, sizeof(*laplacianSettingsBuffer), 2, gl_uniform_buffer, gl_dynamic_draw);
+		SetupBuffer(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, sizeof(*prewittSettingsBuffer), 3, gl_uniform_buffer, gl_dynamic_draw);
+		SetupBuffer(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle, sizeof(*freiChenSettingsBuffer), 4, gl_uniform_buffer, gl_dynamic_draw);
 		
 	}
 
@@ -219,28 +219,28 @@ public:
 		case SOBEL:
 		{
 			glUseProgram(programGLID);
-			UpdateBuffer(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle, sizeof(*sobelSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+			UpdateBuffer(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle, sizeof(*sobelSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 			break;
 		}
 
 		case LAPLACIAN:
 		{
 			glUseProgram(laplacianProgramGLID);
-			UpdateBuffer(laplacianSettingsBuffer, laplacianSettingsBuffer->bufferHandle, sizeof(*laplacianSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+			UpdateBuffer(laplacianSettingsBuffer, laplacianSettingsBuffer->bufferHandle, sizeof(*laplacianSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 			break;
 		}
 
 		case PREWITT:
 		{
 			glUseProgram(prewittProgramGLID);
-			UpdateBuffer(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, sizeof(*prewittSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+			UpdateBuffer(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, sizeof(*prewittSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 			break;
 		}
 
 		case FREI_CHEN:
 		{
 			glUseProgram(freiChenProgramGLID);
-			UpdateBuffer(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle, sizeof(*freiChenSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+			UpdateBuffer(freiChenSettingsBuffer, freiChenSettingsBuffer->bufferHandle, sizeof(*freiChenSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 			break;
 		}
 		}

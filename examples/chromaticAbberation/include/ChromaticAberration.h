@@ -56,9 +56,9 @@ protected:
 	{
 		glGenBuffers(1, &chromaticSettings->bufferHandle);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, chromaticSettings->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(*chromaticSettings), chromaticSettings, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 1, this->chromaticSettings->bufferHandle);
+		glBindBuffer(gl_uniform_buffer, chromaticSettings->bufferHandle);
+		glBufferData(gl_uniform_buffer, sizeof(*chromaticSettings), chromaticSettings, gl_dynamic_draw);
+		glBindBufferBase(gl_uniform_buffer, 1, this->chromaticSettings->bufferHandle);
 	}
 
 	void InitializeBuffers() override
@@ -70,7 +70,7 @@ protected:
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(chromaticSettings, chromaticSettings->bufferHandle, sizeof(*chromaticSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		UpdateBuffer(chromaticSettings, chromaticSettings->bufferHandle, sizeof(*chromaticSettings), gl_uniform_buffer, gl_dynamic_draw);
 	}
 };
 

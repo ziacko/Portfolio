@@ -85,13 +85,13 @@ protected:
 	{
 		//SetupVertexBuffer();
 		scene::InitializeBuffers();
-		SetupBuffer(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle, sizeof(*bubbleSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle, sizeof(*bubbleSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	void SetupVertexBuffer() override
 	{ 
-		GLfloat cellWidth = defaultUniformBuffer->resolution.x / bubbleSettingsBuffer->gridDimensions;
-		GLfloat cellHeight = defaultUniformBuffer->resolution.y / bubbleSettingsBuffer->gridDimensions;
+		GLfloat cellWidth = defaultUniform->resolution.x / bubbleSettingsBuffer->gridDimensions;
+		GLfloat cellHeight = defaultUniform->resolution.y / bubbleSettingsBuffer->gridDimensions;
 
 		defaultVertexBuffer = new vertexBuffer_t(glm::vec2(cellWidth, cellHeight));
 	}
@@ -104,7 +104,7 @@ protected:
 
 	void Draw()	override
 	{
-		UpdateBuffer(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle, sizeof(*bubbleSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		UpdateBuffer(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle, sizeof(*bubbleSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 		defaultTexture->GetUniformLocation(programGLID);
 		glUseProgram(this->programGLID);
 		if (enableWireframe)

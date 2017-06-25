@@ -94,8 +94,8 @@ protected:
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		UpdateBuffer(cellBuffer->cells.data(), cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), GL_SHADER_STORAGE_BUFFER, GL_DYNAMIC_DRAW);
+		UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
+		UpdateBuffer(cellBuffer->cells.data(), cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), gl_shader_storage_buffer, gl_dynamic_draw);
 /*
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, cellBuffer->bufferHandle);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * cellBuffer->cells.size(), cellBuffer->cells.data(), GL_DYNAMIC_DRAW);*/
@@ -299,7 +299,7 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		SetupBuffer(cellBuffer, cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), 0, GL_SHADER_STORAGE_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
+		SetupBuffer(cellBuffer, cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), 0, gl_shader_storage_buffer, gl_dynamic_draw);
 	}
 };

@@ -86,13 +86,13 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		UpdateBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), gl_uniform_buffer, gl_dynamic_draw);
 	}
 };
 #endif

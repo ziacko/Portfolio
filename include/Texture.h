@@ -8,9 +8,9 @@ public:
 	texture(const char* path = "../../resources/textures/earth_diffuse.tga", const char* uniformName = "defaultTexture",
 		GLint internalFormat = GL_RGBA, GLenum target = GL_TEXTURE_2D,
 		GLint currentMipmapLevel = 0, GLint mipmapLevels = 0, GLint border = 0, GLenum dataType = GL_UNSIGNED_BYTE,
-		GLenum internalDataType = GL_RGBA32F, GLint xOffset = 0, GLint yOffset = 0,
+		GLenum internalDataType = gl_rgba32f, GLint xOffset = 0, GLint yOffset = 0,
 		GLenum minFilterSetting = GL_LINEAR, GLenum magFilterSetting = GL_LINEAR,
-		GLenum wrapSSetting = GL_CLAMP_TO_EDGE, GLenum wrapTSetting = GL_CLAMP_TO_EDGE, GLenum wrapRSetting = GL_CLAMP_TO_EDGE)
+		GLenum wrapSSetting = gl_clamp_to_edge, GLenum wrapTSetting = gl_clamp_to_edge, GLenum wrapRSetting = gl_clamp_to_edge)
 	{
 		this->path = path;
 		this->uniformName = uniformName;
@@ -49,7 +49,7 @@ public:
 		uniformHandle = glGetUniformLocation(programHandle, uniformName);
 		glUniform1i(uniformHandle, handle);
 
-		glActiveTexture(GL_TEXTURE0 + handle);
+		glActiveTexture(gl_texture0 + handle);
 		glBindTexture(target, handle);
 	}
 
@@ -73,7 +73,7 @@ public:
 
 		case 2:
 		{
-			format = GL_RG;
+			format = gl_rg;
 			break;
 		}
 
@@ -147,7 +147,7 @@ public:
 			break;
 		}
 
-		case GL_TEXTURE_1D_ARRAY:
+		case gl_texture_1d_array:
 		{
 			break;
 		}
@@ -164,42 +164,42 @@ public:
 			break;
 		}
 
-		case GL_TEXTURE_2D_ARRAY:
+		case gl_texture_2d_array:
 		{
 			break;
 		}
 
-		case GL_TEXTURE_2D_MULTISAMPLE:
+		case gl_texture_2d_multisample:
 		{
 			break;
 		}
 
-		case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+		case gl_texture_2d_multisample_array:
 		{
 			break;
 		}
 
-		case GL_TEXTURE_3D:
+		case gl_texture_3d:
 		{
 			break;
 		}
 
-		case GL_TEXTURE_BUFFER:
+		case gl_texture_buffer:
 		{
 			break;
 		}
 
-		case GL_TEXTURE_RECTANGLE:
+		case gl_texture_rectangle:
 		{
 			break;
 		}
 
-		case GL_TEXTURE_CUBE_MAP:
+		case gl_texture_cube_map:
 		{
 			break;
 		}
 
-		case GL_TEXTURE_CUBE_MAP_ARRAY:
+		case gl_texture_cube_map_array:
 		{
 			break;
 		}
@@ -266,19 +266,19 @@ public:
 		{
 			case 0:
 			{
-				this->wrapSSetting = GL_CLAMP_TO_EDGE;
+				this->wrapSSetting = gl_clamp_to_edge;
 				break;
 			}
 
 			case 1:
 			{
-				this->wrapSSetting = GL_MIRROR_CLAMP_TO_EDGE;
+				this->wrapSSetting = gl_mirror_clamp_to_edge;
 				break;
 			}
 
 			case 2:
 			{
-				this->wrapSSetting = GL_CLAMP_TO_BORDER;
+				this->wrapSSetting = gl_clamp_to_border;
 				break;
 			}
 
@@ -290,7 +290,7 @@ public:
 
 			case 4:
 			{
-				this->wrapSSetting = GL_MIRRORED_REPEAT;
+				this->wrapSSetting = gl_mirrored_repeat;
 				break;
 			}
 		}
@@ -306,19 +306,19 @@ public:
 		{
 			case 0:
 			{
-				this->wrapTSetting = GL_CLAMP_TO_EDGE;
+				this->wrapTSetting = gl_clamp_to_edge;
 				break;
 			}
 
 			case 1:
 			{
-				this->wrapTSetting = GL_MIRROR_CLAMP_TO_EDGE;
+				this->wrapTSetting = gl_mirror_clamp_to_edge;
 				break;
 			}
 
 			case 2:
 			{
-				this->wrapTSetting = GL_CLAMP_TO_BORDER;
+				this->wrapTSetting = gl_clamp_to_border;
 				break;
 			}
 
@@ -330,7 +330,7 @@ public:
 
 			case 4:
 			{
-				this->wrapTSetting = GL_MIRRORED_REPEAT;
+				this->wrapTSetting = gl_mirrored_repeat;
 				break;
 			}
 		}
@@ -346,19 +346,19 @@ public:
 		{
 			case 0:
 			{
-				this->wrapRSetting = GL_CLAMP_TO_EDGE;
+				this->wrapRSetting = gl_clamp_to_edge;
 				break;
 			}
 
 			case 1:
 			{
-				this->wrapRSetting = GL_MIRROR_CLAMP_TO_EDGE;
+				this->wrapRSetting = gl_mirror_clamp_to_edge;
 				break;
 			}
 
 			case 2:
 			{
-				this->wrapRSetting = GL_CLAMP_TO_BORDER;
+				this->wrapRSetting = gl_clamp_to_border;
 				break;
 			}
 
@@ -370,13 +370,13 @@ public:
 
 			case 4:
 			{
-				this->wrapRSetting = GL_MIRRORED_REPEAT;
+				this->wrapRSetting = gl_mirrored_repeat;
 				break;
 			}
 		}
 
 		BindTexture();
-		glTexParameteri(target, GL_TEXTURE_WRAP_R, this->wrapRSetting);
+		glTexParameteri(target, gl_texture_wrap_r, this->wrapRSetting);
 		UnbindTexture();
 	}
 

@@ -4,7 +4,9 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <iostream>
 #include <stdlib.h>
+#include <map>
 #include <TinyExtender.h>
+using namespace TinyExtender;
 #include <TinyShaders.h>
 #include <TinyWindow.h>
 #include <TinyClock.h>
@@ -23,7 +25,9 @@
 #include <imgui.h>
 #include <stb_image.h>
 #include <stb_image_write.h>
+
 using namespace TinyWindow;
+using namespace std::placeholders;
 
 class scene
 {
@@ -31,7 +35,7 @@ public:
 
 	scene(const char* windowName = "Ziyad Barakat's Portfolio ( Example Scene )",
 		camera* bufferCamera = new camera(),
-		const GLchar* shaderConfigPath = "../../resources/shaders/Default.txt")
+		const char* shaderConfigPath = "../../resources/shaders/Default.txt")
 	{
 		this->windowName = windowName;
 		this->sceneCamera = bufferCamera;
@@ -42,9 +46,22 @@ public:
 		imGUIFontTexture = 0;
 
 		manager = new windowManager();
-		window = manager->AddWindow(windowName, this, 
-			TinyWindow::vec2_t<unsigned int>(bufferCamera->resolution.x, bufferCamera->resolution.y),
-			4, 5);
+		
+		
+		
+		windows.push_back(manager->AddWindow(windowName, this));
+		windowContextMap.insert(std::make_pair(windows[0], ImGui::GetCurrentContext()));
+		ImGui::SetCurrentContext(windowContextMap[windows[0]]);
+		InitImGUI(windows[0]);
+		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+
+		windows.push_back(manager->AddSharedWindow(windows[0], "shared context"));
+		windowContextMap.insert(std::make_pair(windows[1], ImGui::CreateContext()));
+		ImGui::SetCurrentContext(windowContextMap[windows[1]]);
+		InitImGUI(windows[1]);
+		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+		
+
 		sceneClock = new tinyClock_t();
 	}
 
@@ -52,7 +69,7 @@ public:
 
 	virtual void Run()
 	{
-		while (!window->shouldClose)
+		while (!windows[0]->shouldClose)
 		{
 			Update();
 			Draw();
@@ -61,20 +78,23 @@ public:
 
 	virtual void Initialize()
 	{
-		TinyExtender::InitializeExtensions();
+		TinyExtender::InitializeExtentions();
+
+		if (glDebugMessageCallback == nullptr)
+		{
+			printf("blarg \n");
+		}
 
 		glDebugMessageCallback(&OpenGLDebugCallback, NULL);
 
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
 			GL_DONT_CARE, 0, NULL, GL_TRUE);
 		glEnable(GL_DEPTH_TEST);
-		InitImGUI();
+		
 		tinyShaders::LoadShaderProgramsFromConfigFile(this->shaderConfigPath);
 		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
 
 		glUseProgram(this->programGLID);
-
-		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
 		InitializeBuffers();
 		SetupCallbacks();
@@ -82,32 +102,35 @@ public:
 
 	virtual void SetupCallbacks()
 	{
-		manager->resizeEvent = &scene::HandleWindowResize;
-		manager->mouseButtonEvent = &scene::HandleMouseClick;
-		manager->mouseMoveEvent = &scene::HandleMouseMotion;
-		manager->mouseWheelEvent = &scene::HandleMouseWheel;
-		manager->maximizedEvent = &scene::HandleMaximize;
-		manager->keyEvent = &scene::HandleKey;
-		manager->destroyedEvent = &scene::ShutDown;
+		manager->resizeEvent = std::bind(&scene::HandleWindowResize, this, _1, _2);
+		manager->mouseButtonEvent = std::bind(&scene::HandleMouseClick, this, _1, _2, _3);
+		manager->mouseMoveEvent = std::bind(&scene::HandleMouseMotion, this, _1, _2, _3);
+		manager->mouseWheelEvent = std::bind(&scene::HandleMouseWheel, this, _1, _2);
+		manager->maximizedEvent = std::bind(&scene::HandleMaximize, this, _1);
+		manager->keyEvent = std::bind(&scene::HandleKey, this, _1, _2, _3);
+		manager->destroyedEvent = std::bind(&scene::ShutDown, this, _1);
+		manager->fileDropEvent = std::bind(&scene::HandleFileDrop, this, _1, _2, _3);
 	}
 
-	static void ShutDown(tWindow* window)
+	void ShutDown(tWindow* window)
 	{
-		scene* thisScene = (scene*)window->userData;
-		thisScene->imGUIInvalidateDeviceObject();
+		//scene* thisScene = (scene*)window->userData;
+		imGUIInvalidateDeviceObject();
 		tinyShaders::Shutdown();
-		thisScene->manager->ShutDown();
+		manager->ShutDown();
 	}
 
-	static void RenderImGUIDrawLists(ImDrawData* drawData)
+	/*static void RenderImGUIDrawLists(ImDrawData* drawData)
 	{
 		
-	}
+	}*/
 	
 protected:
 
 	windowManager*				manager;
-	tWindow*					window;
+
+	std::map<tWindow*, ImGuiContext*> windowContextMap;
+	std::vector<tWindow*>		windows;
 
 	tinyClock_t*				sceneClock;
 
@@ -115,25 +138,25 @@ protected:
 	vertexBuffer_t*				defaultVertexBuffer;
 
 	camera*						sceneCamera;
-	const GLchar*				windowName;
+	const char*					windowName;
 	GLuint						programGLID;
-	const GLchar*				tweakBarName;
-	const GLchar*				shaderConfigPath;
+	const char*					tweakBarName;
+	const char*					shaderConfigPath;
 
-	GLuint					imGUIFontTexture;
-	GLint					imGUIShaderhandle;
-	GLint					imGUIVertexHandle;
-	GLint					imGUIFragmentHandle;
-	GLint					imGUITexAttribLocation;
-	GLint					imGUIProjMatrixAttribLocation;
-	GLint					imGUIPositionAttribLocation;
-	GLint					imGUIUVAttribLocation;
-	GLint					imGUIColorAttribLocation;
-	GLuint					imGUIVBOHandle;
-	GLuint					imGUIVAOHandle;
-	GLuint					imGUIIBOHandle;
+	GLuint						imGUIFontTexture;
+	GLint						imGUIShaderhandle;
+	GLint						imGUIVertexHandle;
+	GLint						imGUIFragmentHandle;
+	GLint						imGUITexAttribLocation;
+	GLint						imGUIProjMatrixAttribLocation;
+	GLint						imGUIPositionAttribLocation;
+	GLint						imGUIUVAttribLocation;
+	GLint						imGUIColorAttribLocation;
+	GLuint						imGUIVBOHandle;
+	GLuint						imGUIVAOHandle;
+	GLuint						imGUIIBOHandle;
 
-	bool					isGUIActive;
+	bool						isGUIActive;
 
 	virtual void Update()
 	{
@@ -144,46 +167,61 @@ protected:
 		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
 		
 		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
-		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	virtual void Draw()
 	{
-		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glUseProgram(this->programGLID);
+		for (auto windowIter : windows)
+		{
+			windowIter->MakeCurrentContext();
+			ImGui::SetCurrentContext(windowContextMap[windowIter]);
+			glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+			glUseProgram(this->programGLID);
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		
-		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		DrawGUI(window->name);
-		
-		window->SwapDrawBuffers();
-		glClear(GL_COLOR_BUFFER_BIT);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+
+			glViewport(0, 0, windowIter->resolution.width, windowIter->resolution.height);
+			DrawGUI(windowIter);
+
+			windowIter->SwapDrawBuffers();
+			glClear(GL_COLOR_BUFFER_BIT);
+		}
 	}
 
-	virtual void BuildGUI(ImGuiIO io)
+	virtual void BuildGUI(tWindow* window, ImGuiIO io)
 	{
 		ImGui::Text("FPS %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, 1.0f / sceneClock->GetDeltaTime());
 		ImGui::Text("Total running time %.5f", sceneClock->GetTotalTime());
 		ImGui::Text("Mouse coordinates: \t X: %.0f \t Y: %.0f", io.MousePos.x, io.MousePos.y);
 		ImGui::Text("Window size: \t Width: %i \t Height: %i", window->resolution.width, window->resolution.height);
-		
-		static int interval = 0;
-		if (ImGui::SliderInt("Swap Interval", &interval, 0, 3))
+		if(ImGui::Button("Toggle Fullscreen"))
 		{
-			//manager->SetWindowSwapInterval(window, interval);
+			window->SetStyle(style_t::popup);
+			window->SetPosition(vec2_t<int>::Zero());
+			window->SetResolution(vec2_t<unsigned int>(manager->GetMonitors().back()->extents.right, manager->GetMonitors().back()->extents.bottom));
+			window->ToggleFullscreen(manager->GetMonitors()[0]);
+		}
+
+		static bool interval = true;
+		if (ImGui::Checkbox("Swap Interval", &interval))
+		{
+			manager->SetWindowSwapInterval(window, interval);
 		}
 	}
 
-	virtual void DrawGUI(const char* guiName, ImVec2 beginSize = ImVec2(0, 0))
+	virtual void DrawGUI(tWindow* window, ImVec2 beginSize = ImVec2(0, 0))
 	{
-		ImGUINewFrame();
+
+		//window->MakeCurrentContext();
+		
+		ImGUINewFrame(window);
 		ImGuiIO io = ImGui::GetIO();
-		ImGui::Begin(guiName, &isGUIActive, beginSize);
-		BuildGUI(io);
+		ImGui::Begin(window->name, &isGUIActive, beginSize);
+		BuildGUI(window, io);
 		ImGui::End();
 		ImGui::Render();
-		HandleImGUIRender();
+		HandleImGUIRender(window);
 	}
 
 	virtual void SetupVertexBuffer()
@@ -199,7 +237,7 @@ protected:
 		};
 	}
 
-	static void SetupBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferSize, GLuint bufferUniformHandle, GLenum target, GLenum usage)
+	void SetupBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferSize, GLuint bufferUniformHandle, GLenum target, GLenum usage)
 	{
 		glGenBuffers(1, &bufferHandle);
 		UpdateBuffer(buffer, bufferHandle, bufferSize, target, usage);
@@ -207,7 +245,7 @@ protected:
 	}
 
 	//fuh. ill do it AFTER i've fixed GOL
-	static void UpdateBuffer(void* buffer, GLuint bufferHandle, GLuint bufferSize, GLenum target, GLenum usage)
+	void UpdateBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferSize, GLenum target, GLenum usage)
 	{
 		glBindBuffer(target, bufferHandle);
 		glBufferData(target, bufferSize, buffer, usage);
@@ -216,12 +254,12 @@ protected:
 	virtual void InitializeBuffers()
 	{
 		defaultUniform = new defaultUniformBuffer(this->sceneCamera);
-		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
+		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		defaultUniform->resolution = glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height);
+		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)windows[0]->resolution.width, (GLfloat)windows[0]->resolution.height, 0.0f, 0.01f, 10.0f);
 
 		SetupVertexBuffer();
-		SetupBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), 0, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), 0, gl_uniform_buffer, gl_dynamic_draw);
 		//void* blarg = 
 	}
 
@@ -231,8 +269,9 @@ protected:
 		glUniformBlockBinding(this->programGLID, defaultUniform->uniformHandle, 0);
 	}
 
-	static void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state)
+	virtual void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state)
 	{
+		ImGui::SetCurrentContext(windowContextMap[window]);
 		ImGuiIO& io = ImGui::GetIO();
 
 		switch (button)
@@ -257,52 +296,48 @@ protected:
 		}
 	}
 
-	static void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions)
+	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions)
 	{
-		scene* thisScene = (scene*)window->userData;
-
 		glViewport(0, 0, dimensions.width, dimensions.height);
-		thisScene->defaultUniform->resolution = glm::vec2(dimensions.width, dimensions.height);
-		thisScene->defaultUniform->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
+		defaultUniform->resolution = glm::vec2(dimensions.width, dimensions.height);
+		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
 
-		UpdateBuffer(thisScene->defaultUniform, thisScene->defaultUniform->bufferHandle, sizeof(*defaultUniform), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		thisScene->defaultVertexBuffer->UpdateBuffer(thisScene->defaultUniform->resolution);
+		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
+		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
 	}
 
-	static void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition)
+	virtual void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition)
 	{
-		scene* thisScene = (scene*)window->userData;
-
-		thisScene->defaultUniform->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
-		UpdateBuffer(thisScene->defaultUniform, thisScene->defaultUniform->bufferHandle, sizeof(*defaultUniform), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		ImGui::SetCurrentContext(windowContextMap[window]);
+		defaultUniform->mousePosition = glm::vec2(windowPosition.x, windowPosition.y);
+		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
 		ImGuiIO& io = ImGui::GetIO();
 		io.MousePos = ImVec2((float)windowPosition.x, (float)windowPosition.y); //why screen co-ordinates?
 	}
 
-	static void HandleMaximize(tWindow* window)
+	virtual void HandleMaximize(tWindow* window)
 	{
-		scene* thisScene = (scene*)window->userData;
-
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		thisScene->defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		thisScene->defaultUniform->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
+		defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
+		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
 
 		//bind the uniform buffer and refill it
-		glBindBuffer(GL_UNIFORM_BUFFER, thisScene->defaultUniform->bufferHandle);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(*defaultUniform), thisScene->defaultUniform, GL_DYNAMIC_DRAW);
+		glBindBuffer(gl_uniform_buffer, defaultUniform->bufferHandle);
+		glBufferData(gl_uniform_buffer, sizeof(*defaultUniform), defaultUniform, gl_dynamic_draw);
 
-		thisScene->defaultVertexBuffer->UpdateBuffer(thisScene->defaultUniform->resolution);
+		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
 	}
 
-	static void HandleMouseWheel(tWindow* window, mouseScroll_t scroll)
+	virtual void HandleMouseWheel(tWindow* window, mouseScroll_t scroll)
 	{
-		scene* thisScene = (scene*)window->userData;
+		ImGui::SetCurrentContext(windowContextMap[window]);
 		ImGuiIO& io = ImGui::GetIO();
 		io.MouseWheel += (float)((scroll == mouseScroll_t::down) ? -1 : 1);
 	}
 
-	static void HandleKey(tWindow* window, int key, keyState_t keyState)
+	virtual void HandleKey(tWindow* window, int key, keyState_t keyState)
 	{
+		ImGui::SetCurrentContext(windowContextMap[window]);
 		ImGuiIO& io = ImGui::GetIO();
 		if (key < 255 && keyState == keyState_t::down)
 		{
@@ -328,7 +363,14 @@ protected:
 		}
 	}
 
-	void InitImGUI()
+	virtual void HandleFileDrop(tWindow* window, const std::vector<std::string>& files, const vec2_t<int>& windowMousePosition)
+	{
+		//for eeach file that is dropped in
+		//make sure its a texture 
+		//and load up a new window for each one
+	}
+
+	void InitImGUI(tWindow* window)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
@@ -369,7 +411,7 @@ protected:
 		imGUIFontTexture = 0;
 	}
 
-	void HandleImGUIRender()
+	void HandleImGUIRender(tWindow* window)
 	{
 		ImDrawData* drawData = ImGui::GetDrawData();
 
@@ -388,15 +430,15 @@ protected:
 		GLint lastBlendEquationAlpha;
 		GLint lastViewport[4];
 
-		glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
+		glGetIntegerv(gl_current_program, &lastProgram);
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
-		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
-		glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &lastElementArrayBuffer);
-		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVertexArray);
+		glGetIntegerv(gl_array_buffer_binding, &lastArrayBuffer);
+		glGetIntegerv(gl_element_array_buffer_binding, &lastElementArrayBuffer);
+		glGetIntegerv(gl_vertex_array_binding, &lastVertexArray);
 		glGetIntegerv(GL_BLEND_SRC, &lastBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &lastBlendDst);
-		glGetIntegerv(GL_BLEND_EQUATION_RGB, &lastBlendEquationRGB);
-		glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &lastBlendEquationAlpha);
+		glGetIntegerv(gl_blend_equation_rgb, &lastBlendEquationRGB);
+		glGetIntegerv(gl_blend_equation_alpha, &lastBlendEquationAlpha);
 		glGetIntegerv(GL_VIEWPORT, lastViewport);
 
 		GLboolean lastEnableBlend = glIsEnabled(GL_BLEND);
@@ -405,12 +447,12 @@ protected:
 		GLboolean lastEnableScissorTest = glIsEnabled(GL_SCISSOR_TEST);
 
 		glEnable(GL_BLEND);
-		glBlendEquation(GL_FUNC_ADD);
+		glBlendEquation(gl_func_add);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_SCISSOR_TEST);
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(gl_texture0);
 
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
 		const float orthoProjection[4][4] =
@@ -431,11 +473,11 @@ protected:
 			const ImDrawList* commandList = drawData->CmdLists[numCommandLists];
 			const ImDrawIdx* indexBufferOffset = 0;
 
-			glBindBuffer(GL_ARRAY_BUFFER, imGUIVBOHandle);
-			glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)commandList->VtxBuffer.size() * sizeof(ImDrawVert), (GLvoid*)&commandList->VtxBuffer.front(), GL_STREAM_DRAW);
+			glBindBuffer(gl_array_buffer, imGUIVBOHandle);
+			glBufferData(gl_array_buffer, (GLsizeiptr)commandList->VtxBuffer.size() * sizeof(ImDrawVert), (GLvoid*)&commandList->VtxBuffer.front(), gl_stream_draw);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, imGUIIBOHandle);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)commandList->IdxBuffer.size() * sizeof(ImDrawIdx), (GLvoid*)&commandList->IdxBuffer.front(), GL_STREAM_DRAW);
+			glBindBuffer(gl_element_array_buffer, imGUIIBOHandle);
+			glBufferData(gl_element_array_buffer, (GLsizeiptr)commandList->IdxBuffer.size() * sizeof(ImDrawIdx), (GLvoid*)&commandList->IdxBuffer.front(), gl_stream_draw);
 
 			for (const ImDrawCmd* drawCommand = commandList->CmdBuffer.begin(); drawCommand != commandList->CmdBuffer.end(); drawCommand++)
 			{
@@ -458,8 +500,8 @@ protected:
 		//glActiveTexture(lastActiveTexture);
 		glBindTexture(GL_TEXTURE_2D, lastTexture);
 		glBindVertexArray(lastVertexArray);
-		glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lastElementArrayBuffer);
+		glBindBuffer(gl_array_buffer, lastArrayBuffer);
+		glBindBuffer(gl_element_array_buffer, lastElementArrayBuffer);
 		glBlendEquationSeparate(lastBlendEquationRGB, lastBlendEquationAlpha);
 		glBlendFunc(lastBlendSrc, lastBlendDst);
 		lastEnableBlend ? glEnable(GL_BLEND) : glDisable(GL_BLEND);
@@ -490,7 +532,7 @@ protected:
 		glBindTexture(GL_TEXTURE_2D, lastTexture);
 	}
 
-	void ImGUINewFrame()
+	void ImGUINewFrame(tWindow* drawWindow)
 	{
 		if (!imGUIFontTexture)
 		{
@@ -498,7 +540,7 @@ protected:
 		}
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2((float)window->resolution.width, (float)window->resolution.height);
+		io.DisplaySize = ImVec2((float)drawWindow->resolution.width, (float)drawWindow->resolution.height);
 		io.DisplayFramebufferScale = ImVec2(1, 1);
 		io.DeltaTime = (float)sceneClock->GetDeltaTime();
 
@@ -510,10 +552,10 @@ protected:
 
 		GLint lastTexture, lastArrayBuffer, LastVertexArray;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
-		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
-		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &LastVertexArray);
+		glGetIntegerv(gl_array_buffer_binding, &lastArrayBuffer);
+		glGetIntegerv(gl_vertex_array_binding, &LastVertexArray);
 
-		const GLchar *vertex_shader =
+		const char *vertex_shader =
 			"#version 330\n"
 			"uniform mat4 ProjMtx;\n"
 			"in vec2 Position;\n"
@@ -528,7 +570,7 @@ protected:
 			"	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
 			"}\n";
 
-		const GLchar* fragment_shader =
+		const char* fragment_shader =
 			"#version 330\n"
 			"uniform sampler2D Texture;\n"
 			"in vec2 Frag_UV;\n"
@@ -540,8 +582,8 @@ protected:
 			"}\n";
 
 		imGUIShaderhandle = glCreateProgram();
-		imGUIVertexHandle = glCreateShader(GL_VERTEX_SHADER);
-		imGUIFragmentHandle = glCreateShader(GL_FRAGMENT_SHADER);
+		imGUIVertexHandle = glCreateShader(gl_vertex_shader);
+		imGUIFragmentHandle = glCreateShader(gl_fragment_shader);
 		glShaderSource(imGUIVertexHandle, 1, &vertex_shader, 0);
 		glShaderSource(imGUIFragmentHandle, 1, &fragment_shader, 0);
 		glCompileShader(imGUIVertexHandle);
@@ -561,22 +603,22 @@ protected:
 
 		glGenVertexArrays(1, &imGUIVAOHandle);
 		glBindVertexArray(imGUIVAOHandle);
-		glBindBuffer(GL_ARRAY_BUFFER, imGUIVBOHandle);
+		glBindBuffer(gl_array_buffer, imGUIVBOHandle);
 		glEnableVertexAttribArray(imGUIPositionAttribLocation);
 		glEnableVertexAttribArray(imGUIUVAttribLocation);
 		glEnableVertexAttribArray(imGUIColorAttribLocation);
 
 #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
-		glVertexAttribPointer(imGUIPositionAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos)); //ffs
-		glVertexAttribPointer(imGUIUVAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
-		glVertexAttribPointer(imGUIColorAttribLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
+		glVertexAttribPointer(imGUIPositionAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)offsetof(ImDrawVert, pos));
+		glVertexAttribPointer(imGUIUVAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)offsetof(ImDrawVert, uv));
+		glVertexAttribPointer(imGUIColorAttribLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)offsetof(ImDrawVert, col));
 #undef OFFSETOF
 
 		ImGUICreateFontsTexture();
 
 		//restore GL state
 		glBindTexture(GL_TEXTURE_2D, lastTexture); //why do the values change?
-		glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer);
+		glBindBuffer(gl_array_buffer, lastArrayBuffer);
 		glBindVertexArray(LastVertexArray);
 	}
 
@@ -624,62 +666,62 @@ protected:
 		GLuint id,
 		GLenum severity,
 		GLsizei length,
-		const GLchar* message,
+		const char* message,
 		const void* userParam)
 	{
 		printf("---------------------opengl-callback-start------------\n");
 		printf("type: ");
 		switch (type)
 		{
-		case GL_DEBUG_TYPE_ERROR:
+		case gl_debug_type_error:
 		{
 			printf("error\n");
 			break;
 		}
 
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		case gl_debug_type_deprecated_behavior:
 		{
 			printf("deprecated behavior\n");
 			break;
 		}
 
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		case gl_debug_type_undefined_behavior:
 		{
 			printf("undefined behavior\n");
 			break;
 		}
 
-		case GL_DEBUG_TYPE_PERFORMANCE:
+		case gl_debug_type_performance:
 		{
 			printf("performance\n");
 			break;
 		}
 
-		case GL_DEBUG_TYPE_PORTABILITY:
+		case gl_debug_type_portability:
 		{
 			printf("portability\n");
 			break;
 		}
 		
-		case GL_DEBUG_TYPE_MARKER:
+		case gl_debug_type_marker:
 		{
 			printf("marker\n");
 			break;
 		}
 
-		case GL_DEBUG_TYPE_PUSH_GROUP:
+		case gl_debug_type_push_group:
 		{
 			printf("push group\n");
 			break;
 		}
 
-		case GL_DEBUG_TYPE_POP_GROUP:
+		case gl_debug_type_pop_group:
 		{
 			printf("pop group\n");
 			break;
 		}
 		
-		case GL_DEBUG_TYPE_OTHER:
+		case gl_debug_type_other:
 		{
 			printf("other\n");
 			break;
@@ -692,19 +734,19 @@ protected:
 		switch (severity)
 		{
 
-		case GL_DEBUG_SEVERITY_LOW:
+		case gl_debug_severity_low:
 		{
 			printf("low \n");
 			break;
 		}
 
-		case GL_DEBUG_SEVERITY_MEDIUM:
+		case gl_debug_severity_medium:
 		{
 			printf("medium \n");
 			break;
 		}
 
-		case GL_DEBUG_SEVERITY_HIGH:
+		case gl_debug_severity_high:
 		{
 			printf("high \n");
 			break;
@@ -714,37 +756,37 @@ protected:
 		printf("Source: ");
 		switch (source)
 		{
-		case GL_DEBUG_SOURCE_API:
+		case gl_debug_source_api:
 		{
 			printf("API\n");
 			break;
 		}
 
-		case GL_DEBUG_SOURCE_SHADER_COMPILER:
+		case gl_debug_source_shader_compiler:
 		{
 			printf("shader compiler\n");
 			break;
 		}
 
-		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+		case gl_debug_source_window_system:
 		{
 			printf("window system\n");
 			break;
 		}
 
-		case GL_DEBUG_SOURCE_THIRD_PARTY:
+		case gl_debug_source_third_party:
 		{
 			printf("third party\n");
 			break;
 		}
 
-		case GL_DEBUG_SOURCE_APPLICATION:
+		case gl_debug_source_application:
 		{
 			printf("application\n");
 			break;
 		}
 
-		case GL_DEBUG_SOURCE_OTHER:
+		case gl_debug_source_other:
 		{
 			printf("other\n");
 			break;

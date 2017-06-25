@@ -88,7 +88,7 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupBuffer(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle, sizeof(*parallaxSettingsBuffer), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle, sizeof(*parallaxSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	void SetupParallaxUniforms()
@@ -107,8 +107,8 @@ protected:
 	{
 		scene::Update();
 		//UpdateBuffer()
-		//UpdateBuffer(pixelizeSettings, pixelizeSettings->bufferHandle, sizeof(*pixelizeSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		UpdateBuffer(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle, sizeof(*parallaxSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		//UpdateBuffer(pixelizeSettings, pixelizeSettings->bufferHandle, sizeof(*pixelizeSettings), gl_uniform_buffer, gl_dynamic_draw);
+		UpdateBuffer(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle, sizeof(*parallaxSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	void Draw() override

@@ -44,6 +44,13 @@ public:
 		}*/
 	}
 
+	virtual void HandleFileDrop(tWindow* window, const std::vector<std::string>& files, const vec2_t<int>& windowMousePosition)
+	{
+		//for each file that is dropped in
+		//make sure its a texture 
+		//and load up a new window for each one
+	}
+
 	virtual void Draw() override
 	{
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
@@ -55,6 +62,12 @@ public:
 
 		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	virtual void SetupCallbacks() override
+	{
+		scene::SetupCallbacks();
+		manager->fileDropEvent = std::bind(&texturedScene::HandleFileDrop, this, _1, _2, _3);
 	}
 
 protected:

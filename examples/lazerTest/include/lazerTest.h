@@ -470,7 +470,7 @@ protected:
 	{
 		//wait for events is not an option here. we must poll to receive continuous input
 		scene::Update();
-		//UpdateBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		//UpdateBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), gl_uniform_buffer, gl_dynamic_draw);
 
 		ReadData(255);
 

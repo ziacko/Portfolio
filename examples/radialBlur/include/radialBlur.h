@@ -60,13 +60,13 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		UpdateBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), gl_uniform_buffer, gl_dynamic_draw);
 	}
 };
 #endif

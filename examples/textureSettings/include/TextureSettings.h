@@ -24,7 +24,7 @@ public:
 
 		//aaaahhhh much nicer!
 		//mag
-		/*if (ImGui::ListBox("mag filter setting", &magFilterIndex, magFilterSettings.data(), magFilterSettings.size()))
+		if (ImGui::ListBox("mag filter setting", &magFilterIndex, magFilterSettings.data(), magFilterSettings.size()))
 		{
 			defaultTexture->SetMagFilter(magFilterSetting);
 		}
@@ -44,7 +44,7 @@ public:
 		if (ImGui::ListBox("T wrap texture setting", &tWrapIndex, wrapSettings.data(), wrapSettings.size()))
 		{
 			defaultTexture->SetWrapT(tWrapIndex);
-		}*/
+		}
 		//R wrap setting (3D textures) //not doing 3D right now so I'll leave it out
 		/*if (ImGui::ListBox("R wrap texture setting", &rWrapIndex, wrapSettings.data(), wrapSettings.size()))
 		{

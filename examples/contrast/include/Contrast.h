@@ -49,13 +49,13 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		UpdateBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 };

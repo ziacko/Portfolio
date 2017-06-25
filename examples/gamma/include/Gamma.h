@@ -49,13 +49,13 @@ protected:
 	void InitializeBuffers() override
 	{
 		scene::InitializeBuffers();
-		SetupBuffer(gammaSettings, gammaSettings->bufferHandle, sizeof(*gammaSettings), 1, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		SetupBuffer(gammaSettings, gammaSettings->bufferHandle, sizeof(*gammaSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(gammaSettings, gammaSettings->bufferHandle, sizeof(*gammaSettings), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
+		UpdateBuffer(gammaSettings, gammaSettings->bufferHandle, sizeof(*gammaSettings), gl_uniform_buffer, gl_dynamic_draw);
 	}
 };
 
