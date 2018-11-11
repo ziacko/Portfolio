@@ -21,7 +21,7 @@ struct cellShadeSettings_t
 		this->cellDistance = cellDistance;
 	}
 
-	~cellShadeSettings_t( void ){};
+	~cellShadeSettings_t(){};
 };
 
 class cellShadingScene : public texturedScene
@@ -44,9 +44,9 @@ protected:
 
 	cellShadeSettings_t*		cellShadeSettingsBuffer;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 		ImGui::SliderFloat("red modifier", &cellShadeSettingsBuffer->redModifier, 0.0f, 1.0f);
 		ImGui::SliderFloat("green modifier", &cellShadeSettingsBuffer->greenModifier, 0.0f, 1.0f);
 		ImGui::SliderFloat("blue modifier", &cellShadeSettingsBuffer->blueModifier, 0.0f, 1.0f);
@@ -55,7 +55,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(cellShadeSettingsBuffer, cellShadeSettingsBuffer->bufferHandle, sizeof(*cellShadeSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

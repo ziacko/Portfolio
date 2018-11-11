@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -64,7 +66,7 @@ namespace Blender {
 // * C++ style comments only
 //
 // * Structures may include the primitive types char, int, short,
-//   float, double. Signedness specifiers are not allowed on
+//   float, double. Signed specifiers are not allowed on
 //   integers. Enum types are allowed, but they must have been
 //   defined in this header.
 //
@@ -85,14 +87,23 @@ namespace Blender {
 //   provided they are neither pointers nor arrays.
 //
 // * One of WARN, FAIL can be appended to the declaration (
-//   prior to the semiolon to specifiy the error handling policy if
+//   prior to the semicolon to specify the error handling policy if
 //   this field is missing in the input DNA). If none of those
-//   is specified the default policy is to subtitute a default
+//   is specified the default policy is to substitute a default
 //   value for the field.
 //
 
-#define WARN // warn if field is missing, substitute default value
-#define FAIL // fail the import if the field does not exist
+// warn if field is missing, substitute default value
+#ifdef WARN
+#  undef WARN
+#endif
+#define WARN 
+
+// fail the import if the field does not exist
+#ifdef FAIL
+#  undef FAIL
+#endif
+#define FAIL 
 
 struct Object;
 struct MTex;
@@ -102,16 +113,16 @@ struct Image;
 
 #define AI_BLEND_MESH_MAX_VERTS 2000000000L
 
+static const size_t MaxNameLen = 1024;
+
 // -------------------------------------------------------------------------------
 struct ID : ElemBase {
-
-    char name[1024] WARN;
+    char name[ MaxNameLen ] WARN;
     short flag;
 };
 
 // -------------------------------------------------------------------------------
 struct ListBase : ElemBase {
-
     std::shared_ptr<ElemBase> first;
     std::shared_ptr<ElemBase> last;
 };
@@ -126,7 +137,6 @@ struct PackedFile : ElemBase {
 
 // -------------------------------------------------------------------------------
 struct GroupObject : ElemBase {
-
     std::shared_ptr<GroupObject> prev,next FAIL;
     std::shared_ptr<Object> ob;
 };
@@ -142,16 +152,21 @@ struct Group : ElemBase {
 // -------------------------------------------------------------------------------
 struct World : ElemBase {
     ID id FAIL;
-
 };
 
 // -------------------------------------------------------------------------------
 struct MVert : ElemBase {
     float co[3] FAIL;
-    float no[3] FAIL;
+    float no[3] FAIL;       // readed as short and divided through / 32767.f
     char flag;
     int mat_nr WARN;
     int bweight;
+
+    MVert() : ElemBase()
+        , flag(0)
+        , mat_nr(0)
+        , bweight(0)
+    {}
 };
 
 // -------------------------------------------------------------------------------
@@ -217,6 +232,13 @@ struct TFace : ElemBase {
 
 // -------------------------------------------------------------------------------
 struct MTFace : ElemBase {
+	MTFace()
+	: flag(0)
+	, mode(0)
+	, tile(0)
+	, unwrap(0)
+	{
+	}
 
     float uv[4][2] FAIL;
     char flag;
@@ -235,7 +257,6 @@ struct MDeformWeight : ElemBase  {
 
 // -------------------------------------------------------------------------------
 struct MDeformVert : ElemBase  {
-
     vector<MDeformWeight> dw WARN;
     int totweight;
 };
@@ -263,7 +284,6 @@ struct Material : ElemBase {
     float roughness;
     float darkness;
     float refrac;
-
 
     float amb;
     float ang;
@@ -355,6 +375,72 @@ struct Material : ElemBase {
     std::shared_ptr<MTex> mtex[18];
 };
 
+/*
+CustomDataLayer 104
+
+    int type 0 4
+    int offset 4 4
+    int flag 8 4
+    int active 12 4
+    int active_rnd 16 4
+    int active_clone 20 4
+    int active_mask 24 4
+    int uid 28 4
+    char name 32 64
+    void *data 96 8
+*/
+struct CustomDataLayer : ElemBase {
+    int type;
+    int offset;
+    int flag;
+    int active;
+    int active_rnd;
+    int active_clone;
+    int active_mask;
+    int uid;
+    char name[64];
+    std::shared_ptr<ElemBase> data;     // must be converted to real type according type member
+
+    CustomDataLayer()
+        : ElemBase()
+        , type(0)
+        , offset(0)
+        , flag(0)
+        , active(0)
+        , active_rnd(0)
+        , active_clone(0)
+        , active_mask(0)
+        , uid(0)
+        , data(nullptr)
+    {
+        memset(name, 0, sizeof name);
+    }
+};
+
+/*
+CustomData 208
+
+    CustomDataLayer *layers 0 8
+    int typemap 8 168
+    int pad_i1 176 4
+    int totlayer 180 4
+    int maxlayer 184 4
+    int totsize 188 4
+    BLI_mempool *pool 192 8
+    CustomDataExternal *external 200 8
+*/
+struct CustomData : ElemBase {
+    vector<std::shared_ptr<struct CustomDataLayer> > layers;
+    int typemap[42];    // CD_NUMTYPES
+    int totlayer;
+    int maxlayer;
+    int totsize;
+    /*
+    std::shared_ptr<BLI_mempool> pool;
+    std::shared_ptr<CustomDataExternal> external;
+    */
+};
+
 // -------------------------------------------------------------------------------
 struct Mesh : ElemBase {
     ID id FAIL;
@@ -384,6 +470,12 @@ struct Mesh : ElemBase {
     vector<MCol> mcol;
 
     vector< std::shared_ptr<Material> > mat FAIL;
+
+    struct CustomData vdata;
+    struct CustomData edata;
+    struct CustomData fdata;
+    struct CustomData pdata;
+    struct CustomData ldata;
 };
 
 // -------------------------------------------------------------------------------
@@ -612,6 +704,17 @@ struct Object : ElemBase  {
     std::shared_ptr<ElemBase> data FAIL;
 
     ListBase modifiers;
+
+    Object()
+    : ElemBase()
+    , type( Type_EMPTY )
+    , parent( nullptr )
+    , track()
+    , proxy()
+    , proxy_from()
+    , data() {
+        // empty
+    }
 };
 
 
@@ -620,6 +723,15 @@ struct Base : ElemBase {
     Base* prev WARN;
     std::shared_ptr<Base> next WARN;
     std::shared_ptr<Object> object WARN;
+
+    Base() 
+    : ElemBase()
+    , prev( nullptr )
+    , next()
+    , object() {
+        // empty
+        // empty
+    }
 };
 
 // -------------------------------------------------------------------------------
@@ -631,8 +743,15 @@ struct Scene : ElemBase {
     std::shared_ptr<Base> basact WARN;
 
     ListBase base;
-};
 
+    Scene()
+    : ElemBase()
+    , camera()
+    , world()
+    , basact() {
+        // empty
+    }
+};
 
 // -------------------------------------------------------------------------------
 struct Image : ElemBase {
@@ -660,6 +779,11 @@ struct Image : ElemBase {
     short animspeed;
 
     short gen_x, gen_y, gen_type;
+    
+    Image()
+    : ElemBase() {
+        // empty
+    }
 };
 
 // -------------------------------------------------------------------------------
@@ -747,6 +871,14 @@ struct Tex : ElemBase {
     //VoxelData *vd;
 
     //char use_nodes;
+
+    Tex()
+    : ElemBase()
+    , imaflag( ImageFlags_INTERPOL )
+    , type( Type_CLOUDS )
+    , ima() {
+        // empty
+    }
 };
 
 // -------------------------------------------------------------------------------
@@ -835,9 +967,13 @@ struct MTex : ElemBase {
     //float lifefac, sizefac, ivelfac, pvelfac;
     //float shadowfac;
     //float zenupfac, zendownfac, blendfac;
+
+    MTex()
+    : ElemBase() {
+        // empty
+    }
 };
 
-
-    }
+}
 }
 #endif

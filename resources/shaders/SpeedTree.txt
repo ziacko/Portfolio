@@ -1,0 +1,17 @@
+1
+treeProgram
+5
+positon
+normal
+tangent
+biTangent
+uv
+1
+outColor
+2
+modelVertex
+Vertex
+../../resources/shaders/Model.vert
+TreeFragment
+Fragment
+../../resources/shaders/SpeedTree.frag

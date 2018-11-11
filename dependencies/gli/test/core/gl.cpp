@@ -179,7 +179,7 @@ namespace es20
 			gli::texture2d TextureA(gli::FORMAT_RGBA16_SFLOAT_PACK16, gli::texture2d::extent_type(2), 1, gli::texture2d::swizzles_type(gli::SWIZZLE_RED, gli::SWIZZLE_GREEN, gli::SWIZZLE_BLUE, gli::SWIZZLE_ALPHA));
 			gli::gl::format FormatA = GL.translate(TextureA.format(), TextureA.swizzles());
 
-			// With OpenGL ES 2, the internal format is the external format so Internal is pretty much moot but this is the responsability of GLI user.
+			// With OpenGL ES 2, the internal format is the external format so Internal is pretty much moot but this is the responsibility of GLI user.
 			Error += FormatA.Internal == gli::gl::INTERNAL_RGBA16F ? 0 : 1;
 			Error += FormatA.External == gli::gl::EXTERNAL_RGBA ? 0 : 1;
 			Error += FormatA.Type == gli::gl::TYPE_F16_OES ? 0 : 1;

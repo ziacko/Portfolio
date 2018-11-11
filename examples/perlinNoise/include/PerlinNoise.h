@@ -127,9 +127,9 @@ protected:
 
 	static perlinSettings_t*		perlinSettingsBuffer;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		scene::BuildGUI(io); 
+		scene::BuildGUI(window, io); 
 
 		ImGui::SliderFloat("modifier value", &perlinSettingsBuffer->modValue, 0.0f, 1000.0f);
 		ImGui::SliderFloat("permutation value", &perlinSettingsBuffer->permuteValue, 0.0f, 100.0f);
@@ -174,7 +174,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle, sizeof(*perlinSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
@@ -188,9 +188,9 @@ protected:
 	{
 		UpdateBuffer(perlinSettingsBuffer, perlinSettingsBuffer->bufferHandle, sizeof(*perlinSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 		glUseProgram(this->programGLID);
-		glDrawArrays(GL_QUADS, 0, 4);
-		DrawGUI(window->name);
-		window->SwapDrawBuffers();
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		DrawGUI(windows[0]);
+		windows[0]->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 };

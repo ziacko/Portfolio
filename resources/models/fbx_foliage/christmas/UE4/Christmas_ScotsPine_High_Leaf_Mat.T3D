@@ -1,0 +1,97 @@
+Begin Object Class=/Script/Engine.Material Name="Christmas_ScotsPine_High_Leaf_Mat"
+   Begin Object Class=/Script/Engine.MaterialExpressionConstantBiasScale Name="MaterialExpressionConstantBiasScale_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionSpeedTree Name="MaterialExpressionSpeedTree_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_1"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_2"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVertexColor Name="MaterialExpressionVertexColor_0"
+   End Object
+   Begin Object Class=/Script/UnrealEd.SceneThumbnailInfoWithPrimitive Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   Begin Object Name="MaterialExpressionConstantBiasScale_0"
+      Input=(Expression=MaterialExpressionTextureSample'"Christmas_ScotsPine_High_Leaf_Mat:MaterialExpressionTextureSample_1"')
+      Bias=-0.500000
+      Scale=2.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=266
+      MaterialExpressionGuid=45C1EB1A40BBC7C10C7E5C9C48259007
+      Material=Material'"Christmas_ScotsPine_High_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_0"
+      A=(Expression=MaterialExpressionTextureSample'"Christmas_ScotsPine_High_Leaf_Mat:MaterialExpressionTextureSample_0"',Mask=1,MaskA=1)
+      B=(Expression=MaterialExpressionVertexColor'"Christmas_ScotsPine_High_Leaf_Mat:MaterialExpressionVertexColor_0"',Mask=1,MaskA=1)
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=66
+      MaterialExpressionGuid=7FBBDA8D4BBDE83EF0925DB637DED0C1
+      Material=Material'"Christmas_ScotsPine_High_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionSpeedTree_0"
+      GeometryType=STG_Leaf
+      BillboardThreshold=1.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=466
+      MaterialExpressionGuid=9C4825D44076205A68210582BA220A4C
+      Material=Material'"Christmas_ScotsPine_High_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_0"
+      Texture=Texture2D'"/Game/models/christmas/Christmas_ScotsPine_High_Color_Tex.Christmas_ScotsPine_High_Color_Tex"'
+      MaterialExpressionEditorX=-600
+      MaterialExpressionGuid=658D838440D7E80EA5D7E49C1B098C29
+      Material=Material'"Christmas_ScotsPine_High_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_1"
+      Texture=Texture2D'"/Game/models/christmas/Christmas_ScotsPine_High_Normal_Tex.Christmas_ScotsPine_High_Normal_Tex"'
+      SamplerType=SAMPLERTYPE_LinearColor
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=200
+      MaterialExpressionGuid=01AB25E04DBF5446F0B86FA369642D9C
+      Material=Material'"Christmas_ScotsPine_High_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_2"
+      Texture=Texture2D'"/Game/models/christmas/Christmas_ScotsPine_High_Subsurface_Tex.Christmas_ScotsPine_High_Subsurface_Tex"'
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=666
+      MaterialExpressionGuid=C56AC1E14AB56638FF37AB8283D2BE49
+      Material=Material'"Christmas_ScotsPine_High_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionVertexColor_0"
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=400
+      MaterialExpressionGuid=C36E6C234D02D2D26469209D5CBB1A3D
+      Material=Material'"Christmas_ScotsPine_High_Leaf_Mat"'
+   End Object
+   Begin Object Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   BaseColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"')
+   Roughness=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"',Mask=1,MaskA=1)
+   Normal=(Expression=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"')
+   OpacityMask=(Expression=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"')
+   BlendMode=BLEND_Masked
+   ShadingModel=MSM_TwoSidedFoliage
+   WorldPositionOffset=(Expression=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"')
+   SubsurfaceColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_2"')
+   AmbientOcclusion=(Expression=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"',Mask=1,MaskR=1)
+   TwoSided=True
+   DitheredLODTransition=True
+   Expressions(0)=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"'
+   Expressions(1)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"'
+   Expressions(2)=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"'
+   Expressions(3)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"'
+   Expressions(4)=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"'
+   Expressions(5)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_2"'
+   Expressions(6)=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"'
+   StateId=7F3657754043D4051D44E1862048591B
+   ReferencedTextureGuids(0)=C1ADA21D4E2696DD92061B8903A90935
+   ReferencedTextureGuids(1)=20D4D874419CCEA078F40FA5638E5C33
+   ReferencedTextureGuids(2)=B86713EF44416686EFC58E99C15479C3
+   LightmassSettings=(bCastShadowAsMasked=True)
+   ThumbnailInfo=SceneThumbnailInfoWithPrimitive'"SceneThumbnailInfoWithPrimitive_0"'
+   LightingGuid=79D1E2A840B90568359597823C0150EA
+End Object

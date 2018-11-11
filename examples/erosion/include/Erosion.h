@@ -41,16 +41,16 @@ protected:
 
 	erosionSettings_t*		erosionSettings;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(windows[0], io);
 		ImGui::SliderFloat("erosion strength X", &erosionSettings->strengthX, 0.0f, 10.0f);
 		ImGui::SliderFloat("erosion strength Y", &erosionSettings->strengthY, 0.0f, 10.0f);
 	}
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(erosionSettings, erosionSettings->bufferHandle, sizeof(*erosionSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

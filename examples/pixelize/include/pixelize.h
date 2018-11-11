@@ -40,9 +40,9 @@ protected:
 
 	pixelizeSettings_t*		pixelizeSettings;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 
 		ImGui::SliderFloat("pixel width", &pixelizeSettings->pixelWidth, 0.0f, 100.0f, "%.0f");
 		ImGui::SliderFloat("pixel height", &pixelizeSettings->pixelHeight, 0.0f, 100.0f, "%.0f");
@@ -50,7 +50,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(pixelizeSettings, pixelizeSettings->bufferHandle, sizeof(*pixelizeSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

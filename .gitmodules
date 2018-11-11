@@ -13,3 +13,12 @@
 [submodule "dependencies/tinyclock"]
 	path = dependencies/tinyclock
 	url = https://github.com/ziacko/tinyclock.git
+[submodule "dependencies/gli"]
+	path = dependencies/gli
+	url = https://github.com/g-truc/gli
+[submodule "dependencies/assimp"]
+	path = dependencies/assimp
+	url = https://github.com/assimp/assimp
+[submodule "dependencies/imgui"]
+	path = dependencies/imgui
+	url = https://github.com/ocornut/imgui

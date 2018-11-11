@@ -3,7 +3,9 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 
 All rights reserved.
 
@@ -47,15 +49,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ASSIMP_BUILD_NO_MD5_IMPORTER
 
 // internal headers
-#include "RemoveComments.h"
+#include <assimp/RemoveComments.h>
 #include "MD5Loader.h"
-#include "StringComparison.h"
-#include "fast_atof.h"
-#include "SkeletonMeshBuilder.h"
+#include <assimp/StringComparison.h>
+#include <assimp/fast_atof.h>
+#include <assimp/SkeletonMeshBuilder.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/IOSystem.hpp>
 #include <assimp/DefaultLogger.hpp>
+#include <assimp/importerdesc.h>
 #include <memory>
 
 using namespace Assimp;
@@ -228,8 +231,8 @@ void MD5Importer::MakeDataUnique (MD5::MeshDesc& meshSrc)
     std::vector<bool> abHad(meshSrc.mVertices.size(),false);
 
     // allocate enough storage to keep the output structures
-    const unsigned int iNewNum = meshSrc.mFaces.size()*3;
-    unsigned int iNewIndex = meshSrc.mVertices.size();
+    const unsigned int iNewNum = static_cast<unsigned int>(meshSrc.mFaces.size()*3);
+    unsigned int iNewIndex = static_cast<unsigned int>(meshSrc.mVertices.size());
     meshSrc.mVertices.resize(iNewNum);
 
     // try to guess how much storage we'll need for new weights
@@ -356,7 +359,7 @@ void MD5Importer::LoadMD5MeshFile ()
 
     // Check whether we can read from the file
     if( file.get() == NULL || !file->FileSize())    {
-        DefaultLogger::get()->warn("Failed to access MD5MESH file: " + pFile);
+        ASSIMP_LOG_WARN("Failed to access MD5MESH file: " + pFile);
         return;
     }
     bHadMD5Mesh = true;
@@ -479,7 +482,7 @@ void MD5Importer::LoadMD5MeshFile ()
                 for (unsigned int jub = (*iter).mFirstWeight, w = jub; w < jub + (*iter).mNumWeights;++w)
                     fSum += meshSrc.mWeights[w].mWeight;
                 if (!fSum) {
-                    DefaultLogger::get()->error("MD5MESH: The sum of all vertex bone weights is 0");
+                    ASSIMP_LOG_ERROR("MD5MESH: The sum of all vertex bone weights is 0");
                     continue;
                 }
 
@@ -571,7 +574,7 @@ void MD5Importer::LoadMD5AnimFile ()
 
     // Check whether we can read from the file
     if( !file.get() || !file->FileSize())   {
-        DefaultLogger::get()->warn("Failed to read MD5ANIM file: " + pFile);
+        ASSIMP_LOG_WARN("Failed to read MD5ANIM file: " + pFile);
         return;
     }
     LoadFileIntoMemory(file.get());
@@ -585,8 +588,7 @@ void MD5Importer::LoadMD5AnimFile ()
     // generate and fill the output animation
     if (animParser.mAnimatedBones.empty() || animParser.mFrames.empty() ||
         animParser.mBaseFrames.size() != animParser.mAnimatedBones.size())  {
-
-        DefaultLogger::get()->error("MD5ANIM: No frames or animated bones loaded");
+        ASSIMP_LOG_ERROR("MD5ANIM: No frames or animated bones loaded");
     }
     else {
         bHadMD5Anim = true;
@@ -719,16 +721,16 @@ void MD5Importer::LoadMD5CameraFile ()
     // every cut is written to a separate aiAnimation
     if (!cuts.size()) {
         cuts.push_back(0);
-        cuts.push_back(frames.size()-1);
+        cuts.push_back(static_cast<unsigned int>(frames.size()-1));
     }
     else {
         cuts.insert(cuts.begin(),0);
 
         if (cuts.back() < frames.size()-1)
-            cuts.push_back(frames.size()-1);
+            cuts.push_back(static_cast<unsigned int>(frames.size()-1));
     }
 
-    pScene->mNumAnimations = cuts.size()-1;
+    pScene->mNumAnimations = static_cast<unsigned int>(cuts.size()-1);
     aiAnimation** tmp = pScene->mAnimations = new aiAnimation*[pScene->mNumAnimations];
     for (std::vector<unsigned int>::const_iterator it = cuts.begin(); it != cuts.end()-1; ++it) {
 

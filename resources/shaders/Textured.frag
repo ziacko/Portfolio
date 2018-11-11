@@ -3,14 +3,14 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 out vec4 outColor;
 
-uniform sampler2D defaultTexture;
+layout(binding = 0) uniform sampler2D defaultTexture;
 
 void main()
 {
-	outColor = texture2D(defaultTexture, inBlock.UV);
+	outColor = texture2D(defaultTexture, inBlock.uv);
 }

@@ -15,6 +15,7 @@ public:
 	GLfloat				deltaTime;
 	GLfloat				totalTime;
 	GLfloat				framesPerSec;
+	GLuint				totalFrames;
 	GLuint				bufferHandle;
 	GLuint				uniformHandle;
 
@@ -28,6 +29,7 @@ public:
 		this->view = view;
 		this->translation = translation;
 		this->resolution = resolution;
+		totalFrames = 1;
 	}
 
 	defaultUniformBuffer(camera* defaultCamera)// : uniformBuffer_t()
@@ -38,6 +40,7 @@ public:
 		this->view = defaultCamera->view;
 		this->translation = defaultCamera->translation;
 		this->resolution = defaultCamera->resolution;
+		totalFrames = 1;
 	}
 
 	defaultUniformBuffer(){};

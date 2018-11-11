@@ -41,16 +41,16 @@ protected:
 
 	dilationSettings_t*			dilationSettings;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 		ImGui::SliderFloat("dilation strength X", &dilationSettings->strengthX, 0.0f, 10.0f);
 		ImGui::SliderFloat("dilation strength Y", &dilationSettings->strengthY, 0.0f, 10.0f);
 	}
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(dilationSettings, dilationSettings->bufferHandle, sizeof(*dilationSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

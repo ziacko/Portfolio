@@ -38,9 +38,9 @@ protected:
 
 	gammaSettings_t*		gammaSettings;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 		ImGui::SliderFloat("gamma red", &gammaSettings->gammaSettings.r, 0.f, 10.0f);
 		ImGui::SliderFloat("gamma green", &gammaSettings->gammaSettings.g, 0.0f, 10.0f);
 		ImGui::SliderFloat("gamma blue", &gammaSettings->gammaSettings.b, 0.0f, 10.0f);
@@ -48,7 +48,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(gammaSettings, gammaSettings->bufferHandle, sizeof(*gammaSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

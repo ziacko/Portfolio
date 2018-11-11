@@ -1,0 +1,98 @@
+Begin Object Class=/Script/Engine.Material Name="Broadleaf_Hero_Forest_Leaf_Mat"
+   Begin Object Class=/Script/Engine.MaterialExpressionConstantBiasScale Name="MaterialExpressionConstantBiasScale_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionSpeedTree Name="MaterialExpressionSpeedTree_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_1"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_2"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVertexColor Name="MaterialExpressionVertexColor_0"
+   End Object
+   Begin Object Class=/Script/UnrealEd.SceneThumbnailInfoWithPrimitive Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   Begin Object Name="MaterialExpressionConstantBiasScale_0"
+      Input=(Expression=MaterialExpressionTextureSample'"Broadleaf_Hero_Forest_Leaf_Mat:MaterialExpressionTextureSample_1"')
+      Bias=-0.500000
+      Scale=2.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=266
+      MaterialExpressionGuid=D3793E7A43B1497ACB704D92AD5321EA
+      Material=Material'"Broadleaf_Hero_Forest_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_0"
+      A=(Expression=MaterialExpressionTextureSample'"Broadleaf_Hero_Forest_Leaf_Mat:MaterialExpressionTextureSample_0"',Mask=1,MaskA=1)
+      B=(Expression=MaterialExpressionVertexColor'"Broadleaf_Hero_Forest_Leaf_Mat:MaterialExpressionVertexColor_0"',Mask=1,MaskA=1)
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=66
+      MaterialExpressionGuid=BD7FEA09441C86CDEDA62C997CED0D2C
+      Material=Material'"Broadleaf_Hero_Forest_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionSpeedTree_0"
+      GeometryType=STG_Leaf
+      WindType=STW_BestPlus
+      BillboardThreshold=1.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=466
+      MaterialExpressionGuid=27B9AABA464DB4986319DA88E269E614
+      Material=Material'"Broadleaf_Hero_Forest_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_0"
+      Texture=Texture2D'"/Game/models/vroadleaf_hero/Broadleaf_Hero_Forest_Color_Tex.Broadleaf_Hero_Forest_Color_Tex"'
+      MaterialExpressionEditorX=-600
+      MaterialExpressionGuid=3673CE074790B0ED2476A0B08C1FB9E1
+      Material=Material'"Broadleaf_Hero_Forest_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_1"
+      Texture=Texture2D'"/Game/models/vroadleaf_hero/Broadleaf_Hero_Forest_Normal_Tex.Broadleaf_Hero_Forest_Normal_Tex"'
+      SamplerType=SAMPLERTYPE_LinearColor
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=200
+      MaterialExpressionGuid=2EAA9ABD40868415FECB1EB96EBD5A42
+      Material=Material'"Broadleaf_Hero_Forest_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_2"
+      Texture=Texture2D'"/Game/models/vroadleaf_hero/Broadleaf_Hero_Forest_Subsurface_Tex.Broadleaf_Hero_Forest_Subsurface_Tex"'
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=666
+      MaterialExpressionGuid=F7A4217A43E4B3A57921D6833FE33936
+      Material=Material'"Broadleaf_Hero_Forest_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionVertexColor_0"
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=400
+      MaterialExpressionGuid=67D5B7BC40095575FDE427AAB454E7B4
+      Material=Material'"Broadleaf_Hero_Forest_Leaf_Mat"'
+   End Object
+   Begin Object Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   BaseColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"')
+   Roughness=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"',Mask=1,MaskA=1)
+   Normal=(Expression=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"')
+   OpacityMask=(Expression=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"')
+   BlendMode=BLEND_Masked
+   ShadingModel=MSM_TwoSidedFoliage
+   WorldPositionOffset=(Expression=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"')
+   SubsurfaceColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_2"')
+   AmbientOcclusion=(Expression=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"',Mask=1,MaskR=1)
+   TwoSided=True
+   DitheredLODTransition=True
+   Expressions(0)=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"'
+   Expressions(1)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"'
+   Expressions(2)=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"'
+   Expressions(3)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"'
+   Expressions(4)=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"'
+   Expressions(5)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_2"'
+   Expressions(6)=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"'
+   StateId=FB1E1E7E4C06CE7243760D933122CB15
+   ReferencedTextureGuids(0)=7D5B1D4F4C4F6F7F420B369605921591
+   ReferencedTextureGuids(1)=801A7A78496A618F516D59BFF58BC10F
+   ReferencedTextureGuids(2)=8A0EB15B48DB10400613A1AF00661E10
+   LightmassSettings=(bCastShadowAsMasked=True)
+   ThumbnailInfo=SceneThumbnailInfoWithPrimitive'"SceneThumbnailInfoWithPrimitive_0"'
+   LightingGuid=C2B28C0A412ED6C663E1F6A925CE80A2
+End Object

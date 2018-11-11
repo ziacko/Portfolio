@@ -9,7 +9,7 @@ typedef enum { CLAMP_TO_EDGE = 0, MIRROR_CLAMP_TO_EDGE, CLAMP_TO_BORDER, REPEAT,
 class textureSettings : public texturedScene
 {
 public:
-	textureSettings(texture* defaultTexture = new texture(),
+	textureSettings(texture* defaultTexture = new texture("../../resources/textures/crate_sideup.png"),
 		const char* windowName = "Ziyad Barakat's Portfolio (texture settings)",
 		camera* textureCamera = new camera(),
 		const char* shaderConfigPath = "../../resources/shaders/TextureSettings.txt") :
@@ -18,12 +18,10 @@ public:
 
 	}
 
-	void BuildGUI(ImGuiIO io) override //it's not virtual because i don't really want anything to inherit from it at this point. 
+	void BuildGUI(tWindow* window, ImGuiIO io) override //it's not virtual because i don't really want anything to inherit from it at this point. 
 	{
 		//texturedScene::BuildGUI(io);
 
-		//aaaahhhh much nicer!
-		//mag
 		if (ImGui::ListBox("mag filter setting", &magFilterIndex, magFilterSettings.data(), magFilterSettings.size()))
 		{
 			defaultTexture->SetMagFilter(magFilterSetting);

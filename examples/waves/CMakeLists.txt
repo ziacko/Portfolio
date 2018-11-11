@@ -73,7 +73,7 @@ include_directories("${SCENE_INCLUDE_DIR}")
 link_directories (${LINK_DIRECTORY})
 link_libraries (${LIBS})
 
-set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo")
+set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
 
 file(GLOB_RECURSE RES_FILES *.vert *.frag *.geom *.tesc *.tese *.glsl *.txt)
 

@@ -14,3 +14,12 @@ vcxproj.filters
 *.in
 *.csv
 *.rdc
+*.obj
+*.pdb
+*.ilk
+*.suo
+*.yml
+*.tcl
+*.ipch
+
+

@@ -1,0 +1,82 @@
+Begin Object Class=/Script/Engine.Material Name="ChristmasScotsPineBark_Branch_Mat"
+   Begin Object Class=/Script/Engine.MaterialExpressionConstantBiasScale Name="MaterialExpressionConstantBiasScale_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionSpeedTree Name="MaterialExpressionSpeedTree_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_1"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVertexColor Name="MaterialExpressionVertexColor_0"
+   End Object
+   Begin Object Class=/Script/UnrealEd.SceneThumbnailInfoWithPrimitive Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   Begin Object Name="MaterialExpressionConstantBiasScale_0"
+      Input=(Expression=MaterialExpressionTextureSample'"ChristmasScotsPineBark_Branch_Mat:MaterialExpressionTextureSample_1"')
+      Bias=-0.500000
+      Scale=2.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=266
+      MaterialExpressionGuid=C7ED2B0F45F92CBC3AF9508248FBAAA2
+      Material=Material'"ChristmasScotsPineBark_Branch_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_0"
+      A=(Expression=MaterialExpressionTextureSample'"ChristmasScotsPineBark_Branch_Mat:MaterialExpressionTextureSample_0"',Mask=1,MaskA=1)
+      B=(Expression=MaterialExpressionVertexColor'"ChristmasScotsPineBark_Branch_Mat:MaterialExpressionVertexColor_0"',Mask=1,MaskA=1)
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=66
+      MaterialExpressionGuid=8A62716D421BE159AAD0C298424E7669
+      Material=Material'"ChristmasScotsPineBark_Branch_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionSpeedTree_0"
+      BillboardThreshold=1.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=466
+      MaterialExpressionGuid=3CE7EC024B2641562DEDE0B47F9EFA29
+      Material=Material'"ChristmasScotsPineBark_Branch_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_0"
+      Texture=Texture2D'"/Game/models/christmas/ChristmasScotsPineBark_Color_Tex.ChristmasScotsPineBark_Color_Tex"'
+      MaterialExpressionEditorX=-600
+      MaterialExpressionGuid=76DF747D42722EFB8C239D9325BF96C7
+      Material=Material'"ChristmasScotsPineBark_Branch_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_1"
+      Texture=Texture2D'"/Game/models/christmas/ChristmasScotsPineBark_Normal_Tex.ChristmasScotsPineBark_Normal_Tex"'
+      SamplerType=SAMPLERTYPE_LinearColor
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=200
+      MaterialExpressionGuid=2CA001BC4AA315150BD7FA99061AFA0F
+      Material=Material'"ChristmasScotsPineBark_Branch_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionVertexColor_0"
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=400
+      MaterialExpressionGuid=EBD48D054370AB9D9DE68E9C9C94AAA5
+      Material=Material'"ChristmasScotsPineBark_Branch_Mat"'
+   End Object
+   Begin Object Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   BaseColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"')
+   Roughness=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"',Mask=1,MaskA=1)
+   Normal=(Expression=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"')
+   OpacityMask=(Expression=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"')
+   BlendMode=BLEND_Masked
+   WorldPositionOffset=(Expression=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"')
+   AmbientOcclusion=(Expression=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"',Mask=1,MaskR=1)
+   DitheredLODTransition=True
+   Expressions(0)=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"'
+   Expressions(1)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"'
+   Expressions(2)=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"'
+   Expressions(3)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"'
+   Expressions(4)=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"'
+   Expressions(5)=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"'
+   StateId=AD65E5C84FAAA410C79DAC9CD4ED2E4C
+   ReferencedTextureGuids(0)=07571DEF48352A953E2871A6143C1676
+   ReferencedTextureGuids(1)=9634F325423060440EABD8A1B3EC5FB6
+   LightmassSettings=(bCastShadowAsMasked=True)
+   ThumbnailInfo=SceneThumbnailInfoWithPrimitive'"SceneThumbnailInfoWithPrimitive_0"'
+   LightingGuid=000B2F704934875D398A8182B146752B
+End Object

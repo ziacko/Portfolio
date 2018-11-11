@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -47,7 +49,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assimp/DefaultLogger.hpp>
 
 #include "LWOFileData.h"
-#include "BaseImporter.h"
+#include <assimp/BaseImporter.h>
+
+#include <map>
 
 struct aiTexture;
 struct aiNode;
@@ -469,7 +473,7 @@ inline void LWOImporter::GetS0(std::string& out,unsigned int max)
     {
         if (++iCursor > max)
         {
-            DefaultLogger::get()->warn("LWO: Invalid file, string is is too long");
+            ASSIMP_LOG_WARN("LWO: Invalid file, string is is too long");
             break;
         }
         ++mFileBuffer;

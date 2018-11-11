@@ -1,0 +1,98 @@
+Begin Object Class=/Script/Engine.Material Name="Bush_Hero_Frond_Mat"
+   Begin Object Class=/Script/Engine.MaterialExpressionConstantBiasScale Name="MaterialExpressionConstantBiasScale_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionSpeedTree Name="MaterialExpressionSpeedTree_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_1"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_2"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVertexColor Name="MaterialExpressionVertexColor_0"
+   End Object
+   Begin Object Class=/Script/UnrealEd.SceneThumbnailInfoWithPrimitive Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   Begin Object Name="MaterialExpressionConstantBiasScale_0"
+      Input=(Expression=MaterialExpressionTextureSample'"Bush_Hero_Frond_Mat:MaterialExpressionTextureSample_1"')
+      Bias=-0.500000
+      Scale=2.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=266
+      MaterialExpressionGuid=4B4F1E17435777558C8A52AC87349DBA
+      Material=Material'"Bush_Hero_Frond_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_0"
+      A=(Expression=MaterialExpressionTextureSample'"Bush_Hero_Frond_Mat:MaterialExpressionTextureSample_0"',Mask=1,MaskA=1)
+      B=(Expression=MaterialExpressionVertexColor'"Bush_Hero_Frond_Mat:MaterialExpressionVertexColor_0"',Mask=1,MaskA=1)
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=66
+      MaterialExpressionGuid=9EC65F144951F3045D4720B0E54C6479
+      Material=Material'"Bush_Hero_Frond_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionSpeedTree_0"
+      GeometryType=STG_Frond
+      WindType=STW_Palm
+      BillboardThreshold=1.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=466
+      MaterialExpressionGuid=0E1D8AE044DBA3AF92DC9AA7C6E0DFA0
+      Material=Material'"Bush_Hero_Frond_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_0"
+      Texture=Texture2D'"/Game/models/bush/Bush_Hero_Color_Tex.Bush_Hero_Color_Tex"'
+      MaterialExpressionEditorX=-600
+      MaterialExpressionGuid=6EC012D843F16F3DBDF5DBBC714F9A84
+      Material=Material'"Bush_Hero_Frond_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_1"
+      Texture=Texture2D'"/Game/models/bush/Bush_Hero_Normal_Tex.Bush_Hero_Normal_Tex"'
+      SamplerType=SAMPLERTYPE_LinearColor
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=200
+      MaterialExpressionGuid=5B9B1A7945078B8A30FBEFA86E05BE1B
+      Material=Material'"Bush_Hero_Frond_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_2"
+      Texture=Texture2D'"/Game/models/bush/Bush_Hero_Subsurface_Tex.Bush_Hero_Subsurface_Tex"'
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=666
+      MaterialExpressionGuid=7A2C354A4AC71992B6CAD8B85FBB8BA1
+      Material=Material'"Bush_Hero_Frond_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionVertexColor_0"
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=400
+      MaterialExpressionGuid=88B5086047D55984E17ACB8F13FFC3F2
+      Material=Material'"Bush_Hero_Frond_Mat"'
+   End Object
+   Begin Object Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   BaseColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"')
+   Roughness=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"',Mask=1,MaskA=1)
+   Normal=(Expression=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"')
+   OpacityMask=(Expression=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"')
+   BlendMode=BLEND_Masked
+   ShadingModel=MSM_TwoSidedFoliage
+   WorldPositionOffset=(Expression=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"')
+   SubsurfaceColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_2"')
+   AmbientOcclusion=(Expression=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"',Mask=1,MaskR=1)
+   TwoSided=True
+   DitheredLODTransition=True
+   Expressions(0)=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"'
+   Expressions(1)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"'
+   Expressions(2)=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"'
+   Expressions(3)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"'
+   Expressions(4)=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"'
+   Expressions(5)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_2"'
+   Expressions(6)=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"'
+   StateId=5D95600D4AFEBE45A045389083ED319D
+   ReferencedTextureGuids(0)=EA9BF83A4543DB0C7D71B8895B272AEE
+   ReferencedTextureGuids(1)=A195EFF943CEF48801A7DE959B9C9129
+   ReferencedTextureGuids(2)=97E7B524435C7133FF2A7DB47011DB5E
+   LightmassSettings=(bCastShadowAsMasked=True)
+   ThumbnailInfo=SceneThumbnailInfoWithPrimitive'"SceneThumbnailInfoWithPrimitive_0"'
+   LightingGuid=FD159DA64E0094109267CAB55C9DAA88
+End Object

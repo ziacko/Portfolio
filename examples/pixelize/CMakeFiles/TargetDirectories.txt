@@ -1,1 +1,3 @@
-/home/ziyad/Documents/Projects/Portfolio/examples/pixelize/CMakeFiles/Pixelize.dir
+D:/projects/Portfolio/examples/pixelize/CMakeFiles/Pixelize.dir
+D:/projects/Portfolio/examples/pixelize/CMakeFiles/ALL_BUILD.dir
+D:/projects/Portfolio/examples/pixelize/CMakeFiles/ZERO_CHECK.dir

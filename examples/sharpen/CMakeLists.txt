@@ -73,7 +73,7 @@ include_directories("${STB_INCLUDE_DIR}")
 link_directories (${LINK_DIRECTORY})# ${FREEIMAGE_LIB_DIR})
 link_libraries (${LIBS})# freeimage)
 
-set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp")
+set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
 
 #set (SOIL_SOURCES "${SOIL_INCLUDE_DIR}/SOIL.c" "${SOIL_INCLUDE_DIR}/image_DXT.c" "${SOIL_INCLUDE_DIR}/image_helper.c" "${SOIL_INCLUDE_DIR}/stb_image_aug.c")
 

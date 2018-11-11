@@ -3,7 +3,7 @@
 in defaultBlock
 {
 	vec4 		position;
-	vec2		UV;
+	vec2		uv;
 } inBlock;
 
 out vec4 outColor;
@@ -17,7 +17,16 @@ layout(std140, binding = 0) uniform defaultSettings
 	vec2		mousePosition;
 	float		deltaTime;
 	float		totalTime;
-	float 		framesPerSec;
+	float 		framesPerSecond;
+	uint 		totalFrames;
+};
+
+layout(std140, binding = 1) uniform materialSettings
+{
+	vec4 		diffuseMat;
+	vec4		specularMat;
+	vec4		ambientMat;
+	vec4		emissiveMat;
 };
 
 void main()

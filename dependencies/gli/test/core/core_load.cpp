@@ -95,6 +95,27 @@ namespace load_file_dds
 	}
 }//namespace load_file_dds
 
+namespace load_struct
+{
+	struct wrapper
+	{
+		gli::texture Texture;
+	};
+
+	int test()
+	{
+		int Error = 0;
+
+		wrapper Wrapper;
+
+		Wrapper.Texture = gli::load(path("kueken7_rgba8_unorm", "dds"));
+
+		gli::texture Texture = gli::load(path("kueken7_rgba8_unorm", "dds"));
+
+		return Error;
+	}
+}//namespace load_struct
+
 int main()
 {
 	//make_file_ktx::test(params("kueken7_rgba_astc4x4_srgb", gli::FORMAT_RGB8_UNORM_PACK8));
@@ -112,6 +133,8 @@ int main()
 	Params.push_back(params("kueken7_rgb5a1_unorm", gli::FORMAT_BGR5A1_UNORM_PACK16));
 	Params.push_back(params("kueken8_rgba8_srgb", gli::FORMAT_RGBA8_SRGB_PACK8));
 	Params.push_back(params("kueken7_rgba_dxt5_unorm", gli::FORMAT_RGBA_DXT5_UNORM_BLOCK16));
+
+	load_struct::test();
 
 	{
 		for(std::size_t Index = 0, Count = Params.size(); Index < Count; ++Index)

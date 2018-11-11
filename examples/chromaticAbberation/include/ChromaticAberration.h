@@ -43,9 +43,9 @@ protected:
 
 	static chromaticSettings_t*		chromaticSettings;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 
 		ImGui::SliderFloat("red offset", &chromaticSettings->redOffset, -1.0f, 1.0f, "%0.10f");
 		ImGui::SliderFloat("green offset", &chromaticSettings->greenOffset, -1.0f, 1.0f, "%0.10f");
@@ -63,7 +63,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupChromaticBuffer();
 	}
 

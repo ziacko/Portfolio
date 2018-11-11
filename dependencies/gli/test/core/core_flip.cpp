@@ -25,6 +25,10 @@ int test_texture
 
 int main()
 {
+	static_assert(sizeof(gli::detail::dxt1_block) == 8, "DXT1-compressed block must be of size 8.");
+	static_assert(sizeof(gli::detail::dxt3_block) == 16, "DXT3-compressed block must be of size 16.");
+	static_assert(sizeof(gli::detail::dxt5_block) == 16, "DXT5-compressed block must be of size 16.");
+
 	int Error(0);
 
 	gli::texture2d::extent_type const TextureSize(32);
@@ -53,6 +57,26 @@ int main()
 	Error += test_texture(
 		gli::texture2d_array(gli::FORMAT_RGBA32_SFLOAT_PACK32, TextureSize, 4, Levels),
 		glm::f32vec4(1.0, 0.5, 0.0, 1.0), glm::f32vec4(0.0, 0.5, 1.0, 1.0));
+
+	Error += test_texture(
+		gli::texture2d(gli::FORMAT_RGB_DXT1_UNORM_BLOCK8, TextureSize, Levels),
+		gli::detail::dxt1_block{63721, 255, 228, 144, 64, 0},
+		gli::detail::dxt1_block{2516, 215, 152, 173, 215, 106});
+
+	Error += test_texture(
+		gli::texture2d(gli::FORMAT_RGBA_DXT1_UNORM_BLOCK8, TextureSize, Levels),
+		gli::detail::dxt1_block{63721, 255, 228, 144, 64, 0},
+		gli::detail::dxt1_block{2516, 215, 152, 173, 215, 106});
+
+	Error += test_texture(
+		gli::texture2d(gli::FORMAT_RGBA_DXT3_UNORM_BLOCK16, TextureSize, Levels),
+		gli::detail::dxt3_block{12514, 1512, 12624, 16614, 63712, 255, 228, 144, 64, 0},
+		gli::detail::dxt3_block{36125, 2416, 46314, 10515, 2516, 215, 152, 173, 215, 106});
+
+	Error += test_texture(
+		gli::texture2d(gli::FORMAT_RGBA_DXT5_UNORM_BLOCK16, TextureSize, Levels),
+		gli::detail::dxt5_block{255, 0, 64, 30, 50, 45, 242, 68, 63712, 255, 228, 144, 64, 0},
+		gli::detail::dxt5_block{0, 255, 62, 144, 228, 214, 59, 200, 2516, 215, 152, 173, 215, 106});
 
 	return Error;
 }

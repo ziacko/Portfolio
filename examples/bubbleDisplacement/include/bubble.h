@@ -46,9 +46,9 @@ public:
 
 protected:
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 		ImGui::Checkbox("enable wireframe", &enableWireframe);
 		
 		ImGui::SliderFloat("Attenuation", &bubbleSettingsBuffer->attenuation, 0.0f, 1.0f);
@@ -84,7 +84,7 @@ protected:
 	void InitializeBuffers() override
 	{
 		//SetupVertexBuffer();
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(bubbleSettingsBuffer, bubbleSettingsBuffer->bufferHandle, sizeof(*bubbleSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
@@ -114,8 +114,8 @@ protected:
 
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(bubbleSettingsBuffer->gridDimensions * bubbleSettingsBuffer->gridDimensions));
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		texturedScene::DrawGUI(window->name);
-		window->SwapDrawBuffers();
+		texturedScene::DrawGUI(windows[0]);
+		windows[0]->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 };

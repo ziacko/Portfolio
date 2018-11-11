@@ -4,16 +4,39 @@
 
 struct gaussianSettings_t
 {
-	int			numOffsets;
-	float		weight;
+	//damn 5 points is so fkn awkward
+	GLint		offset1;
+	GLint		offset2;
+	GLint		offset3;
+	GLint		offset4;
+	GLint		offset5;
+
+	float		weight1;
+	float		weight2;
+	float		weight3;
+	float		weight4;
+	float		weight5;
 
 	GLuint		bufferHandle;
 	GLuint		uniformHandle;
 
-	gaussianSettings_t(GLuint numOffsets = 5, GLfloat weight = 0.1f)
+	gaussianSettings_t(GLint offset1 = 0, GLint offset2 = 1, GLint offset3 = 2, GLint offset4 = 3, GLint offset5 = 4,
+		GLfloat weight1 = 0.2270270270f, GLfloat weight2 = 0.1945945946, GLfloat weight3 = 0.1216216216, GLfloat weight4 = 0.0540540541, GLfloat weight5 = 0.0162162162)
 	{
-		this->numOffsets = numOffsets;
-		this->weight = weight;
+		this->offset1 = offset1;
+		this->offset2 = offset2;
+		this->offset3 = offset3;
+		this->offset4 = offset4;
+		this->offset5 = offset5;
+
+		this->weight1 = weight1;
+		this->weight2 = weight2;
+		this->weight3 = weight3;
+		this->weight4 = weight4;
+		this->weight5 = weight5;
+
+		bufferHandle = 0;
+		uniformHandle = 0;
 	}
 
 	~gaussianSettings_t(){};
@@ -39,23 +62,31 @@ protected:
 
 	static	gaussianSettings_t*		gaussianSettingsBuffer;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
-		//need to come back and set up a 2 render pass system for proper gaussian blurring
-		//ImGui::SliderInt("num offsets", &gaussianSettingsBuffer->numOffsets, 0, 100);
-		ImGui::SliderFloat("weight", &gaussianSettingsBuffer->weight, 0.0f, 1.0f);
-	}
+		texturedScene::BuildGUI(window, io);
+		
+		ImGui::PushItemWidth(100.0f);
+		ImGui::SliderFloat("weight1", &gaussianSettingsBuffer->weight1, 0.0f, 0.25f, "%.10f");	 
+		ImGui::SameLine();		
+		ImGui::SliderFloat("weight2", &gaussianSettingsBuffer->weight2, 0.0f, 0.25f, "%.10f");
+		
+		ImGui::SliderFloat("weight3", &gaussianSettingsBuffer->weight3, 0.0f, 0.25f, "%.10f");
+		ImGui::SameLine();
+		ImGui::SliderFloat("weight4", &gaussianSettingsBuffer->weight4, 0.0f, 0.25f, "%.10f");
+		ImGui::SliderFloat("weight5", &gaussianSettingsBuffer->weight5, 0.0f, 0.25f, "%.10f");
+		ImGui::PopItemWidth();
 
-	/*void InitTweakBar() override
-	{
-		scene::InitTweakBar();
-		TwAddVarRW(tweakBar, "blur weight", TwType::TW_TYPE_FLOAT, &gaussianSettingsBuffer->weight, "min=0 max=1 step=0.001");
-	}*/
+		ImGui::SliderInt("offset1", &gaussianSettingsBuffer->offset1, 0, 100);
+		ImGui::SliderInt("offset2", &gaussianSettingsBuffer->offset2, 0, 100);
+		ImGui::SliderInt("offset3", &gaussianSettingsBuffer->offset3, 0, 100);
+		ImGui::SliderInt("offset4", &gaussianSettingsBuffer->offset4, 0, 100);
+		ImGui::SliderInt("offset5", &gaussianSettingsBuffer->offset5, 0, 100);
+	}
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(gaussianSettingsBuffer, gaussianSettingsBuffer->bufferHandle, sizeof(*gaussianSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

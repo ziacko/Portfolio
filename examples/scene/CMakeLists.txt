@@ -67,7 +67,7 @@ include_directories("${STB_INCLUDE_DIR}")
 link_directories (${LINK_DIRECTORY})
 link_libraries (${LIBS})
 
-set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo")
+set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo" "${IMGUI_INCLUDE_DIR}/imgui_widgets")
 
 add_executable(Scene ${SOURCE} ${IMGUI_SOURCES} ${SOIL_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET Scene PROPERTY OUTPUT_NAME "Scene")

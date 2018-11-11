@@ -47,9 +47,9 @@ protected:
 
 	radialBlur_t*		radialBlur;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 		ImGui::SliderFloat("exposure", &radialBlur->exposure, 0.0f, 1.0f);
 		ImGui::SliderFloat("decay", &radialBlur->decay, 0.0f, 1.0f);
 		ImGui::SliderFloat("density", &radialBlur->density, 0.0f, 0.01f, "%.10f", 100.0f);
@@ -59,7 +59,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

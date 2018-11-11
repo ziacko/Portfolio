@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -48,7 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assimp/DefaultLogger.hpp>
 
 #include <limits>
-#include "TinyFormatter.h"
+#include <assimp/TinyFormatter.h>
 
 using namespace Assimp;
 using namespace Assimp::Formatter;
@@ -57,7 +59,7 @@ using namespace Assimp::Formatter;
 // Constructor
 SplitByBoneCountProcess::SplitByBoneCountProcess()
 {
-    // set default, might be overriden by importer config
+    // set default, might be overridden by importer config
     mMaxBoneCount = AI_SBBC_DEFAULT_MAX_BONES;
 }
 
@@ -86,7 +88,7 @@ void SplitByBoneCountProcess::SetupProperties(const Importer* pImp)
 // Executes the post processing step on the given imported data.
 void SplitByBoneCountProcess::Execute( aiScene* pScene)
 {
-    DefaultLogger::get()->debug("SplitByBoneCountProcess begin");
+    ASSIMP_LOG_DEBUG("SplitByBoneCountProcess begin");
 
     // early out
     bool isNecessary = false;
@@ -96,7 +98,7 @@ void SplitByBoneCountProcess::Execute( aiScene* pScene)
 
     if( !isNecessary )
     {
-        DefaultLogger::get()->debug( format() << "SplitByBoneCountProcess early-out: no meshes with more than " << mMaxBoneCount << " bones." );
+        ASSIMP_LOG_DEBUG( format() << "SplitByBoneCountProcess early-out: no meshes with more than " << mMaxBoneCount << " bones." );
         return;
     }
 
@@ -144,7 +146,7 @@ void SplitByBoneCountProcess::Execute( aiScene* pScene)
     // recurse through all nodes and translate the node's mesh indices to fit the new mesh array
     UpdateNode( pScene->mRootNode);
 
-    DefaultLogger::get()->debug( format() << "SplitByBoneCountProcess end: split " << mSubMeshIndices.size() << " meshes into " << meshes.size() << " submeshes." );
+    ASSIMP_LOG_DEBUG( format() << "SplitByBoneCountProcess end: split " << mSubMeshIndices.size() << " meshes into " << meshes.size() << " submeshes." );
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -391,7 +393,7 @@ void SplitByBoneCountProcess::UpdateNode( aiNode* pNode) const
             newMeshList.insert( newMeshList.end(), replaceMeshes.begin(), replaceMeshes.end());
         }
 
-        delete pNode->mMeshes;
+        delete [] pNode->mMeshes;
         pNode->mNumMeshes = static_cast<unsigned int>(newMeshList.size());
         pNode->mMeshes = new unsigned int[pNode->mNumMeshes];
         std::copy( newMeshList.begin(), newMeshList.end(), pNode->mMeshes);

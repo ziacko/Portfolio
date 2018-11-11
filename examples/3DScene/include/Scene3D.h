@@ -1,9 +1,8 @@
 #ifndef SCENE3D_H
 #define SCENE3D_H
 #include "Scene.h"
-#include <assimp/cimport.h>
-#include <assimp/scene.h>
-#include "Grid.h"
+#include "Model.h"
+//#include "Grid.h"
 #include "FrameBuffer.h"
 
 class scene3D : public scene
@@ -12,10 +11,11 @@ public:
 
 	scene3D(const char* windowName = "Ziyad Barakat's Portfolio(3D scene)",
 		camera* camera3D = new camera(glm::vec2(1280, 720), 100.0f, camera::projection_t::perspective),
+		model_t* model = new model_t(),
 		const char* shaderConfigPath = "../../resources/shaders/Model.txt") : 
 		scene(windowName, camera3D, shaderConfigPath)
 	{
-		
+		testModel = model;
 	}
 
 	~scene3D() {};
@@ -35,23 +35,27 @@ public:
 	virtual void Initialize() override
 	{
 		scene::Initialize();
+		model->loadModel();
 		drawGrid = new grid(glm::ivec2(100, 100));
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_STENCIL_TEST);
+		//glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_STENCIL_TEST);
 	}
 
 protected:
 
-	grid* drawGrid;
+	//grid* drawGrid;
+	model_t* testModel;
 
 	virtual void Draw() override 
 	{
-		glBindVertexArray(drawGrid->vertexArrayHandle);
+		glBindVertexArray(testModel->vertexArrays[0]);
 		glUseProgram(this->programGLID);
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		drawGrid->Draw();
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glDrawElements(GL_TRIANGLES, testModel->vertexArrays->assimpScene->mMeshes[0]->mNumFaces * 3, GL_UNSIGNED_INT);
+		
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//drawGrid->Draw();
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		DrawGUI(window->name);
 
 		window->SwapDrawBuffers();

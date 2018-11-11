@@ -2,7 +2,7 @@
 DefaultProgram
 2
 position
-uV
+UV
 1
 outColor
 2

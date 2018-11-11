@@ -3,7 +3,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -45,8 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_ASSBINIMPORTER_H_INC
 #define AI_ASSBINIMPORTER_H_INC
 
-#include "BaseImporter.h"
-#include <assimp/types.h>
+#include <assimp/BaseImporter.h>
 
 struct aiMesh;
 struct aiNode;
@@ -69,33 +70,33 @@ namespace Assimp    {
 class AssbinImporter : public BaseImporter
 {
 private:
-  bool shortened;
-  bool compressed;
-protected:
+    bool shortened;
+    bool compressed;
 
 public:
-  virtual bool CanRead(
-    const std::string& pFile,
-    IOSystem* pIOHandler,
-    bool checkSig
+    virtual bool CanRead(
+        const std::string& pFile,
+        IOSystem* pIOHandler,
+        bool checkSig
     ) const;
-  virtual const aiImporterDesc* GetInfo() const;
-  virtual void InternReadFile(
+    virtual const aiImporterDesc* GetInfo() const;
+    virtual void InternReadFile(
     const std::string& pFile,
-    aiScene* pScene,
-    IOSystem* pIOHandler
+        aiScene* pScene,
+        IOSystem* pIOHandler
     );
-  void ReadBinaryScene( IOStream * stream, aiScene* pScene );
-  void ReadBinaryNode( IOStream * stream, aiNode** mRootNode );
-  void ReadBinaryMesh( IOStream * stream, aiMesh* mesh );
-  void ReadBinaryBone( IOStream * stream, aiBone* bone );
-  void ReadBinaryMaterial(IOStream * stream, aiMaterial* mat);
-  void ReadBinaryMaterialProperty(IOStream * stream, aiMaterialProperty* prop);
-  void ReadBinaryNodeAnim(IOStream * stream, aiNodeAnim* nd);
-  void ReadBinaryAnim( IOStream * stream, aiAnimation* anim );
-  void ReadBinaryTexture(IOStream * stream, aiTexture* tex);
-  void ReadBinaryLight( IOStream * stream, aiLight* l );
-  void ReadBinaryCamera( IOStream * stream, aiCamera* cam );
+    void ReadHeader();
+    void ReadBinaryScene( IOStream * stream, aiScene* pScene );
+    void ReadBinaryNode( IOStream * stream, aiNode** mRootNode, aiNode* parent );
+    void ReadBinaryMesh( IOStream * stream, aiMesh* mesh );
+    void ReadBinaryBone( IOStream * stream, aiBone* bone );
+    void ReadBinaryMaterial(IOStream * stream, aiMaterial* mat);
+    void ReadBinaryMaterialProperty(IOStream * stream, aiMaterialProperty* prop);
+    void ReadBinaryNodeAnim(IOStream * stream, aiNodeAnim* nd);
+    void ReadBinaryAnim( IOStream * stream, aiAnimation* anim );
+    void ReadBinaryTexture(IOStream * stream, aiTexture* tex);
+    void ReadBinaryLight( IOStream * stream, aiLight* l );
+    void ReadBinaryCamera( IOStream * stream, aiCamera* cam );
 };
 
 } // end of namespace Assimp

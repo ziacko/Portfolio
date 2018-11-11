@@ -31,7 +31,6 @@ public:
 		Update(data, bufferHandle, offset, bufferSize, target, usage);
 		glBindBufferBase(target, uniformHandle, bufferHandle);
 	}
-	//virtual ~uniformBuffer_t(){}
 
 	void* CreateBaseBuffer()
 	{
@@ -49,7 +48,6 @@ public:
 		buffer = (void*)(((char*)buffer) + sizeof(object));
 		dataSize += sizeof(object);
 	}
-
 };
 
 #endif

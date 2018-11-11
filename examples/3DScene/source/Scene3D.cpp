@@ -1,4 +1,4 @@
-#include "Scene3D.h"
+#include "scene3D.h"
 
 int main()
 {

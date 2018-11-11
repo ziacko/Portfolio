@@ -3,7 +3,9 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 
 All rights reserved.
 
@@ -45,12 +47,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #ifndef ASSIMP_BUILD_NO_ASE_IMPORTER
+#ifndef ASSIMP_BUILD_NO_3DS_IMPORTER
 
 // internal headers
 #include "TextureTransform.h"
 #include "ASELoader.h"
-#include "MaterialSystem.h"
-#include "fast_atof.h"
+#include <assimp/fast_atof.h>
 #include <assimp/DefaultLogger.hpp>
 
 using namespace Assimp;
@@ -149,7 +151,7 @@ void Parser::LogWarning(const char* szWarn)
 #endif
 
     // output the warning to the logger ...
-    DefaultLogger::get()->warn(szTemp);
+    ASSIMP_LOG_WARN(szTemp);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -165,7 +167,7 @@ void Parser::LogInfo(const char* szWarn)
 #endif
 
     // output the information to the logger ...
-    DefaultLogger::get()->info(szTemp);
+    ASSIMP_LOG_INFO(szTemp);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -265,7 +267,9 @@ void Parser::Parse()
                 // at the file extension (ASE, ASK, ASC)
                 // *************************************************************
 
-                if (fmt)iFileFormat = fmt;
+                if ( fmt ) {
+                    iFileFormat = fmt;
+                }
                 continue;
             }
             // main scene information
@@ -291,7 +295,7 @@ void Parser::Parse()
             if (TokenMatch(filePtr,"GEOMOBJECT",10))
 
             {
-                m_vMeshes.push_back(Mesh());
+                m_vMeshes.push_back(Mesh("UNNAMED"));
                 ParseLV1ObjectBlock(m_vMeshes.back());
                 continue;
             }
@@ -307,14 +311,14 @@ void Parser::Parse()
             if (TokenMatch(filePtr,"LIGHTOBJECT",11))
 
             {
-                m_vLights.push_back(Light());
+                m_vLights.push_back(Light("UNNAMED"));
                 ParseLV1ObjectBlock(m_vLights.back());
                 continue;
             }
             // camera object
             if (TokenMatch(filePtr,"CAMERAOBJECT",12))
             {
-                m_vCameras.push_back(Camera());
+                m_vCameras.push_back(Camera("UNNAMED"));
                 ParseLV1ObjectBlock(m_vCameras.back());
                 continue;
             }
@@ -425,28 +429,25 @@ void Parser::ParseLV1SoftSkinBlock()
                         // Reserve enough storage
                         vert.mBoneWeights.reserve(numWeights);
 
-                        for (unsigned int w = 0; w < numWeights;++w)
-                        {
-                            std::string bone;
+                        std::string bone;
+                        for (unsigned int w = 0; w < numWeights;++w) {
+                            bone.clear();
                             ParseString(bone,"*MESH_SOFTSKINVERTS.Bone");
 
                             // Find the bone in the mesh's list
                             std::pair<int,ai_real> me;
                             me.first = -1;
 
-                            for (unsigned int n = 0; n < curMesh->mBones.size();++n)
-                            {
-                                if (curMesh->mBones[n].mName == bone)
-                                {
+                            for (unsigned int n = 0; n < curMesh->mBones.size();++n) {
+                                if (curMesh->mBones[n].mName == bone) {
                                     me.first = n;
                                     break;
                                 }
                             }
-                            if (-1 == me.first)
-                            {
+                            if (-1 == me.first) {
                                 // We don't have this bone yet, so add it to the list
-                                me.first = (int)curMesh->mBones.size();
-                                curMesh->mBones.push_back(ASE::Bone(bone));
+                                me.first = static_cast<int>( curMesh->mBones.size() );
+                                curMesh->mBones.push_back( ASE::Bone( bone ) );
                             }
                             ParseLV4MeshFloat( me.second );
 
@@ -527,7 +528,7 @@ void Parser::ParseLV1MaterialListBlock()
                 ParseLV4MeshLong(iMaterialCount);
 
                 // now allocate enough storage to hold all materials
-                m_vMaterials.resize(iOldMaterialCount+iMaterialCount);
+                m_vMaterials.resize(iOldMaterialCount+iMaterialCount, Material("INVALID"));
                 continue;
             }
             if (TokenMatch(filePtr,"MATERIAL",8))
@@ -618,7 +619,8 @@ void Parser::ParseLV2MaterialBlock(ASE::Material& mat)
             if (TokenMatch(filePtr,"MATERIAL_TRANSPARENCY",21))
             {
                 ParseLV4MeshFloat(mat.mTransparency);
-                mat.mTransparency = 1.0 - mat.mTransparency;continue;
+                mat.mTransparency = ai_real( 1.0 ) - mat.mTransparency;
+                continue;
             }
             // material self illumination
             if (TokenMatch(filePtr,"MATERIAL_SELFILLUM",18))
@@ -704,7 +706,7 @@ void Parser::ParseLV2MaterialBlock(ASE::Material& mat)
                 ParseLV4MeshLong(iNumSubMaterials);
 
                 // allocate enough storage
-                mat.avSubMaterials.resize(iNumSubMaterials);
+                mat.avSubMaterials.resize(iNumSubMaterials, Material("INVALID SUBMATERIAL"));
             }
             // submaterial chunks
             if (TokenMatch(filePtr,"SUBMATERIAL",11))
@@ -742,6 +744,7 @@ void Parser::ParseLV3MapBlock(Texture& map)
     // empty the texture won't be used later.
     // ***********************************************************
     bool parsePath = true;
+    std::string temp;
     while (true)
     {
         if ('*' == *filePtr)
@@ -750,12 +753,12 @@ void Parser::ParseLV3MapBlock(Texture& map)
             // type of map
             if (TokenMatch(filePtr,"MAP_CLASS" ,9))
             {
-                std::string temp;
+                temp.clear();
                 if(!ParseString(temp,"*MAP_CLASS"))
                     SkipToNextToken();
                 if (temp != "Bitmap" && temp != "Normal Bump")
                 {
-                    DefaultLogger::get()->warn("ASE: Skipping unknown map type: " + temp);
+                    ASSIMP_LOG_WARN_F("ASE: Skipping unknown map type: ", temp);
                     parsePath = false;
                 }
                 continue;
@@ -770,7 +773,7 @@ void Parser::ParseLV3MapBlock(Texture& map)
                 {
                     // Files with 'None' as map name are produced by
                     // an Maja to ASE exporter which name I forgot ..
-                    DefaultLogger::get()->warn("ASE: Skipping invalid map entry");
+                    ASSIMP_LOG_WARN("ASE: Skipping invalid map entry");
                     map.mMapName = "";
                 }
 
@@ -1069,7 +1072,7 @@ void Parser::ParseLV2AnimationBlock(ASE::BaseNode& mesh)
                         ( mesh.mType != BaseNode::Light  || ((ASE::Light&)mesh).mLightType   != ASE::Light::TARGET))
                     {
 
-                        DefaultLogger::get()->error("ASE: Found target animation channel "
+                        ASSIMP_LOG_ERROR("ASE: Found target animation channel "
                             "but the node is neither a camera nor a spot light");
                         anim = NULL;
                     }
@@ -1095,7 +1098,7 @@ void Parser::ParseLV2AnimationBlock(ASE::BaseNode& mesh)
                 if (!anim || anim == &mesh.mTargetAnim)
                 {
                     // Target animation channels may have no rotation channels
-                    DefaultLogger::get()->error("ASE: Ignoring scaling channel in target animation");
+                    ASSIMP_LOG_ERROR("ASE: Ignoring scaling channel in target animation");
                     SkipSection();
                 }
                 else ParseLV3ScaleAnimationBlock(*anim);
@@ -1109,7 +1112,7 @@ void Parser::ParseLV2AnimationBlock(ASE::BaseNode& mesh)
                 if (!anim || anim == &mesh.mTargetAnim)
                 {
                     // Target animation channels may have no rotation channels
-                    DefaultLogger::get()->error("ASE: Ignoring rotation channel in target animation");
+                    ASSIMP_LOG_ERROR("ASE: Ignoring rotation channel in target animation");
                     SkipSection();
                 }
                 else ParseLV3RotAnimationBlock(*anim);
@@ -1134,7 +1137,7 @@ void Parser::ParseLV3ScaleAnimationBlock(ASE::Animation& anim)
             bool b = false;
 
             // For the moment we're just reading the three floats -
-            // we ignore the �dditional information for bezier's and TCBs
+            // we ignore the additional information for bezier's and TCBs
 
             // simple scaling keyframe
             if (TokenMatch(filePtr,"CONTROL_SCALE_SAMPLE" ,20))
@@ -1180,7 +1183,7 @@ void Parser::ParseLV3PosAnimationBlock(ASE::Animation& anim)
             bool b = false;
 
             // For the moment we're just reading the three floats -
-            // we ignore the �dditional information for bezier's and TCBs
+            // we ignore the additional information for bezier's and TCBs
 
             // simple scaling keyframe
             if (TokenMatch(filePtr,"CONTROL_POS_SAMPLE" ,18))
@@ -1226,7 +1229,7 @@ void Parser::ParseLV3RotAnimationBlock(ASE::Animation& anim)
             bool b = false;
 
             // For the moment we're just reading the  floats -
-            // we ignore the �dditional information for bezier's and TCBs
+            // we ignore the additional information for bezier's and TCBs
 
             // simple scaling keyframe
             if (TokenMatch(filePtr,"CONTROL_ROT_SAMPLE" ,18))
@@ -1292,12 +1295,14 @@ void Parser::ParseLV2NodeTransformBlock(ASE::BaseNode& mesh)
                     {
                         mode = 2;
                     }
-                    else DefaultLogger::get()->error("ASE: Ignoring target transform, "
-                        "this is no spot light or target camera");
+                    else {
+                        ASSIMP_LOG_ERROR("ASE: Ignoring target transform, "
+                            "this is no spot light or target camera");
+                    }
                 }
                 else
                 {
-                    DefaultLogger::get()->error("ASE: Unknown node transformation: " + temp);
+                    ASSIMP_LOG_ERROR("ASE: Unknown node transformation: " + temp);
                     // mode = 0
                 }
                 continue;
@@ -1551,7 +1556,7 @@ void Parser::ParseLV3MeshWeightsBlock(ASE::Mesh& mesh)
 void Parser::ParseLV4MeshBones(unsigned int iNumBones,ASE::Mesh& mesh)
 {
     AI_ASE_PARSER_INIT();
-    mesh.mBones.resize(iNumBones);
+    mesh.mBones.resize(iNumBones, Bone("UNNAMED"));
     while (true)
     {
         if ('*' == *filePtr)
@@ -1857,7 +1862,7 @@ void Parser::ParseLV3MeshCFaceListBlock(unsigned int iNumFaces, ASE::Mesh& mesh)
             ++filePtr;
 
             // Face entry
-            if (TokenMatch(filePtr,"MESH_CFACE" ,11))
+            if (TokenMatch(filePtr,"MESH_CFACE" ,10))
             {
                 unsigned int aiValues[3];
                 unsigned int iIndex = 0;
@@ -1913,7 +1918,7 @@ void Parser::ParseLV3MeshNormalListBlock(ASE::Mesh& sMesh)
                 else if (index == face.mIndices[2])
                     index = 2;
                 else    {
-                    DefaultLogger::get()->error("ASE: Invalid vertex index in MESH_VERTEXNORMAL section");
+                    ASSIMP_LOG_ERROR("ASE: Invalid vertex index in MESH_VERTEXNORMAL section");
                     continue;
                 }
                 // We'll renormalize later
@@ -1925,7 +1930,7 @@ void Parser::ParseLV3MeshNormalListBlock(ASE::Mesh& sMesh)
                 ParseLV4MeshFloatTriple(&vNormal.x,faceIdx);
 
                 if (faceIdx >= sMesh.mFaces.size()) {
-                    DefaultLogger::get()->error("ASE: Invalid vertex index in MESH_FACENORMAL section");
+                    ASSIMP_LOG_ERROR("ASE: Invalid vertex index in MESH_FACENORMAL section");
                     continue;
                 }
 
@@ -2149,5 +2154,7 @@ void Parser::ParseLV4MeshLong(unsigned int& iOut)
     // parse the value
     iOut = strtoul10(filePtr,&filePtr);
 }
+
+#endif // ASSIMP_BUILD_NO_3DS_IMPORTER
 
 #endif // !! ASSIMP_BUILD_NO_BASE_IMPORTER

@@ -1,8 +1,9 @@
 #version 420
+
 in defaultBlock
 {
 	vec4 position;
-	vec2 uv;
+	vec2 UV;
 } inBlock;
 
 out vec4 outColor;
@@ -50,15 +51,15 @@ void main()
 		};
 
 		vec4 color = vec4(0);
-		color += texture2D(defaultTexture, inBlock.uv + offsets[0]) * kernel1;
-		color += texture2D(defaultTexture, inBlock.uv + offsets[1]) * kernel2;
-		color += texture2D(defaultTexture, inBlock.uv + offsets[2]) * kernel3;
-		color += texture2D(defaultTexture, inBlock.uv + offsets[3]) * kernel4;
-		color += texture2D(defaultTexture, inBlock.uv + offsets[4]) * kernel5;
-		color += texture2D(defaultTexture, inBlock.uv + offsets[5]) * kernel6;
-		color += texture2D(defaultTexture, inBlock.uv + offsets[6]) * kernel7;
-		color += texture2D(defaultTexture, inBlock.uv + offsets[7]) * kernel8;
-		color += texture2D(defaultTexture, inBlock.uv + offsets[8]) * kernel9;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[0]) * kernel1;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[1]) * kernel2;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[2]) * kernel3;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[3]) * kernel4;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[4]) * kernel5;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[5]) * kernel6;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[6]) * kernel7;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[7]) * kernel8;
+		color += texture2D(defaultTexture, inBlock.UV + offsets[8]) * kernel9;
 
 		if(length(color) > filterLevel)
 		{
@@ -73,6 +74,6 @@ void main()
 
 	else
 	{
-		outColor = texture2D(defaultTexture, inBlock.uv);
+		outColor = texture2D(defaultTexture, inBlock.UV);
 	}	
 }

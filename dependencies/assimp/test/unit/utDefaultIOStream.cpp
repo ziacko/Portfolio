@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 
 All rights reserved.
 
@@ -37,7 +39,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -------------------------------------------------------------------------*/
 #include <gtest/gtest.h>
-#include "DefaultIOStream.h"
+#include "TestIOStream.h"
+#include "UnitTestFileGenerator.h"
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 
 using namespace ::Assimp;
 
@@ -45,32 +51,33 @@ class utDefaultIOStream : public ::testing::Test {
     // empty
 };
 
-class TestDefaultIOStream : public DefaultIOStream {
-public:
-    TestDefaultIOStream()
-    : DefaultIOStream() {
-        // empty
-    }
-
-    TestDefaultIOStream( FILE* pFile, const std::string &strFilename )
-    : DefaultIOStream( pFile, strFilename ) {
-        // empty
-    }
-
-    virtual ~TestDefaultIOStream() {
-        // empty
-    }
-};
+const char data[]{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Qui\
+sque luctus sem diam, ut eleifend arcu auctor eu. Vestibulum id est vel nulla l\
+obortis malesuada ut sed turpis. Nulla a volutpat tortor. Nunc vestibulum portt\
+itor sapien ornare sagittis volutpat."};
 
 TEST_F( utDefaultIOStream, FileSizeTest ) {
-    char buffer[ L_tmpnam ];
-    tmpnam( buffer );
-    std::FILE *fs( std::fopen( buffer, "w+" ) );
-    size_t written( std::fwrite( buffer, 1, sizeof( char ) * L_tmpnam, fs ) );
-    std::fflush( fs );
+    const auto dataSize = sizeof(data);
+    const auto dataCount = dataSize / sizeof(*data);
 
-    TestDefaultIOStream myStream( fs, buffer );
-    size_t size = myStream.FileSize();
-    EXPECT_EQ( size, sizeof( char ) * L_tmpnam );
-    remove( buffer );
+    char fpath[] = { TMP_PATH"rndfp.XXXXXX" };
+    auto* fs = MakeTmpFile(fpath);
+    ASSERT_NE(nullptr, fs);
+    {
+        auto written = std::fwrite(data, sizeof(*data), dataCount, fs );
+        EXPECT_NE( 0U, written );
+    
+        auto vflush = std::fflush( fs );
+        ASSERT_EQ(vflush, 0);
+
+		std::fclose(fs);
+		fs = std::fopen(fpath, "r");
+
+		ASSERT_NE(nullptr, fs);
+
+        TestDefaultIOStream myStream( fs, fpath);
+        size_t size = myStream.FileSize();
+        EXPECT_EQ( size, dataSize);
+    }
+    remove(fpath);
 }

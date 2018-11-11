@@ -25,7 +25,7 @@ layout(std140, binding = 1) uniform erosionSettings
 
 out vec4 outColor;
 
-uniform sampler2D defaultTexture;
+layout(binding = 0) uniform sampler2D defaultTexture;
 
 void main()
 {

@@ -20,7 +20,7 @@ public:
 		glm::vec4						aliveColor;
 		glm::vec4						deadColor;
 		glm::vec4						emptyColor;
-		float							dimensions; // change to vec2 for more flexibility
+		GLuint							dimensions; // change to vec2 for more flexibility
 
 		GLuint							bufferHandle;
 		GLuint							uniformHandle;
@@ -35,7 +35,7 @@ public:
 
 			this->aliveColor = aliveColor;
 			this->deadColor = deadColor;
-			this->emptyColor = emptyColor;	
+			this->emptyColor = emptyColor;
 		}
 	};
 
@@ -62,7 +62,7 @@ public:
 		}
 	};
 
-	golScene(GLuint dimensions = 20, GLdouble tickDelay = 0.25f, GLuint randomSeed = 666,
+	golScene(GLuint dimensions = 20, GLdouble tickDelay = 1.0f, GLuint randomSeed = 666,
 		GLuint cellProbability = 90, const char* windowName = "Ziyad Barakat's portfolio (game of life)",
 		camera* golCamera = new camera(), const char* shaderConfigPath = "../../resources/shaders/GOL.txt")
 		: scene(windowName, golCamera, shaderConfigPath)
@@ -91,6 +91,14 @@ protected:
 	GLuint								randomSeed;
 	GLuint								cellProbability;
 
+	void SetupVertexBuffer() override
+	{
+		GLfloat cellWidth = defaultUniform->resolution.x / golSettingsBuffer->dimensions;
+		GLfloat cellHeight = defaultUniform->resolution.y / golSettingsBuffer->dimensions;
+
+		defaultVertexBuffer = new vertexBuffer_t(glm::vec2(cellWidth, cellHeight));
+	}
+
 	void Update() override
 	{
 		scene::Update();
@@ -113,17 +121,17 @@ protected:
 
 	void Draw() override
 	{
-		//UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(golSettingsBuffer), GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW);
-		glUseProgram(this->programGLID);
-		glDrawArraysInstanced(GL_QUADS, 0, 4, (GLsizei)(golSettingsBuffer->dimensions * golSettingsBuffer->dimensions));
-		DrawGUI(window->name);
-		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(golSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
+		glUseProgram(this->programGLID);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(golSettingsBuffer->dimensions * golSettingsBuffer->dimensions));
+		DrawGUI(windows[0]);
+		windows[0]->SwapDrawBuffers();
 	}
 
 	void CheckNode(cellState_t CurrentState, unsigned int& neighborCount, unsigned int& deadNeighborCount)
 	{
-		switch (CurrentState) // OMG that was amazing! how did i do that?
+		switch (CurrentState)
 		{
 		case cellState_t::EMPTY:
 		{
@@ -298,7 +306,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 		SetupBuffer(cellBuffer, cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), 0, gl_shader_storage_buffer, gl_dynamic_draw);
 	}

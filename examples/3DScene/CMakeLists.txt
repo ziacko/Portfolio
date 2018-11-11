@@ -3,11 +3,7 @@ project (Scene_Example CXX)
 
 set(PROJECT_LABEL "3DScene")
 
-link_directories (${LINK_DIRECTORY})
-link_libraries (${LIBS})
 set ( SOURCE "./source/Scene3D.cpp")
-
-#set (TINYEXTENDER_SOURCE_DIR "../../dependencies/tinyextender/Source")
 
 find_package(OpenGL)
 
@@ -37,8 +33,10 @@ set (TINYEXTENDER_INCLUDE_DIR "../../dependencies/tinyextender/Include")
 set (TINYSHADERS_INCLUDE_DIR "../../dependencies/tinyshaders/Include")
 set (TINYCLOCK_INCLUDE_DIR "../../dependencies/tinyclock/Include")
 set (GLM_INCLUDE_DIR "../../dependencies/glm/")
+set (GLI_INCLUDE_DIR "../../dependencies/gli/")
 set (IMGUI_INCLUDE_DIR "../../dependencies/imgui/")
-set (ASSIMP_INCLUDE_DIR "../../dependencies/assimp/include")
+set (ASSIMP_INCLUDE_DIR "../../dependencies/assimp/include/")
+set (STB_INCLUDE_DIR "../../dependencies/stb")
 set (SCENE_INCLUDE_DIR "./include") 
 
 set (COMMON_HEADER_DIR "../../include/")
@@ -50,9 +48,11 @@ set (COMMON_HEADERS
 "${COMMON_HEADER_DIR}TexturedScene.h"
 "${COMMON_HEADER_DIR}UniformBuffer.h"
 "${COMMON_HEADER_DIR}Utilities.h"
-"${COMMON_HEADER_DIR}VertexBuffer.h")
+"${COMMON_HEADER_DIR}VertexBuffer.h"
+"${COMMON_HEADER_DIR}Model.h"
+"${COMMON_HEADER_DIR}Scene3D.h")
 
-set (HEADERS "${COMMON_HEADERS}" "./include/Scene3D.h")
+set (HEADERS "${COMMON_HEADERS}")
 
 include_directories("${PORTFOLIO_INCLUDE_DIR}")
 include_directories("${TINYWINDOW_INCLUDE_DIR}")
@@ -61,14 +61,19 @@ include_directories("${TINYSHADERS_INCLUDE_DIR}")
 include_directories("${TINYCLOCK_INCLUDE_DIR}")
 include_directories("${IMGUI_INCLUDE_DIR}")
 include_directories("${GLM_INCLUDE_DIR}")
-#include_directories("${GLI_INCLUDE_DIR}")
+include_directories("${GLI_INCLUDE_DIR}")
 include_directories("${ASSIMP_INCLUDE_DIR}")
+include_directories("${STB_INCLUDE_DIR}")
 include_directories("${SCENE_INCLUDE_DIR}")
 
-link_directories (${LINK_DIRECTORY})
-link_libraries (${LIBS})
-
-set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo")
+set(ASSIMP_LIB_DIRECTORY "../../dependencies/assimp/lib/Debug")
+set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
 
 add_executable(3DScene ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET 3DScene PROPERTY OUTPUT_NAME "3DScene")
+find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
+
+target_link_libraries(3DScene "${ASSIMP_LIB_DIRECTORY}/assimp-vc140-mt")
+
+set (SHADER_DIR "../../resources/shaders/")
+file(GLOB GLSL_SOURCE_FILES "${SHADER_DIR}/Model.txt" "${SHADER_DIR}/Model.vert" "${SHADER_DIR}/Model.frag")

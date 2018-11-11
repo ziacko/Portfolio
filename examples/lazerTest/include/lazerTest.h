@@ -55,7 +55,7 @@ public:
 		InitImGUI();
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
-		InitializeBuffers();
+		InitializeUniforms();
 		SetupCallbacks();
 
 		SetGuiStyle();

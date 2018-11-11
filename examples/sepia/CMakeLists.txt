@@ -66,7 +66,7 @@ include_directories("${SCENE_INCLUDE_DIR}")
 link_directories (${LINK_DIRECTORY})
 link_libraries (${LIBS})
 
-set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp")
+set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
 
 add_executable(Sepia ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET Sepia PROPERTY OUTPUT_NAME "Scene")

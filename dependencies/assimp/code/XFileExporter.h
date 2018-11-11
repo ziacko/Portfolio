@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -92,7 +94,10 @@ protected:
     void PushTag() { startstr.append( "  "); }
 
     /// Leaves an element, decreasing the indentation
-    void PopTag() { ai_assert( startstr.length() > 1); startstr.erase( startstr.length() - 2); }
+    void PopTag() { 
+        ai_assert( startstr.length() > 1); 
+        startstr.erase( startstr.length() - 2); 
+    }
 
 public:
     /// Stringstream to write all output into
@@ -107,7 +112,7 @@ protected:
     const ExportProperties* mProperties;
 
     /// write a path
-    void writePath(aiString path);
+    void writePath(const aiString &path);
 
     /// The IOSystem for output
     IOSystem* mIOSystem;

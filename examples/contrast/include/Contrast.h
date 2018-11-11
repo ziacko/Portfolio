@@ -39,16 +39,16 @@ protected:
 
 	contrastSettings_t*			contrastSettings;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 		ImGui::SliderFloat("contrast level", &contrastSettings->contrast, 0.0f, 10.0f);
 	}
 
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(contrastSettings, contrastSettings->bufferHandle, sizeof(*contrastSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

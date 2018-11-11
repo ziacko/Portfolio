@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -44,6 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_GLTFEXPORTER_H_INC
 #define AI_GLTFEXPORTER_H_INC
 
+#ifndef ASSIMP_BUILD_NO_GLTF_EXPORTER
+
 #include <assimp/types.h>
 #include <assimp/material.h>
 
@@ -58,9 +62,12 @@ struct aiMaterial;
 
 namespace glTF
 {
-    class Asset;
+    template<class T>
+    class Ref;
 
+    class Asset;
     struct TexProperty;
+    struct Node;
 }
 
 namespace Assimp
@@ -94,14 +101,19 @@ namespace Assimp
 
         void WriteBinaryData(IOStream* outfile, std::size_t sceneLength);
 
+        void GetTexSampler(const aiMaterial* mat, glTF::TexProperty& prop);
         void GetMatColorOrTex(const aiMaterial* mat, glTF::TexProperty& prop, const char* propName, int type, int idx, aiTextureType tt);
         void ExportMetadata();
         void ExportMaterials();
         void ExportMeshes();
-        unsigned int ExportNode(const aiNode* node);
+        unsigned int ExportNodeHierarchy(const aiNode* n);
+        unsigned int ExportNode(const aiNode* node, glTF::Ref<glTF::Node>& parent);
         void ExportScene();
+        void ExportAnimations();
     };
 
 }
 
-#endif
+#endif // ASSIMP_BUILD_NO_GLTF_EXPORTER
+
+#endif // AI_GLTFEXPORTER_H_INC

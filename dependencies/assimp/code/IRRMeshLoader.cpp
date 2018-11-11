@@ -3,7 +3,9 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 
 All rights reserved.
 
@@ -46,16 +48,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ASSIMP_BUILD_NO_IRRMESH_IMPORTER
 
 #include "IRRMeshLoader.h"
-#include "ParsingUtils.h"
-#include "fast_atof.h"
+#include <assimp/ParsingUtils.h>
+#include <assimp/fast_atof.h>
 #include <memory>
 #include <assimp/IOSystem.hpp>
 #include <assimp/mesh.h>
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/material.h>
 #include <assimp/scene.h>
-#include "Macros.h"
-
+#include <assimp/importerdesc.h>
+#include <assimp/Macros.h>
 
 using namespace Assimp;
 using namespace irr;
@@ -116,14 +118,18 @@ const aiImporterDesc* IRRMeshImporter::GetInfo () const
     return &desc;
 }
 
-static void releaseMaterial( aiMaterial *mat ) {
-    delete mat;
-    mat = nullptr;
+static void releaseMaterial( aiMaterial **mat ) {
+    if(*mat!= nullptr) {
+        delete *mat;
+        *mat = nullptr;
+    }
 }
 
-static void releaseMesh( aiMesh *mesh ) {
-    delete mesh;
-    mesh = nullptr;
+static void releaseMesh( aiMesh **mesh ) {
+    if (*mesh != nullptr){
+        delete *mesh;
+        *mesh = nullptr;
+    }
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -148,8 +154,8 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
     meshes.reserve(5);
 
     // temporary data - current mesh buffer
-    aiMaterial* curMat  = NULL;
-    aiMesh* curMesh     = NULL;
+    aiMaterial* curMat  = nullptr;
+    aiMesh* curMesh     = nullptr;
     unsigned int curMatFlags = 0;
 
     std::vector<aiVector3D> curVertices,curNormals,curTangents,curBitangents;
@@ -169,15 +175,15 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
             if (!ASSIMP_stricmp(reader->getNodeName(),"buffer") && (curMat || curMesh)) {
                 // end of previous buffer. A material and a mesh should be there
                 if ( !curMat || !curMesh)   {
-                    DefaultLogger::get()->error("IRRMESH: A buffer must contain a mesh and a material");                    
-                    releaseMaterial( curMat );
-                    releaseMesh( curMesh );
+                    ASSIMP_LOG_ERROR("IRRMESH: A buffer must contain a mesh and a material");
+                    releaseMaterial( &curMat );
+                    releaseMesh( &curMesh );
                 } else {
                     materials.push_back(curMat);
                     meshes.push_back(curMesh);
                 }
-                curMat  = NULL;
-                curMesh = NULL;
+                curMat  = nullptr;
+                curMesh = nullptr;
 
                 curVertices.clear();
                 curColors.clear();
@@ -191,8 +197,8 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 
             if (!ASSIMP_stricmp(reader->getNodeName(),"material"))  {
                 if (curMat) {
-                    DefaultLogger::get()->warn("IRRMESH: Only one material description per buffer, please");
-                    releaseMaterial( curMat );
+                    ASSIMP_LOG_WARN("IRRMESH: Only one material description per buffer, please");
+                    releaseMaterial( &curMat );
                 }
                 curMat = ParseMaterial(curMatFlags);
             }
@@ -202,10 +208,10 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 
                 if (!num)   {
                     // This is possible ... remove the mesh from the list and skip further reading
-                    DefaultLogger::get()->warn("IRRMESH: Found mesh with zero vertices");
+                    ASSIMP_LOG_WARN("IRRMESH: Found mesh with zero vertices");
 
-                    releaseMaterial( curMat );
-                    releaseMesh( curMesh );
+                    releaseMaterial( &curMat );
+                    releaseMesh( &curMesh );
                     textMeaning = 0;
                     continue;
                 }
@@ -248,15 +254,15 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
                     vertexFormat = 2;
                 }
                 else if (ASSIMP_stricmp("standard", t)) {
-                    releaseMaterial( curMat );
-                    DefaultLogger::get()->warn("IRRMESH: Unknown vertex format");
+                    releaseMaterial( &curMat );
+                    ASSIMP_LOG_WARN("IRRMESH: Unknown vertex format");
                 }
                 else vertexFormat = 0;
                 textMeaning = 1;
             }
             else if (!ASSIMP_stricmp(reader->getNodeName(),"indices"))  {
                 if (curVertices.empty() && curMat)  {
-                    releaseMaterial( curMat );
+                    releaseMaterial( &curMat );
                     throw DeadlyImportError("IRRMESH: indices must come after vertices");
                 }
 
@@ -269,20 +275,20 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
                 curMesh->mNumVertices = reader->getAttributeValueAsInt("indexCount");
                 if (!curMesh->mNumVertices) {
                     // This is possible ... remove the mesh from the list and skip further reading
-                    DefaultLogger::get()->warn("IRRMESH: Found mesh with zero indices");
+                    ASSIMP_LOG_WARN("IRRMESH: Found mesh with zero indices");
 
                     // mesh - away
-                    releaseMesh( curMesh );
+                    releaseMesh( &curMesh );
 
                     // material - away
-                    releaseMaterial( curMat );
+                    releaseMaterial( &curMat );
 
                     textMeaning = 0;
                     continue;
                 }
 
                 if (curMesh->mNumVertices % 3)  {
-                    DefaultLogger::get()->warn("IRRMESH: Number if indices isn't divisible by 3");
+                    ASSIMP_LOG_WARN("IRRMESH: Number if indices isn't divisible by 3");
                 }
 
                 curMesh->mNumFaces = curMesh->mNumVertices / 3;
@@ -433,7 +439,7 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
                 unsigned int total = 0;
                 while(SkipSpacesAndLineEnd(&sz))    {
                     if (curFace >= faceEnd) {
-                        DefaultLogger::get()->error("IRRMESH: Too many indices");
+                        ASSIMP_LOG_ERROR("IRRMESH: Too many indices");
                         break;
                     }
                     if (!curIdx)    {
@@ -443,7 +449,7 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 
                     unsigned int idx = strtoul10(sz,&sz);
                     if (idx >= curVertices.size())  {
-                        DefaultLogger::get()->error("IRRMESH: Index out of range");
+                        ASSIMP_LOG_ERROR("IRRMESH: Index out of range");
                         idx = 0;
                     }
 
@@ -464,7 +470,7 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
                 }
 
                 if (curFace != faceEnd)
-                    DefaultLogger::get()->error("IRRMESH: Not enough indices");
+                    ASSIMP_LOG_ERROR("IRRMESH: Not enough indices");
 
                 // Finish processing the mesh - do some small material workarounds
                 if (curMatFlags & AI_IRRMESH_MAT_trans_vertex_alpha && !useColors)  {
@@ -486,9 +492,9 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
     // End of the last buffer. A material and a mesh should be there
     if (curMat || curMesh)  {
         if ( !curMat || !curMesh)   {
-            DefaultLogger::get()->error("IRRMESH: A buffer must contain a mesh and a material");
-            releaseMaterial( curMat );
-            releaseMesh( curMesh );
+            ASSIMP_LOG_ERROR("IRRMESH: A buffer must contain a mesh and a material");
+            releaseMaterial( &curMat );
+            releaseMesh( &curMesh );
         }
         else    {
             materials.push_back(curMat);

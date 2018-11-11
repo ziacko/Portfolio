@@ -1,0 +1,97 @@
+Begin Object Class=/Script/Engine.Material Name="Palm_In_Well_Leaf_Mat"
+   Begin Object Class=/Script/Engine.MaterialExpressionConstantBiasScale Name="MaterialExpressionConstantBiasScale_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionSpeedTree Name="MaterialExpressionSpeedTree_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_0"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_1"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSample Name="MaterialExpressionTextureSample_2"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVertexColor Name="MaterialExpressionVertexColor_0"
+   End Object
+   Begin Object Class=/Script/UnrealEd.SceneThumbnailInfoWithPrimitive Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   Begin Object Name="MaterialExpressionConstantBiasScale_0"
+      Input=(Expression=MaterialExpressionTextureSample'"Palm_In_Well_Leaf_Mat:MaterialExpressionTextureSample_1"')
+      Bias=-0.500000
+      Scale=2.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=266
+      MaterialExpressionGuid=5B1EB72E49DC7FBD5DD2A2A66F6C66ED
+      Material=Material'"Palm_In_Well_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_0"
+      A=(Expression=MaterialExpressionTextureSample'"Palm_In_Well_Leaf_Mat:MaterialExpressionTextureSample_0"',Mask=1,MaskA=1)
+      B=(Expression=MaterialExpressionVertexColor'"Palm_In_Well_Leaf_Mat:MaterialExpressionVertexColor_0"',Mask=1,MaskA=1)
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=66
+      MaterialExpressionGuid=3E7C1D984D2F1988F19224856E107550
+      Material=Material'"Palm_In_Well_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionSpeedTree_0"
+      GeometryType=STG_Leaf
+      BillboardThreshold=1.000000
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=466
+      MaterialExpressionGuid=8205251047B950022B1C4F89237DBDF1
+      Material=Material'"Palm_In_Well_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_0"
+      Texture=Texture2D'"/Game/models/Palm_well/Palm_In_Well_Color_Tex.Palm_In_Well_Color_Tex"'
+      MaterialExpressionEditorX=-600
+      MaterialExpressionGuid=912CF5744E3C4109F1C792A2E3F462FA
+      Material=Material'"Palm_In_Well_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_1"
+      Texture=Texture2D'"/Game/models/Palm_well/Palm_In_Well_Normal_Tex.Palm_In_Well_Normal_Tex"'
+      SamplerType=SAMPLERTYPE_LinearColor
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=200
+      MaterialExpressionGuid=F3C463F94B50456896D36C8BE3DC6341
+      Material=Material'"Palm_In_Well_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionTextureSample_2"
+      Texture=Texture2D'"/Game/models/Palm_well/Palm_In_Well_Subsurface_Tex.Palm_In_Well_Subsurface_Tex"'
+      MaterialExpressionEditorX=-300
+      MaterialExpressionEditorY=666
+      MaterialExpressionGuid=8B7AEB734D5E38A7B558219305ABE43D
+      Material=Material'"Palm_In_Well_Leaf_Mat"'
+   End Object
+   Begin Object Name="MaterialExpressionVertexColor_0"
+      MaterialExpressionEditorX=-600
+      MaterialExpressionEditorY=400
+      MaterialExpressionGuid=D372AF164F2C0EAEA0C6BF95068E18A1
+      Material=Material'"Palm_In_Well_Leaf_Mat"'
+   End Object
+   Begin Object Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   BaseColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"')
+   Roughness=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"',Mask=1,MaskA=1)
+   Normal=(Expression=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"')
+   OpacityMask=(Expression=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"')
+   BlendMode=BLEND_Masked
+   ShadingModel=MSM_TwoSidedFoliage
+   WorldPositionOffset=(Expression=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"')
+   SubsurfaceColor=(Expression=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_2"')
+   AmbientOcclusion=(Expression=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"',Mask=1,MaskR=1)
+   TwoSided=True
+   DitheredLODTransition=True
+   Expressions(0)=MaterialExpressionVertexColor'"MaterialExpressionVertexColor_0"'
+   Expressions(1)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_0"'
+   Expressions(2)=MaterialExpressionMultiply'"MaterialExpressionMultiply_0"'
+   Expressions(3)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_1"'
+   Expressions(4)=MaterialExpressionConstantBiasScale'"MaterialExpressionConstantBiasScale_0"'
+   Expressions(5)=MaterialExpressionTextureSample'"MaterialExpressionTextureSample_2"'
+   Expressions(6)=MaterialExpressionSpeedTree'"MaterialExpressionSpeedTree_0"'
+   StateId=E98DC8C14FC51B0C0ACC40A2DBC96327
+   ReferencedTextureGuids(0)=8FF938FB4C2ADA64E350B0A78EA139C2
+   ReferencedTextureGuids(1)=9A6DF0AD48AE184CD8909AA6D580788C
+   ReferencedTextureGuids(2)=4F7DEB744AF6ADEB8E204AA0F6BD59C0
+   LightmassSettings=(bCastShadowAsMasked=True)
+   ThumbnailInfo=SceneThumbnailInfoWithPrimitive'"SceneThumbnailInfoWithPrimitive_0"'
+   LightingGuid=4EFB75EA497B0E7834BE0598B1CA9786
+End Object

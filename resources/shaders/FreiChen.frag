@@ -1,8 +1,9 @@
 #version 420
+
 in defaultBlock
 {
 	vec4 position;
-	vec2 uv;
+	vec2 UV;
 } inBlock;
 
 out vec4 outColor;
@@ -26,8 +27,6 @@ uniform freiChenSettings
 };
 
 uniform sampler2D defaultTexture;
-
-
 
 void main()
 {
@@ -56,14 +55,14 @@ void main()
 		{
 			for(float j = 0.0; j < 3.0; j++)
 			{
-				tex = texture2D(defaultTexture, inBlock.uv + texel * vec2(i - 1.0, j - 1.0)).rgb;
+				tex = texture2D(defaultTexture, inBlock.UV + texel * vec2(i - 1.0, j - 1.0)).rgb;
 				I[int(i)][int(j)] = length(tex);
 			}
 		}
 
 		for(int i = 0; i < 9; i++)
 		{
-			float dp3 = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]);
+			float dp3 = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]) * filterLevel;
 			cnv[i] = dp3 * dp3;
 		}
 
@@ -75,6 +74,6 @@ void main()
 
 	else
 	{
-		outColor = texture2D(defaultTexture, inBlock.uv);
+		outColor = texture2D(defaultTexture, inBlock.UV);
 	}
 }

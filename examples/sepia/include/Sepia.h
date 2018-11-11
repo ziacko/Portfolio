@@ -64,9 +64,9 @@ protected:
 
 	sepiaSettings_t*		sepiaSettings;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 
 		ImGui::SliderFloat("factor", &sepiaSettings->factor, 0.0f, 1.0f);
 
@@ -85,7 +85,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

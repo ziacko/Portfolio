@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -47,9 +49,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AI_IRRLOADER_H_INCLUDED
 
 #include "IRRShared.h"
-#include "SceneCombiner.h"
+#include <assimp/SceneCombiner.h>
 #include "Importer.h"
-#include "StringUtils.h"
+#include <assimp/StringUtils.h>
 #include <assimp/anim.h>
 
 namespace Assimp    {
@@ -116,10 +118,10 @@ private:
 
         explicit Animator(AT t = UNKNOWN)
             : type              (t)
-            , speed             (0.001)
-            , direction         (0.0,1.0,0.0)
-            , circleRadius      (1.0)
-            , tightness         (0.5f)
+            , speed             ( ai_real( 0.001 ) )
+            , direction         ( ai_real( 0.0 ), ai_real( 1.0 ), ai_real( 0.0 ) )
+            , circleRadius      ( ai_real( 1.0) )
+            , tightness         ( ai_real( 0.5 ) )
             , loop              (true)
             , timeForWay        (100)
         {

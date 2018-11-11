@@ -2,12 +2,20 @@
 #define SCENE_H
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#define GLM_ENABLE_EXPERIMENTAL
 #include <iostream>
+#include <string>
 #include <stdlib.h>
 #include <map>
+#include <numeric>
+#include <algorithm>
+#include <stddef.h>
+#include <chrono>
+#include <thread>
 #include <TinyExtender.h>
 using namespace TinyExtender;
 #include <TinyShaders.h>
+using namespace TinyShaders;
 #include <TinyWindow.h>
 #include <TinyClock.h>
 #include <glm/fwd.hpp>
@@ -17,17 +25,18 @@ using namespace TinyExtender;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/constants.hpp>
-#include <Camera.h>
-#include <DefaultUniformBuffer.h> 
-//#include <FreeImage.h>
-#include "Utilities.h"
-#include "VertexBuffer.h"
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <imgui.h>
-#include <stb_image.h>
-#include <stb_image_write.h>
-
 using namespace TinyWindow;
 using namespace std::placeholders;
+#include "Camera.h"
+#include "DefaultUniformBuffer.h"
+#include "Utilities.h"
+#include "VertexBuffer.h"
+
+typedef enum {UNCAPPED = 0, THIRTY = 30, SIXTY = 60, NINETY = 90, ONETWENTY = 120, ONEFOURTYFOUR = 144} frameRates_t;
 
 class scene
 {
@@ -45,20 +54,22 @@ public:
 		defaultUniform = nullptr;
 		imGUIFontTexture = 0;
 
+		isFrameRateLocked = false;
+		lockedFrameRate = 60;
+
 		manager = new windowManager();
 		
+		windows.push_back(manager->AddWindow(windowName, this, vec2_t<unsigned int>(1280, 720), 4, 5, profile_t::core));
 		
 		
-		windows.push_back(manager->AddWindow(windowName, this));
-		windowContextMap.insert(std::make_pair(windows[0], ImGui::GetCurrentContext()));
-		ImGui::SetCurrentContext(windowContextMap[windows[0]]);
+		shaderHandler = new shaderManager();
+		
 		InitImGUI(windows[0]);
-		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
-		windows.push_back(manager->AddSharedWindow(windows[0], "shared context"));
+		/*windows.push_back(manager->AddSharedWindow(windows[0], "shared context"));
 		windowContextMap.insert(std::make_pair(windows[1], ImGui::CreateContext()));
 		ImGui::SetCurrentContext(windowContextMap[windows[1]]);
-		InitImGUI(windows[1]);
+		InitImGUI(windows[1]);*/
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		
 
@@ -85,18 +96,18 @@ public:
 			printf("blarg \n");
 		}
 
-		glDebugMessageCallback(&OpenGLDebugCallback, NULL);
+		glDebugMessageCallback(&OpenGLDebugCallback, nullptr);
 
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
-			GL_DONT_CARE, 0, NULL, GL_TRUE);
+			GL_DONT_CARE, 0, nullptr, GL_TRUE);
 		glEnable(GL_DEPTH_TEST);
 		
-		tinyShaders::LoadShaderProgramsFromConfigFile(this->shaderConfigPath);
-		this->programGLID = tinyShaders::GetShaderProgramByIndex(0)->handle;
+		shaderHandler->LoadShaderProgramsFromConfigFile(shaderConfigPath, false, &shaderPrograms);
+		this->programGLID = shaderPrograms[0]->handle;
 
 		glUseProgram(this->programGLID);
 
-		InitializeBuffers();
+		InitializeUniforms();
 		SetupCallbacks();
 	}
 
@@ -108,7 +119,7 @@ public:
 		manager->mouseWheelEvent = std::bind(&scene::HandleMouseWheel, this, _1, _2);
 		manager->maximizedEvent = std::bind(&scene::HandleMaximize, this, _1);
 		manager->keyEvent = std::bind(&scene::HandleKey, this, _1, _2, _3);
-		manager->destroyedEvent = std::bind(&scene::ShutDown, this, _1);
+		//manager->destroyedEvent = std::bind(&scene::ShutDown, this, _1);
 		manager->fileDropEvent = std::bind(&scene::HandleFileDrop, this, _1, _2, _3);
 	}
 
@@ -116,14 +127,9 @@ public:
 	{
 		//scene* thisScene = (scene*)window->userData;
 		imGUIInvalidateDeviceObject();
-		tinyShaders::Shutdown();
-		manager->ShutDown();
+		shaderHandler->Shutdown();
+ 		manager->ShutDown();
 	}
-
-	/*static void RenderImGUIDrawLists(ImDrawData* drawData)
-	{
-		
-	}*/
 	
 protected:
 
@@ -131,6 +137,9 @@ protected:
 
 	std::map<tWindow*, ImGuiContext*> windowContextMap;
 	std::vector<tWindow*>		windows;
+
+	shaderManager*               shaderHandler;
+	std::vector<tShaderProgram*> shaderPrograms;
 
 	tinyClock_t*				sceneClock;
 
@@ -143,6 +152,7 @@ protected:
 	const char*					tweakBarName;
 	const char*					shaderConfigPath;
 
+	ImGuiContext*				imGUIContext;
 	GLuint						imGUIFontTexture;
 	GLint						imGUIShaderhandle;
 	GLint						imGUIVertexHandle;
@@ -158,15 +168,33 @@ protected:
 
 	bool						isGUIActive;
 
+	bool						isFrameRateLocked;
+	int							lockedFrameRate = UNCAPPED;
+	std::vector<const char*>	frameRateSettings = { "none", "30", "60", "90", "120", "144" };
+
+	int				currentResolution = 0;	
+
 	virtual void Update()
 	{
 		manager->PollForEvents();
 		sceneCamera->Update();
-		sceneClock->UpdateClockAdaptive();
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
+		if (lockedFrameRate > 0)
+		{
+			sceneClock->UpdateClockFixed(lockedFrameRate);
+		}
+		else
+		{
+			sceneClock->UpdateClockAdaptive();
+		}
 		
+
+		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();		
 		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultUniform->projection = sceneCamera->projection;
+		defaultUniform->view = sceneCamera->view;
+		defaultUniform->translation = sceneCamera->translation;
+
 		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
 	}
 
@@ -175,11 +203,11 @@ protected:
 		for (auto windowIter : windows)
 		{
 			windowIter->MakeCurrentContext();
-			ImGui::SetCurrentContext(windowContextMap[windowIter]);
-			glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+			//ImGui::SetCurrentContext(windowContextMap[windowIter]);
 			glUseProgram(this->programGLID);
 
 			glDrawArrays(GL_TRIANGLES, 0, 6);
+			//glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 6, GL_UNSIGNED_INT, 0);
 
 			glViewport(0, 0, windowIter->resolution.width, windowIter->resolution.height);
 			DrawGUI(windowIter);
@@ -195,26 +223,144 @@ protected:
 		ImGui::Text("Total running time %.5f", sceneClock->GetTotalTime());
 		ImGui::Text("Mouse coordinates: \t X: %.0f \t Y: %.0f", io.MousePos.x, io.MousePos.y);
 		ImGui::Text("Window size: \t Width: %i \t Height: %i", window->resolution.width, window->resolution.height);
+
 		if(ImGui::Button("Toggle Fullscreen"))
 		{
 			window->SetStyle(style_t::popup);
 			window->SetPosition(vec2_t<int>::Zero());
-			window->SetResolution(vec2_t<unsigned int>(manager->GetMonitors().back()->extents.right, manager->GetMonitors().back()->extents.bottom));
+			window->SetWindowSize(vec2_t<unsigned int>(manager->GetMonitors().back()->resolution.width, manager->GetMonitors().back()->resolution.height));
 			window->ToggleFullscreen(manager->GetMonitors()[0]);
 		}
 
-		static bool interval = true;
-		if (ImGui::Checkbox("Swap Interval", &interval))
+		static int interval = 1;
+		if (ImGui::SliderInt("Swap Interval", &interval, 0, 5))
 		{
 			manager->SetWindowSwapInterval(window, interval);
 		}
+
+		static int frameRatePick = 0;
+		ImGui::ListBox("Frame rate cap", &frameRatePick, frameRateSettings.data(), frameRateSettings.size());
+		switch (frameRatePick)
+		{
+		case 0: //none
+		case 1: //30
+		case 2: //60
+		case 3: //90
+		case 4: //120
+		{
+			lockedFrameRate = frameRatePick * 30;
+			break;
+		}
+		case 5: //144
+		{
+			lockedFrameRate = 144;
+			break;
+		}
+		}
+
+
+		/*std::vector<const char*> resolutions;
+		for (int resolutionIter = 0; resolutionIter < manager->GetMonitors()[0]->settings.size(); resolutionIter += 6)
+		{
+			std::string* currentResolution = new std::string();
+			//ok add the width, an x and then the height
+			*currentResolution += std::to_string(manager->GetMonitors()[0]->settings[resolutionIter]->resolution.width);
+			*currentResolution += " x ";
+			*currentResolution += std::to_string(manager->GetMonitors()[0]->settings[resolutionIter]->resolution.height);
+			//currentResolution += " ";
+			const char* blarg = currentResolution->c_str();
+			resolutions.push_back(std::move(blarg));
+		}*/
+
+		//make a combo that goes through each resolution in the list
+		//if one of them are clicked on 
+		/*if (ImGui::ListBox("resolutions", &currentResolution, resolutions.data(), resolutions.size()))
+		{
+			window->SetResolution(vec2_t<unsigned int>(manager->GetMonitors()[0]->settings[currentResolution]->resolution.width,
+				manager->GetMonitors()[0]->settings[currentResolution]->resolution.height));
+		}*/
+		
+		sceneCamera->resolution = glm::vec2(window->resolution.width, window->resolution.height);
+		//create a separate window that displays all possible rendering resolutions
+		DrawCameraStats();
+	}
+
+	virtual void DrawCameraStats()
+	{
+		//set up the view matrix
+		ImGui::Begin("camera", &isGUIActive, ImVec2(0, 0));
+
+		ImGui::Combo("projection type", &(int)sceneCamera->currentProjectionType, "perspective\0orthographic");
+
+		if (sceneCamera->currentProjectionType == camera::projection_t::orthographic)
+		{
+			ImGui::DragFloat("near plane", &sceneCamera->nearPlane);
+			ImGui::DragFloat("far plane", &sceneCamera->farPlane);
+			ImGui::SliderFloat("Field of view", &sceneCamera->fieldOfView, 0, 90, "%.10f");
+		}
+
+		else
+		{
+			ImGui::InputFloat("camera speed", &sceneCamera->speed, 0.f);
+			ImGui::InputFloat("x sensitivity", &sceneCamera->xSensitivity, 0.f);
+			ImGui::InputFloat("y sensitivity", &sceneCamera->ySensitivity, 0.f);
+		}
+
+		if (ImGui::TreeNode("view matrix"))
+		{
+			if (ImGui::TreeNode("right"))
+			{
+				//ImGui::Columns(2);
+				//ImGui::ListBox("blarg", 0, )
+				//ImGui::Text("blarg");
+				//ImGui::SameLine();
+				//ImGui::NextColumn();
+				ImGui::DragFloat4("##", (float*)&sceneCamera->view[0], 0.1f, -100.0f, 100.0f);
+				//ImGui::Columns(1);
+				ImGui::TreePop();
+			}
+
+			if (ImGui::TreeNode("up"))
+			{
+				ImGui::DragFloat4("##", (float*)&sceneCamera->view[1], 0.1f, -100.0f, 100.0f);
+				ImGui::TreePop();
+			}
+
+			if (ImGui::TreeNode("forward"))
+			{
+				ImGui::DragFloat4("##", (float*)&sceneCamera->view[2], 0.1f, -100.0f, 100.0f);
+				ImGui::TreePop();
+			}
+
+			if (ImGui::TreeNode("position"))
+			{
+				ImGui::DragFloat4("##", (float*)&sceneCamera->view[3], 0.1f, -100.0f, 100.0f);
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
+
+		}
+		if (ImGui::CollapsingHeader("projection matrix", NULL))
+		{
+			ImGui::DragFloat4("projection 0", (float*)&sceneCamera->projection[0], 0.1f, -100.0f, 100.0f);
+			ImGui::DragFloat4("projection 1", (float*)&sceneCamera->projection[1], 0.1f, -100.0f, 100.0f);
+			ImGui::DragFloat4("projection 2", (float*)&sceneCamera->projection[2], 0.1f, -100.0f, 100.0f);
+			ImGui::DragFloat4("projection 3", (float*)&sceneCamera->projection[3], 0.1f, -100.0f, 100.0f);
+		}
+		if (ImGui::CollapsingHeader("translation matrix", NULL))
+		{
+			ImGui::DragFloat4("row 0", (float*)&sceneCamera->translation[0], 0.1f, -100.0f, 100.0f);
+			ImGui::DragFloat4("row 1", (float*)&sceneCamera->translation[1], 0.1f, -100.0f, 100.0f);
+			ImGui::DragFloat4("row 2", (float*)&sceneCamera->translation[2], 0.1f, -100.0f, 100.0f);
+			ImGui::DragFloat4("row 3", (float*)&sceneCamera->translation[3], 0.1f, -100.0f, 100.0f);
+		}
+		ImGui::End();
+
+		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	virtual void DrawGUI(tWindow* window, ImVec2 beginSize = ImVec2(0, 0))
 	{
-
-		//window->MakeCurrentContext();
-		
 		ImGUINewFrame(window);
 		ImGuiIO io = ImGui::GetIO();
 		ImGui::Begin(window->name, &isGUIActive, beginSize);
@@ -228,17 +374,26 @@ protected:
 	{
 		defaultVertexBuffer = new vertexBuffer_t(defaultUniform->resolution);
 
-		GLfloat quadVerts[16] =
+		GLfloat quadVerts[24] =
 		{
 			0.0f, 0.0f, 1.0f, 1.0f,
 			sceneCamera->resolution.x, 0.0f, 1.0f, 1.0f,
+			0.0f, sceneCamera->resolution.y, 1.0f, 1.0f,
+
+			sceneCamera->resolution.x, 0.0f, 1.0f, 1.0f,
+			0.0f, sceneCamera->resolution.y, 1.0f, 1.0f,
 			sceneCamera->resolution.x, sceneCamera->resolution.y, 1.0f, 1.0f,
-			0.0f, sceneCamera->resolution.y, 1.0f, 1.0f
 		};
+	}
+
+	virtual void SetupIndexBuffer()
+	{
+
 	}
 
 	void SetupBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferSize, GLuint bufferUniformHandle, GLenum target, GLenum usage)
 	{
+		//TODO: get the currently bound buffer and rebind to that after this operation is done
 		glGenBuffers(1, &bufferHandle);
 		UpdateBuffer(buffer, bufferHandle, bufferSize, target, usage);
 		glBindBufferBase(target, bufferUniformHandle, bufferHandle);
@@ -247,11 +402,12 @@ protected:
 	//fuh. ill do it AFTER i've fixed GOL
 	void UpdateBuffer(void* buffer, GLuint& bufferHandle, GLuint bufferSize, GLenum target, GLenum usage)
 	{
+		//TODO: get the currently bound buffer and rebind to that after this operation is done
 		glBindBuffer(target, bufferHandle);
 		glBufferData(target, bufferSize, buffer, usage);
 	}
 
-	virtual void InitializeBuffers()
+	virtual void InitializeUniforms()
 	{
 		defaultUniform = new defaultUniformBuffer(this->sceneCamera);
 		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
@@ -372,6 +528,10 @@ protected:
 
 	void InitImGUI(tWindow* window)
 	{
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		windowContextMap.insert(std::make_pair(window, ImGui::GetCurrentContext()));
+
 		ImGuiIO& io = ImGui::GetIO();
 
 		io.KeyMap[ImGuiKey_Tab] = TinyWindow::tab;
@@ -409,6 +569,8 @@ protected:
 		imGUIVAOHandle = 0;
 		imGUIIBOHandle = 0;
 		imGUIFontTexture = 0;
+
+		ImGui::SetCurrentContext(windowContextMap[windows[0]]);
 	}
 
 	void HandleImGUIRender(tWindow* window)
@@ -549,7 +711,6 @@ protected:
 
 	void ImGUICreateDeviceObjects()
 	{
-
 		GLint lastTexture, lastArrayBuffer, LastVertexArray;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture);
 		glGetIntegerv(gl_array_buffer_binding, &lastArrayBuffer);
@@ -584,8 +745,8 @@ protected:
 		imGUIShaderhandle = glCreateProgram();
 		imGUIVertexHandle = glCreateShader(gl_vertex_shader);
 		imGUIFragmentHandle = glCreateShader(gl_fragment_shader);
-		glShaderSource(imGUIVertexHandle, 1, &vertex_shader, 0);
-		glShaderSource(imGUIFragmentHandle, 1, &fragment_shader, 0);
+		glShaderSource(imGUIVertexHandle, 1, &vertex_shader, nullptr);
+		glShaderSource(imGUIFragmentHandle, 1, &fragment_shader, nullptr);
 		glCompileShader(imGUIVertexHandle);
 		glCompileShader(imGUIFragmentHandle);
 		glAttachShader(imGUIShaderhandle, imGUIVertexHandle);
@@ -656,7 +817,7 @@ protected:
 		if (imGUIFontTexture)
 		{
 			glDeleteTextures(1, &imGUIFontTexture);
-			ImGui::GetIO().Fonts->TexID = 0;
+			ImGui::GetIO().Fonts->TexID = nullptr;
 			imGUIFontTexture = 0;
 		}
 	}
@@ -669,6 +830,14 @@ protected:
 		const char* message,
 		const void* userParam)
 	{
+		if (severity != gl_debug_severity_low &&
+			severity != gl_debug_severity_medium &&
+			severity != gl_debug_severity_high)
+		{
+			//we can skip these for the time being
+			return;
+		}
+
 		printf("---------------------opengl-callback-start------------\n");
 		printf("type: ");
 		switch (type)
@@ -749,6 +918,11 @@ protected:
 		case gl_debug_severity_high:
 		{
 			printf("high \n");
+			break;
+		}
+		default:
+		{
+			printf("\n");
 			break;
 		}
 		}

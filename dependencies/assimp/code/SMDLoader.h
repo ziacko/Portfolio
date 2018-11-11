@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -46,8 +48,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AI_SMDLOADER_H_INCLUDED
 
 // internal headers
-#include "BaseImporter.h"
-#include "ParsingUtils.h"
+#include <assimp/BaseImporter.h>
+#include <assimp/ParsingUtils.h>
 
 // public Assimp headers
 #include <assimp/types.h>
@@ -171,7 +173,7 @@ struct Bone
 // ---------------------------------------------------------------------------
 /** Used to load Half-life 1 and 2 SMD models
 */
-class SMDImporter : public BaseImporter
+class ASSIMP_API SMDImporter : public BaseImporter
 {
 public:
     SMDImporter();

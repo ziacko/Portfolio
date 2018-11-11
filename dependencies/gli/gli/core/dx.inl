@@ -55,7 +55,7 @@ namespace gli
 			{DDPF_FOURCC, D3DFMT_DX10, DXGI_FORMAT_R8G8B8A8_SINT, glm::u32vec4(0)},														//FORMAT_RGBA8_SINT,
 			{DDPF_FOURCC, D3DFMT_DX10, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, glm::u32vec4(0)},												//FORMAT_RGBA8_SRGB,
 
-			{DDPF_FOURCC, D3DFMT_A8R8G8B8, DXGI_FORMAT_B8G8R8A8_UNORM, glm::u32vec4(0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000)},	//FORMAT_BGRA8_UNORM,
+			{DDPF_RGBA, D3DFMT_A8R8G8B8, DXGI_FORMAT_B8G8R8A8_UNORM, glm::u32vec4(0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000)},	//FORMAT_BGRA8_UNORM,
 			{DDPF_FOURCC, D3DFMT_GLI1, DXGI_FORMAT_B8G8R8A8_SNORM_GLI, glm::u32vec4(0)},												//FORMAT_BGRA8_SNORM,
 			{DDPF_FOURCC, D3DFMT_GLI1, DXGI_FORMAT_B8G8R8A8_USCALED_GLI, glm::u32vec4(0)},												//FORMAT_BGRA8_USCALED,
 			{DDPF_FOURCC, D3DFMT_GLI1, DXGI_FORMAT_B8G8R8A8_SSCALED_GLI, glm::u32vec4(0)},												//FORMAT_BGRA8_SSCALED,
@@ -258,7 +258,7 @@ namespace gli
 		return Translation[Format - FORMAT_FIRST];
 	}
 
-	inline gli::format dx::find(dx::d3dfmt FourCC, ddpf PixelFormat) const
+	inline gli::format dx::find(dx::d3dfmt FourCC) const
 	{
 		gli::format FormatResult = static_cast<gli::format>(FORMAT_INVALID);
 		for(int FormatIndex = FORMAT_FIRST; FormatIndex <= FORMAT_LAST; ++FormatIndex)
@@ -272,7 +272,7 @@ namespace gli
 		return FormatResult;
 	}
 
-	inline gli::format dx::find(dx::d3dfmt FourCC, dx::dxgiFormat Format, ddpf PixelFormat) const
+	inline gli::format dx::find(dx::d3dfmt FourCC, dx::dxgiFormat Format) const
 	{
 		GLI_ASSERT(FourCC == D3DFMT_DX10 || FourCC == D3DFMT_GLI1);
 		

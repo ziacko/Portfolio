@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -44,8 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef INCLUDED_AI_FBX_IMPORTER_H
 #define INCLUDED_AI_FBX_IMPORTER_H
 
-#include "BaseImporter.h"
-#include "LogAux.h"
+#include <assimp/BaseImporter.h>
+#include <assimp/LogAux.h>
 
 #include "FBXImportSettings.h"
 

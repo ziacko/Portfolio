@@ -23,7 +23,7 @@ struct sobelSettings_t
 		this->cellDistance = cellDistance;
 	}
 
-	~sobelSettings_t(void) {};
+	~sobelSettings_t() {};
 };
 
 struct laplacianSettings_t
@@ -116,16 +116,18 @@ public:
 	void Initialize() override
 	{
 		texturedScene::Initialize();
-		laplacianProgramGLID = tinyShaders::GetShaderProgramByIndex(1)->handle;
-		prewittProgramGLID = tinyShaders::GetShaderProgramByIndex(2)->handle;
-		freiChenProgramGLID = tinyShaders::GetShaderProgramByIndex(3)->handle;
+
+		
+		laplacianProgramGLID = shaderPrograms[1]->handle;
+		prewittProgramGLID = shaderPrograms[2]->handle;
+		freiChenProgramGLID = shaderPrograms[3]->handle;
 
 		//InitializeBuffers();
 	}
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 
 		ImGui::ListBox("edge detection types", &currentEdgeDetection, edgeDetectionSettings.data(), edgeDetectionSettings.size());
 		switch (currentEdgeDetection)
@@ -201,9 +203,9 @@ public:
 		ImGui::End();
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(sobelSettingsBuffer, sobelSettingsBuffer->bufferHandle, sizeof(*sobelSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 		SetupBuffer(laplacianSettingsBuffer, laplacianSettingsBuffer->bufferHandle, sizeof(*laplacianSettingsBuffer), 2, gl_uniform_buffer, gl_dynamic_draw);
 		SetupBuffer(prewittSettingsBuffer, prewittSettingsBuffer->bufferHandle, sizeof(*prewittSettingsBuffer), 3, gl_uniform_buffer, gl_dynamic_draw);
@@ -249,6 +251,8 @@ public:
 
 	void Draw() override //gotta love C++ :)
 	{
+		windows[0]->SwapDrawBuffers();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		switch (currentEdgeDetection)
 		{
@@ -280,12 +284,9 @@ public:
 		}
 		defaultTexture->GetUniformLocation(this->programGLID);
 
-		glDrawArrays(GL_QUADS, 0, 4);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		DrawGUI(window->name);
-
-		window->SwapDrawBuffers();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		DrawGUI(windows[0]);
 	}
 
 protected:

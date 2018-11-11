@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -40,7 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef OBJ_FILE_IMPORTER_H_INC
 #define OBJ_FILE_IMPORTER_H_INC
 
-#include "BaseImporter.h"
+#include <assimp/BaseImporter.h>
 #include <assimp/material.h>
 #include <vector>
 
@@ -50,8 +52,8 @@ struct aiNode;
 namespace Assimp {
 
 namespace ObjFile {
-struct Object;
-struct Model;
+    struct Object;
+    struct Model;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -100,7 +102,7 @@ private:
     void createMaterials(const ObjFile::Model* pModel, aiScene* pScene);
 
     /// @brief  Adds special property for the used texture mapping mode of the model.
-    void addTextureMappingModeProperty(aiMaterial* mat, aiTextureType type, int clampMode = 1);
+    void addTextureMappingModeProperty(aiMaterial* mat, aiTextureType type, int clampMode = 1, int index = 0);
 
     //! \brief  Appends a child node to a parent node and updates the data structures.
     void appendChildToParentNode(aiNode *pParent, aiNode *pChild);

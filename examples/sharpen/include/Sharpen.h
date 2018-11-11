@@ -47,22 +47,8 @@ public:
 		const char* windowName = "Ziyad Barakat's portfolio (sharpen)",
 		camera* sharpencamera = new camera(),
 		const char* shaderConfigPath = "../../resources/shaders/Sharpen.txt")
-		//: texturedScene(defaultTexture, windowName, sharpencamera, shaderConfigPath)
+		: texturedScene(defaultTexture, windowName, sharpencamera, shaderConfigPath)
 	{
-		this->windowName = windowName;
-		this->sceneCamera = sharpencamera;
-		this->shaderConfigPath = shaderConfigPath;
-		this->tweakBarName = windowName;
-		defaultVertexBuffer = nullptr;
-		defaultUniform = nullptr;
-		imGUIFontTexture = 0;
-		manager = new windowManager();
-		window = manager->AddWindow(windowName, this,
-			TinyWindow::vec2_t<unsigned int>(sharpencamera->resolution.x, sharpencamera->resolution.y),
-			4, 5, TinyWindow::profile_t::compatibility);
-		sceneClock = new tinyClock_t();
-
-		this->defaultTexture = defaultTexture;
 		this->sharpenSettings = sharpenSettings;
 	}
 
@@ -72,9 +58,9 @@ protected:
 
 	sharpenSettings_t*			sharpenSettings;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		texturedScene::BuildGUI(io);
+		texturedScene::BuildGUI(window, io);
 
 		ImGui::SliderFloat("kernel 1", &sharpenSettings->kernel1, -1.0f, 1.0f);
 		ImGui::SliderFloat("kernel 2", &sharpenSettings->kernel2, -1.0f, 1.0f);
@@ -87,9 +73,9 @@ protected:
 		ImGui::SliderFloat("kernel 9", &sharpenSettings->kernel9, -1.0f, 1.0f);
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

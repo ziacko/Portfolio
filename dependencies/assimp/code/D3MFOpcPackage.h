@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -41,36 +43,42 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef D3MFOPCPACKAGE_H
 #define D3MFOPCPACKAGE_H
 
-#include <string>
 #include <memory>
 
 #include <assimp/IOSystem.hpp>
-#include "irrXMLWrapper.h"
+#include <assimp/irrXMLWrapper.h>
 
 namespace Assimp {
-
 namespace D3MF {
 
-typedef irr::io::IrrXMLReader XmlReader;
-typedef std::shared_ptr<XmlReader> XmlReaderPtr;
+using XmlReader = irr::io::IrrXMLReader ;
+using XmlReaderPtr = std::shared_ptr<XmlReader> ;
+
+struct OpcPackageRelationship {
+    std::string id;
+    std::string type;
+    std::string target;
+};
 
 class D3MFZipArchive;
 
-class D3MFOpcPackage
-{
+class D3MFOpcPackage {
 public:
-    D3MFOpcPackage(IOSystem* pIOHandler, const std::string& rFile);
+    D3MFOpcPackage( IOSystem* pIOHandler, const std::string& rFile );
     ~D3MFOpcPackage();
-
     IOStream* RootStream() const;
-private:
+    bool validate();
+    static bool isZipArchive( IOSystem* pIOHandler, const std::string& rFile );
+
+protected:
     std::string ReadPackageRootRelationship(IOStream* stream);
+
 private:
-    IOStream* m_RootStream;
-    std::unique_ptr<D3MFZipArchive> zipArchive;
+    IOStream* mRootStream;
+    std::unique_ptr<D3MFZipArchive> mZipArchive;
 };
 
-}
-}
+} // Namespace D3MF
+} // Namespace Assimp
 
 #endif // D3MFOPCPACKAGE_H

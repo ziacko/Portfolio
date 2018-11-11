@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -48,9 +50,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "BlenderLoader.h"
 #include "BlenderDNA.h"
 #include "BlenderScene.h"
-#include "BlenderSceneGen.h"
 #include <deque>
-#include "./../include/assimp/material.h"
+#include <assimp/material.h>
 
 struct aiTexture;
 
@@ -110,7 +111,7 @@ namespace Blender {
         void operator= (const TempArray&)  {
         }
 
-        TempArray(const TempArray& arr) {
+        TempArray(const TempArray& /*arr*/) {
         }
 
     private:
@@ -121,9 +122,11 @@ namespace Blender {
 #   pragma warning(disable:4351)
 #endif
 
+    // As counter-intuitive as it may seem, a comparator must return false for equal values.
+    // The C++ standard defines and expects this behavior: true if lhs < rhs, false otherwise.
     struct ObjectCompare {
         bool operator() (const Object* left, const Object* right) const {
-            return ::strncmp(left->id.name, right->id.name, strlen( left->id.name ) ) == 0;
+            return ::strncmp(left->id.name, right->id.name, strlen( left->id.name ) ) < 0;
         }
     };
 
@@ -142,9 +145,11 @@ namespace Blender {
             , db(db)
         {}
 
+        // As counter-intuitive as it may seem, a comparator must return false for equal values.
+        // The C++ standard defines and expects this behavior: true if lhs < rhs, false otherwise.
         struct ObjectCompare {
             bool operator() (const Object* left, const Object* right) const {
-                return ::strncmp( left->id.name, right->id.name, strlen( left->id.name ) ) == 0;
+                return ::strncmp( left->id.name, right->id.name, strlen( left->id.name ) ) < 0;
             }
         };
 

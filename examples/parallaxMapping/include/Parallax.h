@@ -50,19 +50,19 @@ public:
 
 protected:
 
-	static parallaxSettings_t*		parallaxSettingsBuffer;
+	parallaxSettings_t*		parallaxSettingsBuffer = nullptr;
 	texture*						heightMap;
 	int								heightMapIndex = 0;
 
-	void BuildGUI(ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		//this one's gonna be trickier
-		scene::BuildGUI(io);
+		scene::BuildGUI(window, io);
 
 		std::vector<const char*> tempTextureDirs;
-		for (unsigned int textureIndex = 0; textureIndex < textureDirs.size(); textureIndex++)
+		for (auto & textureDir : textureDirs)
 		{
-			tempTextureDirs.push_back(textureDirs[textureIndex].c_str());
+			tempTextureDirs.push_back(textureDir.c_str());
 		}
 
 		if (ImGui::ListBox("textures", &currentTextureIndex, tempTextureDirs.data(), tempTextureDirs.size()))
@@ -87,7 +87,7 @@ protected:
 
 	void InitializeBuffers() override
 	{
-		scene::InitializeBuffers();
+		scene::InitializeUniforms();
 		SetupBuffer(parallaxSettingsBuffer, parallaxSettingsBuffer->bufferHandle, sizeof(*parallaxSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
@@ -118,16 +118,10 @@ protected:
 		glUseProgram(this->programGLID);
 		defaultTexture->GetUniformLocation(this->programGLID);
 		heightMap->GetUniformLocation(this->programGLID);
-		glDrawArrays(GL_QUADS, 0, 4);
-		DrawGUI(window->name);
-		window->SwapDrawBuffers();
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		DrawGUI(windows[0]);
+		windows[0]->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 };
-
-parallaxSettings_t* parallaxScene::parallaxSettingsBuffer = nullptr;
-
-
-
-
 #endif

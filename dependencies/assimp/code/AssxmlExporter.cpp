@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -40,8 +42,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @file  AssxmlExporter.cpp
  *  ASSXML exporter main code
  */
+
+#ifndef ASSIMP_BUILD_NO_EXPORT
+#ifndef ASSIMP_BUILD_NO_ASSXML_EXPORTER
+
 #include <stdarg.h>
-#include "./../include/assimp/version.h"
+#include <assimp/version.h>
 #include "ProcessHelper.h"
 #include <assimp/IOStream.hpp>
 #include <assimp/IOSystem.hpp>
@@ -56,9 +62,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <time.h>
 #include <stdio.h>
 
-#ifndef ASSIMP_BUILD_NO_EXPORT
-#ifndef ASSIMP_BUILD_NO_ASSXML_EXPORTER
-
 using namespace Assimp;
 
 namespace Assimp    {
@@ -72,13 +75,12 @@ static int ioprintf( IOStream * io, const char *format, ... ) {
         return -1;
     }
 
-    static const size_t Size = 4096;
+    static const int Size = 4096;
     char sz[ Size ];
-    size_t len( strlen( format ) );
     ::memset( sz, '\0', Size );
     va_list va;
     va_start( va, format );
-    int nSize = vsnprintf( sz, Size-1, format, va );
+    const unsigned int nSize = vsnprintf( sz, Size-1, format, va );
     ai_assert( nSize < Size );
     va_end( va );
 
@@ -300,7 +302,7 @@ void WriteDump(const aiScene* scene, IOStream* io, bool shortened) {
             else if (!shortened){
                 ioprintf(io,"\t\t<Data length=\"%i\"> \n",tex->mWidth*tex->mHeight*4);
 
-                // const unsigned int width = (unsigned int)log10((double)std::max(tex->mHeight,tex->mWidth))+1;
+                // const unsigned int width = (unsigned int)std::log10((double)std::max(tex->mHeight,tex->mWidth))+1;
                 for (unsigned int y = 0; y < tex->mHeight;++y) {
                     for (unsigned int x = 0; x < tex->mWidth;++x) {
                         aiTexel* tx = tex->pcData + y*tex->mWidth+x;
@@ -458,7 +460,7 @@ void WriteDump(const aiScene* scene, IOStream* io, bool shortened) {
         ioprintf(io,"<MeshList num=\"%i\">\n",scene->mNumMeshes);
         for (unsigned int i = 0; i < scene->mNumMeshes;++i) {
             aiMesh* mesh = scene->mMeshes[i];
-            // const unsigned int width = (unsigned int)log10((double)mesh->mNumVertices)+1;
+            // const unsigned int width = (unsigned int)std::log10((double)mesh->mNumVertices)+1;
 
             // mesh header
             ioprintf(io,"\t<Mesh types=\"%s %s %s %s\" material_index=\"%i\">\n",
@@ -631,7 +633,7 @@ void WriteDump(const aiScene* scene, IOStream* io, bool shortened) {
 
 } // end of namespace AssxmlExport
 
-void ExportSceneAssxml(const char* pFile, IOSystem* pIOSystem, const aiScene* pScene, const ExportProperties* pProperties)
+void ExportSceneAssxml(const char* pFile, IOSystem* pIOSystem, const aiScene* pScene, const ExportProperties* /*pProperties*/)
 {
     IOStream * out = pIOSystem->Open( pFile, "wt" );
     if (!out) return;

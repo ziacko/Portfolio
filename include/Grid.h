@@ -65,11 +65,11 @@ public:
 		glGenVertexArrays(1, &vertexArrayHandle);
 
 		glBindVertexArray(vertexArrayHandle);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferHandle);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferHandle);
+		glBindBuffer(gl_array_buffer, vertexBufferHandle);
+		glBindBuffer(gl_element_array_buffer, indexBufferHandle);
 
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec4), vertices.data(), GL_STATIC_DRAW);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+		glBufferData(gl_array_buffer, vertices.size() * sizeof(glm::vec4), vertices.data(), gl_static_draw);
+		glBufferData(gl_element_array_buffer, indices.size() * sizeof(unsigned int), &indices[0], gl_static_draw);
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (char*)0);
@@ -79,7 +79,7 @@ public:
 
 	void Draw()
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferHandle);
+		glBindBuffer(gl_element_array_buffer, indexBufferHandle);
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	}
 };

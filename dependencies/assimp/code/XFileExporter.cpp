@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -41,18 +43,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #ifndef ASSIMP_BUILD_NO_EXPORT
-#ifndef ASSIMP_BUILD_NO_XFILE_EXPORTER
+#ifndef ASSIMP_BUILD_NO_X_EXPORTER
+
 #include "XFileExporter.h"
 #include "ConvertToLHProcess.h"
-#include "Bitmap.h"
-#include "BaseImporter.h"
-#include "fast_atof.h"
-#include "SceneCombiner.h"
-#include "DefaultIOSystem.h"
+#include <assimp/Bitmap.h>
+#include <assimp/BaseImporter.h>
+#include <assimp/fast_atof.h>
+#include <assimp/SceneCombiner.h>
+#include <assimp/DefaultIOSystem.h>
 #include <ctime>
 #include <set>
 #include <memory>
-#include "Exceptional.h"
+#include <assimp/Exceptional.h>
 #include <assimp/IOSystem.hpp>
 #include <assimp/scene.h>
 #include <assimp/light.h>
@@ -78,6 +81,10 @@ void ExportSceneXFile(const char* pFile,IOSystem* pIOSystem, const aiScene* pSce
     // invoke the exporter
     XFileExporter iDoTheExportThing( pScene, pIOSystem, path, file, &props);
 
+    if (iDoTheExportThing.mOutput.fail()) {
+        throw DeadlyExportError("output data creation failed. Most likely the file became too large: " + std::string(pFile));
+    }
+    
     // we're still here - export successfully completed. Write result to the given IOSYstem
     std::unique_ptr<IOStream> outfile (pIOSystem->Open(pFile,"wt"));
     if(outfile == NULL) {
@@ -125,7 +132,7 @@ void XFileExporter::WriteFile()
 {
     // note, that all realnumber values must be comma separated in x files
     mOutput.setf(std::ios::fixed);
-    mOutput.precision(16); // precission for double
+    mOutput.precision(16); // precision for double
 
     // entry of writing the file
     WriteHeader();
@@ -513,7 +520,7 @@ std::string XFileExporter::toXFileString(aiString &name)
     return str;
 }
 
-void XFileExporter::writePath(aiString path)
+void XFileExporter::writePath(const aiString &path)
 {
     std::string str = std::string(path.C_Str());
     BaseImporter::ConvertUTF8toISO8859_1(str);

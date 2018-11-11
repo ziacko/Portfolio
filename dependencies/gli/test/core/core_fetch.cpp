@@ -268,17 +268,17 @@ namespace fetch_bgr8_unorm
 	{
 		int Error(0);
 
-		gli::texture2d TextureA(gli::FORMAT_RGB8_UNORM_PACK8, gli::texture2d::extent_type(2, 2));
+		gli::texture2d TextureA(gli::FORMAT_BGR8_UNORM_PACK8, gli::texture2d::extent_type(2, 2));
 		{
 			TextureA.store<glm::u8vec3>(gli::texture2d::extent_type(0, 0), 0, glm::u8vec3(0, 0, 255));
 			TextureA.store<glm::u8vec3>(gli::texture2d::extent_type(1, 0), 0, glm::u8vec3(0, 255, 255));
 			TextureA.store<glm::u8vec3>(gli::texture2d::extent_type(1, 1), 0, glm::u8vec3(0, 255, 0));
 			TextureA.store<glm::u8vec3>(gli::texture2d::extent_type(0, 1), 0, glm::u8vec3(255, 0, 0));
 			TextureA.store<glm::u8vec3>(gli::texture2d::extent_type(0, 0), 1, glm::u8vec3(0, 128, 255));
-			gli::save_dds(TextureA, "rgb8_unorm_4pixels.dds");
+			gli::save_dds(TextureA, "bgr8_unorm_4pixels.dds");
 		}
 
-		gli::texture2d TextureB(gli::load_dds("rgb8_unorm_4pixels.dds"));
+		gli::texture2d TextureB(gli::load_dds("bgr8_unorm_4pixels.dds"));
 		{
 			glm::u8vec3 A = TextureB.load<glm::u8vec3>(gli::texture2d::extent_type(0, 0), 0);
 			Error += glm::all(glm::equal(A, glm::u8vec3(0, 0, 255))) ? 0 : 1;

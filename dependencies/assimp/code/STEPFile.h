@@ -2,7 +2,9 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2016, assimp team
+Copyright (c) 2006-2018, assimp team
+
+
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -54,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 #if _MSC_VER > 1500 || (defined __GNUC___)
 #   define ASSIMP_STEP_USE_UNORDERED_MULTIMAP
-#   else
+#else
 #   define step_unordered_map map
 #   define step_unordered_multimap multimap
 #endif
@@ -70,8 +72,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #   endif
 #endif
 
-#include "LineSplitter.h"
-
+#include <assimp/LineSplitter.h>
 
 // uncomment this to have the loader evaluate all entities upon loading.
 // this is intended as stress test - by default, entities are evaluated
@@ -118,15 +119,13 @@ namespace STEP {
 
 // ********************************************************************************
 
-
 namespace STEP {
 
     // -------------------------------------------------------------------------------
     /** Exception class used by the STEP loading & parsing code. It is typically
      *  coupled with a line number. */
     // -------------------------------------------------------------------------------
-    struct SyntaxError : DeadlyImportError
-    {
+    struct SyntaxError : DeadlyImportError {
         enum {
             LINE_NOT_SPECIFIED = 0xffffffffffffffffLL
         };
@@ -253,7 +252,7 @@ namespace STEP {
         {
         public:
 
-            // This is the type that will ultimatively be used to
+            // This is the type that will cd ultimatively be used to
             // expose this data type to the user.
             typedef T Out;
 
@@ -366,17 +365,16 @@ namespace STEP {
         // -------------------------------------------------------------------------------
         class ConversionSchema
         {
-
         public:
-
             struct SchemaEntry {
-                SchemaEntry(const char* name,ConvertObjectProc func)
-                    : name(name)
-                    , func(func)
-                {}
+                SchemaEntry( const char *name, ConvertObjectProc func )
+                : mName( name )
+                , mFunc(func) {
+                    // empty
+                }
 
-                const char* name;
-                ConvertObjectProc func;
+                const char* mName;
+                ConvertObjectProc mFunc;
             };
 
             typedef std::map<std::string,ConvertObjectProc> ConverterMap;
@@ -412,7 +410,7 @@ namespace STEP {
             const ConversionSchema& operator=( const SchemaEntry (& schemas)[N]) {
                 for(size_t i = 0; i < N; ++i ) {
                     const SchemaEntry& schema = schemas[i];
-                    converters[schema.name] = schema.func;
+                    converters[schema.mName] = schema.mFunc;
                 }
                 return *this;
             }
@@ -441,13 +439,17 @@ namespace STEP {
     // ------------------------------------------------------------------------------
     /** Base class for all concrete object instances */
     // ------------------------------------------------------------------------------
-    class Object
-    {
+    class Object {
     public:
-
-        virtual ~Object() {}
         Object(const char* classname = "unknown")
-            : classname(classname) {}
+        : id( 0 )
+        , classname(classname) {
+            // empty
+        }
+
+        virtual ~Object() {
+            // empty
+        }
 
     public:
 
@@ -462,7 +464,6 @@ namespace STEP {
             return dynamic_cast<T&>(*this);
         }
 
-
         template <typename T>
         const T* ToPtr() const {
             return dynamic_cast<const T*>(this);
@@ -474,7 +475,6 @@ namespace STEP {
         }
 
     public:
-
         uint64_t GetID() const {
             return id;
         }
@@ -491,7 +491,6 @@ namespace STEP {
         uint64_t id;
         const char* const classname;
     };
-
 
     template <typename T>
     size_t GenericFill(const STEP::DB& db, const EXPRESS::LIST& params, T* in);
@@ -777,10 +776,10 @@ namespace STEP {
 
             // XXX is this really how the EXPRESS notation ([?:3],[1:3]) is intended?
             if (max_cnt && inp->GetSize() > max_cnt) {
-                DefaultLogger::get()->warn("too many aggregate elements");
+                ASSIMP_LOG_WARN("too many aggregate elements");
             }
             else if (inp->GetSize() < min_cnt) {
-                DefaultLogger::get()->warn("too few aggregate elements");
+                ASSIMP_LOG_WARN("too few aggregate elements");
             }
 
             out.reserve(inp->GetSize());
@@ -1001,26 +1000,20 @@ namespace STEP {
             refs.insert(std::make_pair(who,by_whom));
         }
 
-
-
     private:
-
         HeaderInfo header;
         ObjectMap objects;
         ObjectMapByType objects_bytype;
         RefMap refs;
         InverseWhitelist inv_whitelist;
-
         std::shared_ptr<StreamReaderLE> reader;
         LineSplitter splitter;
-
         uint64_t evaluated_count;
-
         const EXPRESS::ConversionSchema* schema;
     };
 
 }
 
-
 } // end Assimp
-#endif
+
+#endif // INCLUDED_AI_STEPFILE_H
