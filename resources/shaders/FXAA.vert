@@ -25,7 +25,11 @@ layout(std140, binding = 0) uniform defaultSettings
 
 layout(std140, binding = 5) uniform fxaaSettings
 {
-	float subPixshift;// = 0.25;
+	float subPixShift;// = 0.25;
+    float vxOffset;
+    float maxSpan; //8.0
+    float reduceMul;//1.0/8.0
+    float reduceMin;//1.0/128
 };
 
 void main()
@@ -36,7 +40,7 @@ void main()
 	outBlock.uv = outBlock.position.xy * 0.5f + 0.5f;
 	gl_Position = outBlock.position;
 
-	outBlock.fxaaShift.xy = outBlock.xy;
-	outBlock.fxaaShift.zw = outBlock.xy - (deltaRes * (0.5 + subPixshift));
+	outBlock.fxaaShift.xy = outBlock.uv;
+	outBlock.fxaaShift.zw = outBlock.uv - (deltaRes * (0.5 + subPixShift));
 
 }

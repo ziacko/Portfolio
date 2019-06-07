@@ -41,6 +41,8 @@ layout(binding = 4) uniform jitterSettings
 	vec2 haltonSequence[128];
 	float haltonScale;
 	uint numSamples;
+	uint enableDithering;
+	float ditheringScale;
 };
 
 void main()
@@ -52,11 +54,16 @@ void main()
 	vec2 jitter = vec2(haltonSequence[index].x * deltaWidth, haltonSequence[index].y * deltaHeight);
 
 	mat4 newProj = projection;
-    newProj[3][0] += jitter.x * haltonScale;
-    newProj[3][1] += jitter.y * haltonScale;
+	vec4 outPos = projection * view * translation * position;
+	if(haltonScale > 0)
+	{
+    	newProj[3][0] += jitter.x * haltonScale;
+    	newProj[3][1] += jitter.y * haltonScale;
+		outPos.x += jitter.x * haltonScale;
+		outPos.y += jitter.y * haltonScale;
+	}
 
 	outBlock.jitter = jitter;
-
 	//needs to be jittered. nothing else does
 	gl_Position = newProj * view * translation * position; 
 	outBlock.uv = uv;

@@ -29,6 +29,7 @@ set (RELEASE_OUTPUT_DIR "./bin/Release/")
 
 set (PORTFOLIO_INCLUDE_DIR "../../include/")
 set (TINYWINDOW_INCLUDE_DIR "../../dependencies/tinywindow/Include")
+set (TINYWINDOW_DEPENDENCIES_DIR "../../dependencies/tinywindow/Dependencies")
 set (TINYEXTENDER_INCLUDE_DIR "../../dependencies/tinyextender/Include")
 set (TINYSHADERS_INCLUDE_DIR "../../dependencies/tinyshaders/Include")
 set (TINYCLOCK_INCLUDE_DIR "../../dependencies/tinyclock/Include")
@@ -49,6 +50,7 @@ set (COMMON_HEADERS
 "${COMMON_HEADER_DIR}UniformBuffer.h"
 "${COMMON_HEADER_DIR}Utilities.h"
 "${COMMON_HEADER_DIR}VertexBuffer.h"
+"${COMMON_HEADER_DIR}GPUQuery.h"
 "${COMMON_HEADER_DIR}Model.h"
 "${COMMON_HEADER_DIR}FrameBuffer.h"
 "${COMMON_HEADER_DIR}Scene3D.h")
@@ -57,6 +59,7 @@ set (HEADERS "${COMMON_HEADERS}" "./include/TemporalAA.h")
 
 include_directories("${PORTFOLIO_INCLUDE_DIR}")
 include_directories("${TINYWINDOW_INCLUDE_DIR}")
+include_directories("${TINYWINDOW_DEPENDENCIES_DIR}")
 include_directories("${TINYEXTENDER_INCLUDE_DIR}")
 include_directories("${TINYSHADERS_INCLUDE_DIR}")
 include_directories("${TINYCLOCK_INCLUDE_DIR}")

@@ -451,10 +451,10 @@ private:
 			glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapTSetting);
 
 
-			//glTexStorage2D(target, mipmapLevels, internalDataType, width, height);
-			//glTexSubImage2D(target, currentMipmapLevel, xOffset, yOffset, width, height, internalFormat, dataType, data);
+			glTexStorage2D(target, mipmapLevels, internalDataType, width, height);
+			glTexSubImage2D(target, currentMipmapLevel, xOffset, yOffset, width, height, internalFormat, dataType, data);
 
-			glTexImage2D(target, currentMipmapLevel, internalDataType, width, height, border, internalFormat, dataType, data);
+			//glTexImage2D(target, currentMipmapLevel, internalDataType, width, height, border, internalFormat, dataType, data);
 			
 			if (mipmapLevels > 0)
 			{

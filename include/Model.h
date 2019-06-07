@@ -295,7 +295,6 @@ public:
 		
 		newMesh.vertices = std::move(verts);
 		newMesh.textures = std::move(textures);
-	
 
 		glBindVertexArray(0);
 		glBindBuffer(gl_array_buffer, 0);

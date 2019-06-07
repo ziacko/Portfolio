@@ -11,7 +11,6 @@ in defaultBlock
 layout(location = 0) out vec4 outColor;
 layout(location = 1) out vec4 outVelocity;
 
-
 layout(std140, binding = 0) uniform defaultSettings
 {
 	mat4		projection;
@@ -39,6 +38,8 @@ layout(binding = 4) uniform jitterSettings
 	vec2 haltonSequence[128];
 	float haltonScale;
 	uint numSamples;
+	uint enableDithering;
+	float ditheringScale;
 };
 
 layout(binding = 0) uniform sampler2D diffuse;
@@ -61,20 +62,20 @@ void main()
 
 	uint index = totalFrames % 4;
     float randomX = fract(dot(gl_FragCoord.xy, vec2(0.375, -0.125)) + (OffsetY[index] * deltaWidth));
-    //float randomY = fract(dot(newPos, vec2(-0.125,  0.375))) - (offsetY[0] / deltaHeight);
-	float noise = fract(randomX + totalTime * 15.2333);
+    float randomY = fract(dot(vec2(-0.125,  0.375), gl_FragCoord.xy)) - (OffsetX[index] / deltaHeight);
+	float noise = fract(fract(randomX + randomY) + totalTime * ditheringScale);
 
 	vec2 velocity = (newPos - prePos);// * 10;
 	//velocity = clamp(velocity, vec2(0), vec2(maxVelocity)) * 10;
 
 	vec4 col = texture(diffuse, inBlock.uv);
 
-	if(col.a < noise)
+	if(col.a < noise && enableDithering > 0)
 	{
 		discard;
 	}
 
-	if(col.a == 0)
+	if(col.a < 0.5)
 	{
 		discard;
 	}

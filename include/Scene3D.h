@@ -1,5 +1,9 @@
 ﻿#ifndef SCENE3D_H
 #define SCENE3D_H
+
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF //TODO: move this to tinyextender eventually
+
 #include <assimp/Importer.hpp>
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
@@ -130,6 +134,7 @@ protected:
 		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
 		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
 		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultUniform->totalFrames++;
 
 		defaultUniform->projection = sceneCamera->projection;
 		defaultUniform->view = sceneCamera->view;
@@ -175,7 +180,7 @@ protected:
 			ImGui::DragFloat4("row 3", (float*)&sceneCamera->translation[3], 0.1f, -100.0f, 100.0f);
 		}
 
-		ImGui::Text("pitch: %f\tyaw: %f\troll: %f", glm::degrees(sceneCamera->rotator.y), glm::degrees(sceneCamera->rotation.z), glm::degrees(sceneCamera->rotation.x));
+		ImGui::Text("pitch: %.1f\tyaw: %.1f\troll: %.1f", glm::degrees(sceneCamera->rotator.y), glm::degrees(sceneCamera->rotation.z), glm::degrees(sceneCamera->rotation.x));
 		ImGui::End();
 
 	/*	ImGui::Begin("Model", &testModel->isGUIActive, ImVec2(0, 0));
@@ -222,12 +227,12 @@ protected:
 		SetupBuffer(materialSettingsBuffer, materialSettingsBuffer->bufferHandle, sizeof(*materialSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
-	void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state) override
+	virtual void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state) override
 	{
 		scene::HandleMouseClick(window, button, state);
 	}
 
-	void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition) override
+	virtual void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition) override
 	{
 		scene3D* thisScene = (scene3D*)window->userData;
 		scene::HandleMouseMotion(window, windowPosition, screenPosition);
@@ -248,7 +253,7 @@ protected:
 		}
 	}
 
-	void HandleMaximize(tWindow* window) override
+	virtual void HandleMaximize(tWindow* window) override
 	{
 		scene3D* thisScene = (scene3D*)window->userData;
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
@@ -261,10 +266,9 @@ protected:
 		UpdateBuffer(thisScene->defaultUniform, thisScene->defaultUniform->bufferHandle, sizeof(defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
 	}
 
-	void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
+	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
 		scene3D* thisScene = (scene3D*)window->userData;
-
 		glViewport(0, 0, dimensions.width, dimensions.height);
 		sceneCamera->resolution = glm::vec2(dimensions.width, dimensions.height);
 		defaultUniform->resolution = sceneCamera->resolution;
@@ -277,7 +281,7 @@ protected:
 		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
 	}
 
-	void HandleKey(tWindow* window, int key, keyState_t state)	override
+	virtual void HandleKey(tWindow* window, int key, keyState_t state)	override
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		if (state == keyState_t::down)
@@ -304,62 +308,46 @@ protected:
 
 		float deltaTime = (float)sceneClock->GetDeltaTime();
 
-		if (state == keyState_t::down)
+		if (state == keyState_t::down) //instead of one key could we check multiple keys?
 		{
-			switch (key)
-			{
-			case 'w':
+			if(window->keys['w'] == keyState_t::down)
 			{
 				sceneCamera->MoveForward(camSpeed, deltaTime);
-				break;
 			}
 
-			case 's':
+			if (window->keys['s'] == keyState_t::down)
 			{
 				sceneCamera->MoveForward(-camSpeed, deltaTime);
-				break;
 			}
 
-			case 'a':
+			if (window->keys['a'] == keyState_t::down)
 			{
 				sceneCamera->MoveRight(-camSpeed, deltaTime);
-				//sceneCamera->position -= sceneCamera->localRight * (camSpeed * (float)sceneClock->GetDeltaTime());
-				break;
 			}
 
-			case 'd':
+			if (window->keys['d'] == keyState_t::down)
 			{
-				//sceneCamera->position += sceneCamera->localRight * (camSpeed * (float)sceneClock->GetDeltaTime());
 				sceneCamera->MoveRight(camSpeed, deltaTime);
-				break;
 			}
 
-			case 'e':
+			if (window->keys['e'] == keyState_t::down)
 			{
 				sceneCamera->MoveUp(camSpeed, deltaTime);
-				break;
 			}
 
-			case 'q':
+			if (window->keys['q'] == keyState_t::down)
 			{
 				sceneCamera->MoveUp(-camSpeed, deltaTime);
-				break;
 			}
 
-			case 'z':
+			if (window->keys['z'] == keyState_t::down)
 			{
 				sceneCamera->Roll(glm::radians((float)sceneCamera->zSensitivity * deltaTime));
 			}
 
-			case 'x':
+			if (window->keys['x'] == keyState_t::down)
 			{
 				sceneCamera->Roll(glm::radians((float)-sceneCamera->zSensitivity * deltaTime));
-			}
-
-			default:
-			{
-				break;
-			}
 			}
 		}
 	}};

@@ -3,6 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define GLM_ENABLE_EXPERIMENTAL
+
 #include <iostream>
 #include <string>
 #include <stdlib.h>
@@ -33,6 +34,7 @@ using namespace TinyWindow;
 using namespace std::placeholders;
 #include "Camera.h"
 #include "DefaultUniformBuffer.h"
+#include "GPUQuery.h"
 #include "Utilities.h"
 #include "VertexBuffer.h"
 
@@ -72,7 +74,6 @@ public:
 		InitImGUI(windows[1]);*/
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		
-
 		sceneClock = new tinyClock_t();
 	}
 
@@ -109,6 +110,8 @@ public:
 
 		InitializeUniforms();
 		SetupCallbacks();
+
+		defaultTimer = new GPUTimer();
 	}
 
 	virtual void SetupCallbacks()
@@ -174,6 +177,8 @@ protected:
 
 	int				currentResolution = 0;	
 
+	GPUTimer*					defaultTimer;
+
 	virtual void Update()
 	{
 		manager->PollForEvents();
@@ -185,8 +190,7 @@ protected:
 		else
 		{
 			sceneClock->UpdateClockAdaptive();
-		}
-		
+		}		
 
 		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
 		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();		

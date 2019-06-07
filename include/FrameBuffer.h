@@ -19,9 +19,10 @@ public:
 
 		attachment_t(attachmentType_t attachment = attachmentType_t::color,
 			std::string uniformName = "defaultTexture", glm::vec2 resolution = glm::vec2(1280, 720),
-			textureType_t texType = textureType_t::image, GLint format = GL_RGBA, GLenum target = GL_TEXTURE_2D,
-			GLint currentMipmapLevel = 0, GLint mipmapLevels = 1, GLint border = 0, GLenum dataType = GL_UNSIGNED_BYTE,
-			GLenum internalDataType = GL_RGBA16, GLint xOffset = 0, GLint yOffset = 0,
+			GLint format = GL_RGBA, GLenum target = GL_TEXTURE_2D,
+			GLenum dataType = GL_UNSIGNED_BYTE,	GLenum internalFormat = GL_RGBA16,
+			GLuint samples = 0, GLint currentMipmapLevel = 0, GLint mipmapLevels = 1, 
+			GLint border = 0, GLint xOffset = 0, GLint yOffset = 0,
 			GLenum minFilterSetting = GL_LINEAR, GLenum magFilterSetting = GL_LINEAR,
 			GLenum wrapSSetting = GL_REPEAT, GLenum wrapTSetting = GL_REPEAT, GLenum wrapRSetting = gl_clamp_to_edge)
 		{
@@ -33,14 +34,14 @@ public:
 			this->width = resolution.x;
 			this->height = resolution.y;
 			this->channels = 0;
-			this->format = 0;
 			this->format = format;
 			this->target = target;
+			this->sampleCount = samples;
 			this->currentMipmapLevel = currentMipmapLevel;
 			this->mipmapLevels = mipmapLevels;
 			this->border = border;
 			this->dataType = dataType;
-			this->internalDataType = internalDataType;
+			this->internalDataType = internalFormat;
 			this->xOffset = xOffset;
 			this->yOffset = yOffset;
 
@@ -58,18 +59,26 @@ public:
 
 			glGenTextures(1, &handle);
 			glBindTexture(target, handle);
-			glTexImage2D(target, currentMipmapLevel, internalDataType, width, height, border, format, dataType, nullptr);
-			glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapSSetting);
-			glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapTSetting);
-			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilterSetting);
-			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilterSetting);
+			if (samples > 0 && target == gl_texture_2d_multisample)
+			{
+				glTexStorage2DMultisample(target, sampleCount, internalFormat, width, height, true);				
+			}
+			else
+			{
+				glTexImage2D(target, currentMipmapLevel, internalFormat, width, height, border, format, dataType, nullptr);
+				glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilterSetting);
+				glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilterSetting);
+				glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapSSetting);
+				glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapTSetting);
+			}			
+
 			UnbindTexture();
 		}
 
 		void Initialize(GLenum attachmentFormat)
 		{
 			this->attachmentFormat = attachmentFormat;
-			glFramebufferTexture(gl_framebuffer, this->attachmentFormat, handle, currentMipmapLevel);
+			glFramebufferTexture2D(gl_framebuffer, this->attachmentFormat, target, handle, currentMipmapLevel);
 		}
 
 		void Resize(glm::vec2 newSize)
@@ -77,12 +86,21 @@ public:
 			width = newSize.x;
 			height = newSize.y;
 			BindTexture();
-			glTexImage2D(target, currentMipmapLevel, internalDataType, width, height, border, format, dataType, nullptr);
+			if (sampleCount > 0 && target == gl_texture_2d_multisample)
+			{
+				glTexStorage2DMultisample(target, sampleCount, internalFormat, width, height, true);
+			}
+			else
+			{
+				glTexImage2D(target, currentMipmapLevel, internalFormat, width, height, border, format, dataType, nullptr);
+			}
+
 			UnbindTexture();
 		}
 
 	public:
 
+		GLuint					sampleCount;
 		GLenum					attachmentFormat;
 		GLuint					attachmentHandle;
 		attachmentType_t		attachmentType;
@@ -231,12 +249,9 @@ public:
 		return true;
 	}
 	//ok we need a target, handle, etc.
-	GLuint bufferHandle;
-	std::vector<attachment_t*> attachments;
-	GLuint colorAttachmentNum = 0;
-	GLuint					depthHandle = 0;
+	GLuint							bufferHandle;
+	std::vector<attachment_t*>		attachments;
+	GLuint							colorAttachmentNum = 0;
+	GLuint							depthHandle = 0;
 };
-
-
-
 #endif

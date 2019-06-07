@@ -23,13 +23,23 @@ public:
 	virtual void Initialize() override
 	{
 		scene3D::Initialize();
+
+		glGenQueries(1, &defaultQuery);
 	}
 
 protected:
 
+	std::vector<uint64_t> averageGPUTimes;
+	unsigned int defaultQuery = 0;
+
 	virtual void Draw()
 	{
-		//we just need the first LOd so only do the first 3
+		glQueryCounter(defaultQuery, gl_timestamp);
+		GLint64 startFrameTime = 0;
+		glGetInteger64v(gl_timestamp, &startFrameTime);
+		uint64_t startTime = static_cast<uint64_t>(startFrameTime);
+
+		//we just need the first LOD so only do the first 3
 		for (size_t iter = 0; iter < 3; iter++)
 		{
 			if (testModel->meshes[iter].isCollision)
@@ -44,13 +54,13 @@ protected:
 			UpdateBuffer(materialSettingsBuffer, materialSettingsBuffer->bufferHandle, sizeof(*materialSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 			//leavesDiffuse->UnbindTexture();
 			//trial and error
-			testModel->meshes[iter].textures[0].OverloadTextureUnit(0);
+			testModel->meshes[iter].textures[0].SetActive(0);
 
 			//glBindBuffer(gl_element_array_buffer, iter.indexBufferHandle);
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
-			glUseProgram(this->programGLID);		
+			glUseProgram(this->programGLID);
 			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
-			//glCullFace(GL_BACK);
+			glCullFace(GL_BACK);
 
 			if (wireframe)
 			{
@@ -58,10 +68,36 @@ protected:
 			}
 			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			
-			testModel->meshes[iter].textures[0].UnbindTexture();
+
+			//testModel->meshes[iter].textures[0].UnbindTexture();
 		}
-		
+
+		glQueryCounter(defaultQuery, gl_timestamp);
+		GLint64 geomTime = 0;
+		glGetInteger64v(gl_timestamp, &geomTime);
+		uint64_t GeomTimeU = static_cast<uint64_t>(geomTime);
+
+		uint64_t averageGPUTime = 0;
+		if ((defaultUniform->totalFrames % 11) == 0)
+		{
+			//average the whole lot and clear the vector
+			uint64_t tempTime = 0;
+			for (auto iter : averageGPUTimes)
+			{
+				tempTime += iter;
+			}
+
+			tempTime /= 10; //wee need the average GPU time over 10 frames
+
+			printf("%f | %f \n", (float)tempTime / 10000.0f, (float)(1.0f / (tempTime / 10000000.0f)));
+			averageGPUTimes.clear();
+		}
+
+		else
+		{
+			//
+			averageGPUTimes.push_back(GeomTimeU - startTime);
+		}
 		DrawGUI(windows[0]);
 
 		windows[0]->SwapDrawBuffers();

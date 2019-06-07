@@ -1,3 +1,82 @@
+//luma might be useful for weighing color?
+float luma(vec3 color) {
+  return dot(color, vec3(0.299, 0.587, 0.114));
+}
+
+float luma(vec4 color) {
+  return dot(color.rgb, vec3(0.299, 0.587, 0.114));
+}
+
+vec2 UnJitter(in vec2 uvPos, uint frames, bool current, float depth)
+{
+	float deltaWidth = 1.0 / resolution.x;
+	float deltaHeight = 1.0 / resolution.y;
+
+	vec4 unJitteredPos = vec4(0);
+	vec2 jitter = vec2(0);
+
+	vec2 screenPos = uvPos;
+	//uvs are in 0-1 range, so need to move it into screen space(-1 to 1)
+	screenPos = uvPos * 2 - 1;
+	float newDepth = depth * 2 - 1;//move depth to screen space as well
+	//now use screenPos to get position in world space
+	vec4 worldPos = inverse(previousProjection * currentView * previousTranslation) * vec4(screenPos, newDepth, 1);
+	// can't use the current one since its orthographic. also projection never changes
+	
+	uint index = frames % numSamples;
+    jitter = vec2(haltonSequence[index].x * deltaWidth, haltonSequence[index].y * deltaHeight);
+
+	if(current)
+	{
+		//use the new projection to remove jitter
+		unJitteredPos = previousProjection * currentView * previousTranslation * worldPos;	
+	}
+
+	else
+	{
+		//use the new projection to remove jitter
+		unJitteredPos = previousProjection * previousView * previousTranslation * worldPos;
+	}
+
+	//now move it all back to UV space
+	unJitteredPos.xy = (unJitteredPos.xy / newDepth) * 0.5 + 0.5; //i think depth should be in screen space too
+	return unJitteredPos.xy;
+}
+
+vec4 CustomResolve(in vec4 preNeighborColors[neighborCount], in vec4 curNeighborColors[neighborCount],
+ in float preNeighborDepths[neighborCount], in float curNeighborDepths[neighborCount], vec2 velocity)
+{
+	//use an arbritary value to determine if there's been a falloff or occlusion
+
+	//use the closest depth instead?
+	vec4 preColorMax = MaxColors(preNeighborColors);
+	vec4 preColorMin = MinColors(preNeighborColors);
+
+	vec4 curColorMax = MaxColors(curNeighborColors);
+	vec4 curColorMin = MinColors(curNeighborColors);
+
+	vec2 preMinMaxDepths = MinMaxDepths(preNeighborDepths);
+	vec2 curMinMaxDepths = MinMaxDepths(curNeighborDepths);
+
+	float bestDepth = min(preMinMaxDepths.x, curMinMaxDepths.x); //get the closest
+
+	vec4 res = vec4(0);
+
+	//if highest depth > the fall off range and < the occlusion range. also if velocity isn't too high
+	if(bestDepth > depthOcclusionFactor && bestDepth < depthFalloffFactor)
+	{
+		float test = smoothstep(depthOcclusionFactor, depthFalloffFactor, bestDepth);// * length(velocity);
+		res = mix(preNeighborColors[2], curNeighborColors[2], test);
+	}
+
+	else
+	{
+		res = curNeighborColors[2];
+	}
+
+	return res;
+}
+
 #version 440
 
 in defaultBlock
@@ -5,8 +84,6 @@ in defaultBlock
 	vec4 position;
 	vec2 uv;
 } inBlock;
-
-out vec4 outColor;
 
 layout(std140, binding = 0) uniform defaultSettings
 {
@@ -33,18 +110,27 @@ layout(std140, binding = 1) uniform velocitySettings
 layout(std140, binding = 2) uniform taaSettings
 {
 	//velocity
-	float		velocityScale;
-	float 		feedbackFactor;
-	float 		maxDepthFalloff;
+	float velocityScale;
+
+	//SMAA
+	float SMAAWeightFactor;
+	//Inside
+	float feedbackFactor;
+	//Custom
+	float depthFalloffFactor;
+	float depthOcclusionFactor;
+	float maxDepthFalloff;
+	uint currentResolve;
 };
 
 layout(binding = 4) uniform jitterSettings
 {
-	vec2 		haltonSequence[128];
-	float 		haltonScale;
-	uint 		numSamples;
-	uint 		enableDithering;
+	vec2 haltonSequence[128];
+	float haltonScale;
+	uint numSamples;
 };
+
+out vec4 outColor;
 
 layout(binding = 0) uniform sampler2D currentColorTex;
 layout(binding = 1) uniform sampler2D currentDepthTex;
@@ -195,6 +281,41 @@ vec4 clip_aabb(vec3 colorMin, vec3 colorMax, vec4 currentColor, vec4 previousCol
 	}
 }
 
+vec4 SMAAResolve(float weight, vec2 velo, sampler2D currColorTex, sampler2D prevColorTex)
+{
+	vec4 currentColor = texture2D(currColorTex, inBlock.uv);
+	vec4 previousColor = texture2D(prevColorTex, inBlock.uv + velo);
+
+	float delta = abs(currentColor.a * currentColor.a - previousColor.a * previousColor.a) / 5.0;
+	weight = 0.5 * clamp(1.0 - sqrt(delta) * SMAAWeightFactor, 0, 1);
+
+	return mix(currentColor, previousColor, weight);
+}
+
+vec4 InsideResolve(vec2 velocity, vec4 currentColor)
+{
+	vec2 deltaRes = vec2(1.0 / resolution.x, 1.0 / resolution.y);
+
+	//1. clamp current color to the min/max of 4 steaps and teh current texel
+	vec4 previousColors[neighborCount];
+
+	for(uint iter = 0; iter < neighborCount; iter++)
+	{
+		vec2 newUV = inBlock.uv + (kOffsets2x2[iter] * deltaRes);
+
+		previousColors[iter] = texture2D(previousColorTex, newUV + velocity);
+	}
+
+	//the faster it goes, the less we need to lean on TAA?
+	float testVel = feedbackFactor - (length(velocity) * velocityScale);
+	if(length(velocity) == 0) //if not moving then use feedbackFactor
+	{
+		testVel = 0;
+	}
+
+	return mix(currentColor, ConstrainHistory(previousColors), testVel);
+}
+
 vec4 Inside2Resolve(sampler2D currColorTex, sampler2D prevColorTex, vec2 velocity)
 {
 	vec2 deltaRes = vec2(1.0 / resolution.x, 1.0 / resolution.y);
@@ -261,9 +382,14 @@ vec4 Custom2Resolve(in float preNeighborDepths[kNeighborsCount], in float curNei
 
 	averageDepth /= kNeighborsCount;
 
+	//weigh depth here. inside2 already weighs velocity
+	if (lowestDepth > depthOcclusionFactor && highestDepth < depthFalloffFactor)
+	{
+		res = taa; //blur everything within this range
+	}
 	//for dithered edges, detect if the adge has been dithered? 
 	//use a 3x3 grid to see if anyhting around it has high enough depth?
-	if(averageDepth < maxDepthFalloff)
+	else if(averageDepth < maxDepthFalloff)
 	{
 		res = taa;//vec4(1, 0, 0, 1);
 	}
@@ -278,10 +404,17 @@ vec4 Custom2Resolve(in float preNeighborDepths[kNeighborsCount], in float curNei
 
 void main()
 {
+	vec4 currentColors[kNeighborsCount];
 	float currentDepths[kNeighborsCount];
+
+	vec4 previousColors[kNeighborsCount];
 	float previousDepths[kNeighborsCount];
 
+	float weight = 0;
+
 	vec2 deltaRes = vec2(1.0 / resolution.x, 1.0 / resolution.y);
+
+	vec2 velocity = texture2D(velocityTex, inBlock.uv).rg;
 
 	vec2 closestVec = -texture2D(velocityTex, GetClosestUV(currentDepthTex)).rg;
 
@@ -289,9 +422,48 @@ void main()
 	{
 		vec2 newUV = inBlock.uv + (kOffsets3x3[iter] * deltaRes);
 
+		currentColors[iter] = texture2D(currentColorTex, newUV);
 		currentDepths[iter] = texture2D(currentDepthTex, newUV).x;
+
+		previousColors[iter] = texture2D(previousColorTex, newUV + closestVec);
 		previousDepths[iter] = texture2D(previousDepthTex, newUV + closestVec).x;
 	}
 
-	outColor = Custom2Resolve(previousDepths, currentDepths, closestVec);
+	switch(currentResolve)
+	{
+		case 0:
+		{
+			outColor = SMAAResolve(weight, closestVec, currentColorTex, previousColorTex);
+			break;
+		}
+
+		case 1:
+		{
+			outColor = InsideResolve(closestVec, currentColors[5]);
+			break;
+		}
+		case 2:
+		{
+			outColor = Inside2Resolve(currentColorTex, previousColorTex, closestVec);
+			break;
+		}
+
+		case 3:
+		{
+			outColor = Custom2Resolve(previousDepths, currentDepths, closestVec);
+			break;
+		}
+
+		case 4:
+		{
+			float test = feedbackFactor - (length(velocity) * velocityScale);
+			if(test >= feedbackFactor)
+			{
+				test = 0;
+			}
+			outColor = vec4(test, 0, 0, 1);
+			//outColor = texture2D(currentColorTex, UnJitter(inBlock.uv, totalFrames, true, currentDepths[2]));
+			break;
+		}
+	}
 }
