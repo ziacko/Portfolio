@@ -179,6 +179,75 @@ public:
 	{
 		position += (GetUp() * movement) * (1 - deltaTime);
 	}
+
+	//rebindable actions
+	class command
+	{
+	public:
+
+		virtual ~command() {};
+		virtual void Execute(camera* cam, float speed, float deltaTime) = 0;
+	};
+
+	class up : public command
+	{
+	public:
+
+		virtual void Execute(camera* cam, float speed, float deltaTime) override
+		{
+			cam->MoveUp(-speed, deltaTime);
+		}
+	};
+
+	class down : public command
+	{
+	public:
+
+		virtual void Execute(camera* cam, float speed, float deltaTime) override
+		{
+			cam->MoveUp(speed, deltaTime);
+		}
+	};
+
+	class left : public command
+	{
+	public:
+
+		virtual void Execute(camera* cam, float speed, float deltaTime) override
+		{
+			cam->MoveRight(-speed, deltaTime);
+		}
+	};
+
+	class right : public command
+	{
+	public:
+
+		virtual void Execute(camera* cam, float speed, float deltaTime) override
+		{
+			cam->MoveRight(speed, deltaTime);
+		}
+	};
+
+	class forwards : public command
+	{
+	public:
+
+		virtual void Execute(camera* cam, float speed, float deltaTime) override
+		{
+			cam->MoveForward(speed, deltaTime);
+		}
+	};
+
+	class backwards : public command
+	{
+	public:
+
+		virtual void Execute(camera* cam, float speed, float deltaTime) override
+		{
+			cam->MoveForward(-speed, deltaTime);
+		}
+	};
 };
 
 #endif

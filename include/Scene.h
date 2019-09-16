@@ -13,6 +13,8 @@
 #include <stddef.h>
 #include <chrono>
 #include <thread>
+#include <array>
+#include <list>
 #include <TinyExtender.h>
 using namespace TinyExtender;
 #include <TinyShaders.h>
@@ -37,6 +39,9 @@ using namespace std::placeholders;
 #include "GPUQuery.h"
 #include "Utilities.h"
 #include "VertexBuffer.h"
+
+//#define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
+//#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF //TODO: move this to tinyextender eventually
 
 typedef enum {UNCAPPED = 0, THIRTY = 30, SIXTY = 60, NINETY = 90, ONETWENTY = 120, ONEFOURTYFOUR = 144} frameRates_t;
 
@@ -243,7 +248,7 @@ protected:
 		}
 
 		static int frameRatePick = 0;
-		ImGui::ListBox("Frame rate cap", &frameRatePick, frameRateSettings.data(), frameRateSettings.size());
+		ImGui::ListBox("Frame rate cap", &frameRatePick, frameRateSettings.data(), (int)frameRateSettings.size());
 		switch (frameRatePick)
 		{
 		case 0: //none
@@ -429,6 +434,21 @@ protected:
 		glUniformBlockBinding(this->programGLID, defaultUniform->uniformHandle, 0);
 	}
 
+	virtual void Resize(tWindow* window, glm::vec2 dimensions = glm::vec2(0))
+	{
+		if (dimensions == glm::vec2(0))
+		{
+			dimensions = glm::vec2(window->resolution.width, window->resolution.height);
+		}
+		glViewport(0, 0, dimensions.x, dimensions.y);
+		defaultUniform->resolution = glm::vec2(dimensions.x, dimensions.y);
+		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)dimensions.x, (GLfloat)dimensions.y, 0.0f, 0.01f, 10.0f);
+
+		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
+
+		defaultVertexBuffer->UpdateBuffer(dimensions);
+	}
+
 	virtual void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state)
 	{
 		ImGui::SetCurrentContext(windowContextMap[window]);
@@ -458,12 +478,12 @@ protected:
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions)
 	{
-		glViewport(0, 0, dimensions.width, dimensions.height);
-		defaultUniform->resolution = glm::vec2(dimensions.width, dimensions.height);
-		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)dimensions.width, (GLfloat)dimensions.height, 0.0f, 0.01f, 10.0f);
+		Resize(window, glm::vec2(dimensions.x, dimensions.y));
+	}
 
-		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
-		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
+	virtual void HandleMaximize(tWindow* window)
+	{
+		Resize(window);
 	}
 
 	virtual void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition)
@@ -473,19 +493,6 @@ protected:
 		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
 		ImGuiIO& io = ImGui::GetIO();
 		io.MousePos = ImVec2((float)windowPosition.x, (float)windowPosition.y); //why screen co-ordinates?
-	}
-
-	virtual void HandleMaximize(tWindow* window)
-	{
-		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)window->resolution.width, (GLfloat)window->resolution.height, 0.0f, 0.01f, 10.0f);
-
-		//bind the uniform buffer and refill it
-		glBindBuffer(gl_uniform_buffer, defaultUniform->bufferHandle);
-		glBufferData(gl_uniform_buffer, sizeof(*defaultUniform), defaultUniform, gl_dynamic_draw);
-
-		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
 	}
 
 	virtual void HandleMouseWheel(tWindow* window, mouseScroll_t scroll)

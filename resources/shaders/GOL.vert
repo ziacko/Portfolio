@@ -16,12 +16,14 @@ out defaultBlock
 layout(packed, binding = 0) uniform defaultSettings 
 {
 	mat4		projection;
-	mat4		view;
-	mat4		translation;
+	mat4 		view;
+	mat4 		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 //ok use a shader storage buffer to store all tihs cell data
 layout(std140, binding = 1) uniform GOLSettings 
@@ -29,10 +31,8 @@ layout(std140, binding = 1) uniform GOLSettings
 	vec4 AliveColor;
 	vec4 DeadColor;
 	vec4 EmptyColor;
-	uint Dimensions;
+	float Dimensions;
 };
-
-//all this was an attempt at implementing game of life inside a shader that I could never get working using shader buffer object. (similar to uniform buffer)
 
 layout(std430, binding = 0) buffer GOLStatus 
 {
@@ -46,25 +46,23 @@ void main()
 
 	//oooooh right this uses instanced rendering.
 	float XResult = 0;
-	float YResult = modf(gl_InstanceID / Dimensions.x, XResult); 
-	outBlock.position.x = outBlock.position.x + (XResult * ((resolution.x / Dimensions.x) / resolution.x)) * 2;
-	outBlock.position.y = outBlock.position.y + YResult * 2;
+	float YResult = modf(gl_InstanceID / Dimensions, XResult); 
+	outBlock.position.x = outBlock.position.x + (XResult * ((resolution.x / Dimensions) / resolution.x)) * 2;
+	outBlock.position.y = outBlock.position.y - YResult * 2;
 
 	if(Status[gl_InstanceID] == 0)
 	{
-		outBlock.color = vec4(0, 0, 1, 1);//EmptyColor;
+		outBlock.color = vec4(0, 0, 1, 1);
 	}
 
 	if(Status[gl_InstanceID] == 1)
 	{
 		outBlock.color = vec4(0, 1, 0, 1);
-		//AliveColor;
 	}
 
 	if(Status[gl_InstanceID] == 2)
 	{
 		outBlock.color = vec4(1, 0, 0, 1);
-		//DeadColor;
 	}
 
 	gl_Position = outBlock.position;

@@ -17,25 +17,26 @@ public:
 	{
 	public:
 		
-		glm::vec4						aliveColor;
-		glm::vec4						deadColor;
-		glm::vec4						emptyColor;
-		GLuint							dimensions; // change to vec2 for more flexibility
+		glm::vec4		aliveColor;
+		glm::vec4		deadColor;
+		glm::vec4		emptyColor;
+		float			dimensions; // change to vec2 for more flexibility
 
-		GLuint							bufferHandle;
-		GLuint							uniformHandle;
+		GLuint			bufferHandle;
+		GLuint			uniformHandle;
 
 		golSettings_t(
-			unsigned int dimensions = 100, glm::vec4 aliveColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), //green
+			float dimensions, glm::vec4 aliveColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), //green
 			glm::vec4 deadColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), //red
 			glm::vec4 emptyColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)) //blue
-			//: uniformBuffer_t()
 		{
-			this->dimensions = (float)dimensions;
+			this->dimensions = dimensions;
 
 			this->aliveColor = aliveColor;
 			this->deadColor = deadColor;
 			this->emptyColor = emptyColor;
+			uniformHandle = 0;
+			bufferHandle = 0;
 		}
 	};
 
@@ -46,14 +47,17 @@ public:
 		GLuint							bufferHandle;
 		GLuint							uniformHandle;
 
-		cells_t(golScene* gol, unsigned int dimensions)
+		cells_t(golScene* gol, float dimensions)
 		{
 			std::srand(gol->randomSeed);
-			for (GLuint cellIter = 0; cellIter < dimensions * dimensions; cellIter++)
+			for (size_t cellIter = 0; cellIter < (size_t)dimensions * dimensions; cellIter++)
 			{
-				GLuint newRand = std::rand() % 100;
+				size_t newRand = std::rand() % 100;
 				cells.push_back((cellState_t)(newRand < gol->cellProbability));
 			}
+
+			bufferHandle = 0;
+			uniformHandle = 0;
 		}
 
 		~cells_t()
@@ -62,7 +66,7 @@ public:
 		}
 	};
 
-	golScene(GLuint dimensions = 20, GLdouble tickDelay = 1.0f, GLuint randomSeed = 666,
+	golScene(float dimensions = 100.0f, GLdouble tickDelay = 0.3f, GLuint randomSeed = 666,
 		GLuint cellProbability = 90, const char* windowName = "Ziyad Barakat's portfolio (game of life)",
 		camera* golCamera = new camera(), const char* shaderConfigPath = "../../resources/shaders/GOL.txt")
 		: scene(windowName, golCamera, shaderConfigPath)
@@ -74,9 +78,8 @@ public:
 
 		//pass a pointer to scene just for random generator seed? sheesh past me is dumb!
 		golSettingsBuffer = new golScene::golSettings_t(dimensions);
-		printf("%i \n", dimensions);
 		cellBuffer = new cells_t(this, dimensions);
-
+		cellDimensions = glm::vec2(0);
 		currentTickDelay = 0.0f;
 	}
 
@@ -90,13 +93,13 @@ protected:
 	GLdouble							currentTickDelay;
 	GLuint								randomSeed;
 	GLuint								cellProbability;
+	glm::vec2							cellDimensions;
 
 	void SetupVertexBuffer() override
 	{
-		GLfloat cellWidth = defaultUniform->resolution.x / golSettingsBuffer->dimensions;
-		GLfloat cellHeight = defaultUniform->resolution.y / golSettingsBuffer->dimensions;
+		cellDimensions = glm::vec2(defaultUniform->resolution.x / golSettingsBuffer->dimensions, defaultUniform->resolution.y / golSettingsBuffer->dimensions);
 
-		defaultVertexBuffer = new vertexBuffer_t(glm::vec2(cellWidth, cellHeight));
+		defaultVertexBuffer = new vertexBuffer_t(cellDimensions);
 	}
 
 	void Update() override
@@ -104,9 +107,8 @@ protected:
 		scene::Update();
 		UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
 		UpdateBuffer(cellBuffer->cells.data(), cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), gl_shader_storage_buffer, gl_dynamic_draw);
-/*
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, cellBuffer->bufferHandle);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * cellBuffer->cells.size(), cellBuffer->cells.data(), GL_DYNAMIC_DRAW);*/
+		//UpdateDefaultBuffer();
+
 		if (currentTickDelay < tickDelay)
 		{
 			currentTickDelay += sceneClock->GetDeltaTime();
@@ -120,13 +122,14 @@ protected:
 	}
 
 	void Draw() override
-	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		UpdateBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(golSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
+	{	
 		glUseProgram(this->programGLID);
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(golSettingsBuffer->dimensions * golSettingsBuffer->dimensions));
+		
 		DrawGUI(windows[0]);
+
 		windows[0]->SwapDrawBuffers();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void CheckNode(cellState_t CurrentState, unsigned int& neighborCount, unsigned int& deadNeighborCount)
@@ -161,8 +164,8 @@ protected:
 		for (unsigned int cellIndex = 0; cellIndex < golSettingsBuffer->dimensions * golSettingsBuffer->dimensions; cellIndex++)
 		{
 			unsigned int column = cellIndex % (unsigned int)golSettingsBuffer->dimensions;
-			unsigned int row = cellIndex & (unsigned int)golSettingsBuffer->dimensions;
-
+			unsigned int row = cellIndex / (unsigned int)golSettingsBuffer->dimensions;
+			printf("%i \n", row);
 			if (cellBuffer->cells[cellIndex] == EMPTY)
 			{
 				continue;
@@ -304,10 +307,39 @@ protected:
 		}
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override 
 	{
 		scene::InitializeUniforms();
 		SetupBuffer(golSettingsBuffer, golSettingsBuffer->bufferHandle, sizeof(*golSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
-		SetupBuffer(cellBuffer, cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), 0, gl_shader_storage_buffer, gl_dynamic_draw);
+		SetupBuffer(cellBuffer, cellBuffer->bufferHandle, GLuint(sizeof(int) * cellBuffer->cells.size()), 0, gl_shader_storage_buffer, gl_dynamic_draw);
+	}
+
+	virtual void Resize(tWindow* window, glm::vec2 dimensions = glm::vec2(0)) override
+	{
+		glViewport(0, 0, window->resolution.x, window->resolution.y);
+		defaultUniform->resolution = glm::vec2(window->resolution.x, window->resolution.y);
+		defaultUniform->projection = glm::ortho(0.0f, (GLfloat)window->resolution.x, (GLfloat)window->resolution.y, 0.0f, 0.01f, 10.0f);
+		cellDimensions = glm::vec2(defaultUniform->resolution.x / golSettingsBuffer->dimensions, defaultUniform->resolution.y / golSettingsBuffer->dimensions);
+
+		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
+		if (dimensions == glm::vec2(0))
+		{
+			defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
+		}
+
+		else
+		{
+			defaultVertexBuffer->UpdateBuffer(cellDimensions);
+		}
+	}
+
+	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
+	{
+		Resize(window, cellDimensions);
+	}
+
+	virtual void HandleMaximize(tWindow* window) override
+	{
+		Resize(window, cellDimensions);
 	}
 };

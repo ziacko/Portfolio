@@ -84,7 +84,7 @@ protected:
 		ImGui::SliderInt("offset5", &gaussianSettingsBuffer->offset5, 0, 100);
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
 		SetupBuffer(gaussianSettingsBuffer, gaussianSettingsBuffer->bufferHandle, sizeof(*gaussianSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);

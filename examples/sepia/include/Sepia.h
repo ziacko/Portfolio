@@ -83,7 +83,7 @@ protected:
 		ImGui::SliderFloat("blue modifier 3", &sepiaSettings->blueModifier3, 0.0f, 1.0f);
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
 		SetupBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), 1, gl_uniform_buffer, gl_dynamic_draw);

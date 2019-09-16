@@ -3,7 +3,7 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 layout(std140, binding = 0) uniform defaultSettings
@@ -13,8 +13,10 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 
 layout(std140, binding = 1) uniform dilationSettings
@@ -45,7 +47,7 @@ void main()
 
 		for(int iter = 0; iter < 9; iter++)
 		{
-			maxValue = max(texture2D(defaultTexture, inBlock.UV + offsets[iter]), maxValue);
+			maxValue = max(texture2D(defaultTexture, inBlock.uv + offsets[iter]), maxValue);
 		}
 
 		outColor = maxValue;
@@ -53,6 +55,6 @@ void main()
 
 	else
 	{
-		outColor = texture2D(defaultTexture, inBlock.UV);
+		outColor = texture2D(defaultTexture, inBlock.uv);
 	}
 }

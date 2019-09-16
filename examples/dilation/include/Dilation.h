@@ -48,7 +48,7 @@ protected:
 		ImGui::SliderFloat("dilation strength Y", &dilationSettings->strengthY, 0.0f, 10.0f);
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
 		SetupBuffer(dilationSettings, dilationSettings->bufferHandle, sizeof(*dilationSettings), 1, gl_uniform_buffer, gl_dynamic_draw);

@@ -6,31 +6,36 @@ struct sharpenSettings_t
 {
 	GLfloat			kernel1;
 	GLfloat			kernel2;
+/*
 	GLfloat			kernel3;
 	GLfloat			kernel4;
 	GLfloat			kernel5;
 	GLfloat			kernel6;
 	GLfloat			kernel7;
 	GLfloat			kernel8;
-	GLfloat			kernel9;
+	GLfloat			kernel9;*/
 
 	GLuint			bufferHandle;
 	GLuint			uniformHandle;
 
 	sharpenSettings_t(
-		GLfloat kernel1 = -1.0f, GLfloat kernel2 = -1.0f, GLfloat kernel3 = -1.0f,
+		GLfloat kernel1 = 0.0f, GLfloat kernel2 = 1.0f/*, GLfloat kernel3 = -1.0f,
 		GLfloat kernel4 = -1.0f, GLfloat kernel5 = 9.0f, GLfloat kernel6 = -1.0f,
-		GLfloat kernel7 = -1.0f, GLfloat kernel8 = -1.0f, GLfloat kernel9 = -1.0f)
+		GLfloat kernel7 = -1.0f, GLfloat kernel8 = -1.0f, GLfloat kernel9 = -1.0f*/)
 	{
 		this->kernel1 = kernel1;
 		this->kernel2 = kernel2;
+/*
 		this->kernel3 = kernel3;
 		this->kernel4 = kernel4;
 		this->kernel5 = kernel5;
 		this->kernel6 = kernel6;
 		this->kernel7 = kernel7;
 		this->kernel8 = kernel8;
-		this->kernel9 = kernel9;
+		this->kernel9 = kernel9;*/
+
+		bufferHandle = 0;
+		uniformHandle = 0;
 	}
 
 	~sharpenSettings_t(){ };
@@ -62,21 +67,22 @@ protected:
 	{
 		texturedScene::BuildGUI(window, io);
 
-		ImGui::SliderFloat("kernel 1", &sharpenSettings->kernel1, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 2", &sharpenSettings->kernel2, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 1", &sharpenSettings->kernel1, -10.0f, 10.0f);
+		ImGui::SliderFloat("kernel 2", &sharpenSettings->kernel2, -10.0f, 10.0f);
+/*
 		ImGui::SliderFloat("kernel 3", &sharpenSettings->kernel3, -1.0f, 1.0f);
 		ImGui::SliderFloat("kernel 4", &sharpenSettings->kernel4, -1.0f, 1.0f);
 		ImGui::SliderFloat("kernel 5", &sharpenSettings->kernel5, -100.0f, 100.0f);
 		ImGui::SliderFloat("kernel 6", &sharpenSettings->kernel6, -1.0f, 1.0f);
 		ImGui::SliderFloat("kernel 7", &sharpenSettings->kernel7, -1.0f, 1.0f);
 		ImGui::SliderFloat("kernel 8", &sharpenSettings->kernel8, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 9", &sharpenSettings->kernel9, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 9", &sharpenSettings->kernel9, -1.0f, 1.0f);*/
 	}
 
 	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		SetupBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
+		SetupBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), 3, gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	void Update() override

@@ -42,8 +42,9 @@ public:
 		: scene3D(windowName, texModelCamera, shaderConfigPath, model)
 	{
 		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
+		glDepthFunc(GL_LEQUAL);
 		glHint(gl_generate_mipmap_hint, GL_NICEST);
 
 		geometryBuffer = new frameBuffer();
@@ -70,7 +71,7 @@ public:
 		FXAABuffer->Initialize();
 		FXAABuffer->Bind();
 		FXAABuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"color", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
+			"FXAA", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
 
 		frameBuffer::Unbind();
 
@@ -110,6 +111,7 @@ protected:
 		defaultUniform->totalFrames++;
 
 		UpdateBuffer(FXAASettings, FXAASettings->bufferHandle, sizeof(*FXAASettings), gl_uniform_buffer, gl_dynamic_draw);
+		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
 	}
 
 	void UpdateDefaultBuffer()
@@ -134,7 +136,7 @@ protected:
 		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
 	}
 
-	virtual void Draw()
+	void Draw() override
 	{
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 		sceneCamera->Update();

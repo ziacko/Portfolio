@@ -1,0 +1,17 @@
+1
+PhongLightingProgram
+5
+position
+normal
+tangent
+biTangent
+uv
+1
+outColor
+2
+ModelVertex
+Vertex
+../../resources/shaders/PhongLighting.vert
+ModelFragment
+Fragment
+../../resources/shaders/PhongLighting.frag

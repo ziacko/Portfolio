@@ -1,13 +1,16 @@
 #version 440
 
-in vec4 vPosition;
-in vec2 vUV;
+in defaultBlock
+{
+	vec4 position;
+	vec2 uv;
+} inBlock;
 
 out vec4 outColor;
 
-uniform sampler2D defaultTexture;
+layout(binding = 0) uniform sampler2D defaultTexture;
 
 void main()
 {
-	outColor = texture2D(defaultTexture, vUV);
+	outColor = texture2D(defaultTexture, inBlock.uv);
 }

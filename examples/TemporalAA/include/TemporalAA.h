@@ -1,8 +1,6 @@
 #ifndef TEMPORALAA_H
 #define TEMPORALAA_H
 
-#define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
-#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF //TODO: move this to tinyextender eventually
 #include "Scene3D.h"
 #include "FrameBuffer.h"
 
@@ -23,6 +21,28 @@ struct temporalAAFrame
 	std::vector<frameBuffer::attachment_t*> attachments;
 
 	//also grab the view, translation and projection
+};
+
+struct jitterSettings_t
+{
+	glm::vec2			haltonSequence[128];
+	float				haltonScale;
+	int					haltonIndex;
+	int					enableDithering;
+	float				ditheringScale;
+
+	GLuint				bufferHandle;
+	GLuint				uniformHandle;
+
+	jitterSettings_t()
+	{
+		haltonIndex = 16;
+		enableDithering = 1;
+		haltonScale = 1.0f;
+		ditheringScale = 0.0f;
+	}
+
+	~jitterSettings_t() {};
 };
 
 struct reprojectSettings_t
@@ -92,23 +112,6 @@ struct sharpenSettings_t
 	~sharpenSettings_t() { };
 };
 
-struct jitterSettings_t
-{
-	glm::vec2 haltonSequence[128];
-	float haltonScale = 1.0f;
-	int haltonIndex;
-
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
-	jitterSettings_t()
-	{
-		haltonIndex = 16;
-	}
-
-	~jitterSettings_t() {};
-};
-
 class temporalAA : public scene3D
 {
 public:
@@ -125,6 +128,7 @@ public:
 		//glEnable(gl_clip_distance0);
 		glDepthFunc(GL_LESS);
 		glHint(gl_generate_mipmap_hint, GL_NICEST);
+
 		geometryBuffer = new frameBuffer();
 		unJitteredBuffer = new frameBuffer();
 		//sharpenBuffer = new frameBuffer();
@@ -138,6 +142,8 @@ public:
 		{
 			jitterUniforms->haltonSequence[iter] = glm::vec2(CreateHaltonSequence(iter + 1, 2), CreateHaltonSequence(iter + 1, 3));
 		}
+		//glGenQueries(1, &defaultQuery);
+		//glGenQueries(1, &TAAQuery);
 	}
 
 	~temporalAA() {};
@@ -145,6 +151,9 @@ public:
 	virtual void Initialize() override
 	{
 		scene3D::Initialize();
+
+		glGenQueries(1, &jitterQuery);
+
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
 
@@ -152,12 +161,12 @@ public:
 			"color", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
 
 		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"velocity", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height), texture::textureType_t::image,
-			gl_rg, GL_TEXTURE_2D, 0, 0, 0, GL_FLOAT, gl_rg16_snorm));
+			"velocity", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
+			gl_rg, GL_TEXTURE_2D, GL_FLOAT, gl_rg16_snorm));
 
 		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
-			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height), texture::textureType_t::image,
-			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, 0, 0, 0, GL_FLOAT, gl_depth_component24));
+			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
+			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component24));
 
 		for (unsigned int iter = 0; iter < numPrevFrames; iter++)
 		{
@@ -170,9 +179,9 @@ public:
 
 			newBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
 				("depth" + std::to_string(iter)), glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
-				texture::textureType_t::image, GL_DEPTH_COMPONENT, GL_TEXTURE_2D, 0, 0, 0, GL_FLOAT, gl_depth_component24));
+				GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component24));
 
-			TAAFrames.push_back(newBuffer);
+			historyFrames.push_back(newBuffer);
 		}
 
 		/*sharpenBuffer->Bind();
@@ -184,8 +193,8 @@ public:
 		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
 			"unJittered", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
 		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
-			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height), texture::textureType_t::image,
-			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, 0, 0, 0, GL_FLOAT, gl_depth_component24));
+			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
+			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component24));
 
 		//geometry automatically gets assigned to 0
 		smoothProgram = shaderPrograms[1]->handle;
@@ -194,12 +203,14 @@ public:
 		compareProgram = shaderPrograms[3]->handle;
 		finalProgram = shaderPrograms[4]->handle;
 
+		averageGPUTimes.reserve(10);
+
 		frameBuffer::Unbind();
 	}
 
 protected:
 
-	std::vector<frameBuffer*> TAAFrames;
+	std::vector<frameBuffer*> historyFrames;
 	frameBuffer* geometryBuffer;
 	frameBuffer* unJitteredBuffer;
 	//frameBuffer* sharpenBuffer;
@@ -210,6 +221,10 @@ protected:
 	unsigned int compareProgram = 0;
 	unsigned int finalProgram = 0;
 
+	unsigned int jitterQuery = 0;
+	unsigned int defaultQuery = 0;
+	unsigned int TAAQuery = 0;
+
 	GLuint numPrevFrames = 2; //don't need this right now
 
 	reprojectSettings_t* velocityUniforms;
@@ -217,7 +232,6 @@ protected:
 	TAASettings_t* taaUniforms;
 
 	std::vector<const char*>		TAAResolveSettings = { "SMAA", "Inside", "Inside2", "Custom", "Experimental" };
-	int TAAResolve = 3;
 	bool enableCompare = true;
 
 	sharpenSettings_t*			sharpenSettings;
@@ -226,6 +240,8 @@ protected:
 	jitterSettings_t* jitterUniforms;
 
 	bool currentFrame = 0;
+
+	std::vector<uint64_t> averageGPUTimes;
 
 	virtual void Update() override
 	{
@@ -247,7 +263,7 @@ protected:
 		UpdateBuffer(taaUniforms, taaUniforms->bufferHandle, sizeof(*taaUniforms), gl_uniform_buffer, gl_dynamic_draw);
 		UpdateBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), gl_uniform_buffer, gl_dynamic_draw);
 		UpdateBuffer(jitterUniforms, jitterUniforms->bufferHandle, sizeof(*jitterUniforms), gl_uniform_buffer, gl_dynamic_draw);
-	
+
 		currentFrame = ((defaultUniform->totalFrames % 2) == 0) ? 0 : 1;//if even frame then write to 1 and read from 0 and vice versa
 	}
 
@@ -281,7 +297,47 @@ protected:
 
 		UpdateDefaultBuffer();
 
+/*
+		glQueryCounter(jitterQuery, gl_timestamp);
+		GLint64 startFrameTime = 0;
+		glGetInteger64v(gl_timestamp, &startFrameTime);
+		uint64_t startTime = static_cast<uint64_t>(startFrameTime);*/
+
+
+		//glBeginQuery(gl_time_elapsed, jitterQuery);
+
+		defaultTimer->Begin();
 		JitterPass(); //render current scene with jitter
+		defaultTimer->End();
+
+		//glEndQuery(gl_time_elapsed);
+
+		/*glQueryCounter(jitterQuery, gl_timestamp);
+		GLint64 geomTime = 0;
+		glGetInteger64v(gl_timestamp, &geomTime);
+		uint64_t GeomTimeU = static_cast<uint64_t>(geomTime);
+
+		uint64_t averageGPUTime = 0;
+		if ((defaultUniform->totalFrames % 11) == 0)
+		{
+			//average the whole lot and clear the vector
+			uint64_t tempTime = 0;
+			for (auto iter : averageGPUTimes)
+			{
+				tempTime += iter;
+			}
+
+			tempTime /= 10; //wee need the average GPU time over 10 frames
+
+			//printf("%f | %f \n", (float)tempTime / 10000.0f, (float)(1.0f / (tempTime / 10000000.0f)));
+			averageGPUTimes.clear();
+		}
+
+		else
+		{
+			//
+			averageGPUTimes.push_back(GeomTimeU - startTime);
+		}*/
 
 		if (enableCompare)
 		{
@@ -295,7 +351,7 @@ protected:
 
 		//SharpenPass();
 
-		FinalPass(TAAFrames[currentFrame]->attachments[0], unJitteredBuffer->attachments[0]);
+		FinalPass(historyFrames[currentFrame]->attachments[0], unJitteredBuffer->attachments[0]);
 		
 		DrawGUI(windows[0]);
 		
@@ -381,9 +437,9 @@ protected:
 
 	virtual void TAAPass()
 	{
-		TAAFrames[currentFrame]->Bind();
+		historyFrames[currentFrame]->Bind();
 		GLenum drawBuffers[1] = {
-			TAAFrames[currentFrame]->attachments[0]->attachmentFormat
+			historyFrames[currentFrame]->attachments[0]->attachmentFormat
 		};
 		glDrawBuffers(1, drawBuffers);
 
@@ -392,8 +448,8 @@ protected:
 		geometryBuffer->attachments[2]->SetActive(1); //current depth
 
 		//previous frames
-		TAAFrames[!currentFrame]->attachments[0]->SetActive(2); //previous color
-		TAAFrames[!currentFrame]->attachments[1]->SetActive(3); //previous depth
+		historyFrames[!currentFrame]->attachments[0]->SetActive(2); //previous color
+		historyFrames[!currentFrame]->attachments[1]->SetActive(3); //previous depth
 
 		geometryBuffer->attachments[1]->SetActive(4); //velocity
 		
@@ -402,7 +458,7 @@ protected:
 		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		TAAFrames[currentFrame]->Unbind();
+		historyFrames[currentFrame]->Unbind();
 	}
 
 	/*void SharpenPass()
@@ -453,7 +509,7 @@ protected:
 
 		DrawBufferAttachments();
 		DrawTAASettings();
-		DrawSharpenSettings();
+		//DrawSharpenSettings();
 		//DrawJitterSettings();
 	}
 
@@ -471,6 +527,7 @@ protected:
 	virtual void DrawTAASettings()
 	{
 		ImGui::Begin("TAA Settings");
+		ImGui::Text("performance | %f", defaultTimer->GetTimeMilliseconds());
 		ImGui::Checkbox("enable Compare", &enableCompare);
 		ImGui::SliderFloat("feedback factor", &taaUniforms->feedbackFactor, 0.0f, 1.0f);
 		ImGui::InputFloat("max depth falloff", &taaUniforms->maxDepthFalloff, 0.01f);
@@ -481,10 +538,13 @@ protected:
 		ImGui::Text("Velocity settings");
 		ImGui::SliderFloat("Velocity scale", &taaUniforms->velocityScale, 0.0f, 10.0f);
 
+		//jitter settings
 		ImGui::Separator();
-		ImGui::SameLine();
-		ImGui::DragFloat("halton scale", &jitterUniforms->haltonScale, 0.1f, 0.0f, 15.0f, "%3f");
-		ImGui::DragInt("halton index", &jitterUniforms->haltonIndex, 1.0f, 0, 128);
+		//ImGui::SameLine();
+		ImGui::DragFloat("halton scale", &jitterUniforms->haltonScale, 0.1f, 0.0f, 15.0f, "%.3f");
+		ImGui::DragInt("halton index",  &jitterUniforms->haltonIndex, 1.0f, 0, 128);
+		ImGui::DragInt("enable dithering", &jitterUniforms->enableDithering, 1.0f, 0, 1);
+		ImGui::DragFloat("dithering scale", &jitterUniforms->ditheringScale, 1.0f, 0.0f, 1000.0f, "%.3f");
 
 		ImGui::End();
 	}
@@ -500,7 +560,7 @@ protected:
 			ImGui::Text("%s\n", iter->GetUniformName().c_str());
 		}
 
-		for (auto iter : TAAFrames)
+		for (auto iter : historyFrames)
 		{
 			for (auto iter2 : iter->attachments)
 			{
@@ -522,7 +582,7 @@ protected:
 	virtual void DrawJitterSettings()
 	{
 		ImGui::Begin("Jitter Settings");
-
+		
 
 		ImGui::End();
 	}
@@ -534,7 +594,7 @@ protected:
 
 		ImGui::DragFloat("near plane", &sceneCamera->nearPlane);
 		ImGui::DragFloat("far plane", &sceneCamera->farPlane);
-		ImGui::SliderFloat("Field of view", &sceneCamera->fieldOfView, 0, 90, "%.10f");
+		ImGui::SliderFloat("Field of view", &sceneCamera->fieldOfView, 0, 90, "%.0f");
 
 		ImGui::InputFloat("camera speed", &sceneCamera->speed, 0.f);
 		ImGui::InputFloat("x sensitivity", &sceneCamera->xSensitivity, 0.f);
@@ -549,14 +609,14 @@ protected:
 		float clearColor2[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		float clearColor3[4] = { 1.0f, 0.0f, 0.0f, 0.0f }; //this is for debugging only!
 
-		TAAFrames[!currentFrame]->Bind(); //clear the previous, the next frame current becomes previous
-		TAAFrames[!currentFrame]->ClearTexture(TAAFrames[!currentFrame]->attachments[0], clearColor1);
-		TAAFrames[!currentFrame]->ClearTexture(TAAFrames[!currentFrame]->attachments[1], clearColor2);
+		historyFrames[!currentFrame]->Bind(); //clear the previous, the next frame current becomes previous
+		historyFrames[!currentFrame]->ClearTexture(historyFrames[!currentFrame]->attachments[0], clearColor1);
+		historyFrames[!currentFrame]->ClearTexture(historyFrames[!currentFrame]->attachments[1], clearColor2);
 		//copy current depth to previous or vice versa?
-		TAAFrames[currentFrame]->attachments[1]->Copy(geometryBuffer->attachments[2]); //copy depth over
+		historyFrames[currentFrame]->attachments[1]->Copy(geometryBuffer->attachments[2]); //copy depth over
 
 		glClear(GL_DEPTH_BUFFER_BIT);
-		TAAFrames[currentFrame]->Unbind();
+		historyFrames[currentFrame]->Unbind();
 
 		geometryBuffer->Bind();
 		geometryBuffer->ClearTexture(geometryBuffer->attachments[0], clearColor1);
@@ -579,7 +639,7 @@ protected:
 
 	virtual void ResizeBuffers(glm::vec2 resolution)
 	{
-		for (auto frame : TAAFrames)
+		for (auto frame : historyFrames)
 		{
 			for (auto iter : frame->attachments)
 			{
@@ -631,13 +691,13 @@ protected:
 	{
 		float f = 1;
 		float r = 0;
-		int test = index;
+		int current = index;
 		do 
 		{
 			f = f / base;
-			r = r + f * (test % base);
-			test = glm::floor(test / base);
-		} while (test > 0);
+			r = r + f * (current % base);
+			current = glm::floor(current / base);
+		} while (current > 0);
 
 		return r;
 	}

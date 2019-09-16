@@ -3,21 +3,22 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 out vec4 outColor;
 
-layout(std140, binding = 0)
-uniform defaultSettings
+layout(std140, binding = 0) uniform defaultSettings
 {
 	mat4		projection;
-	mat4		view;
-	mat4		translation;
+	mat4 		view;
+	mat4 		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint 		totalFrames;
 };
 
 layout(std140, binding = 4) 
@@ -55,7 +56,7 @@ void main()
 		{
 			for(float j = 0.0; j < 3.0; j++)
 			{
-				tex = texture2D(defaultTexture, inBlock.UV + texel * vec2(i - 1.0, j - 1.0)).rgb;
+				tex = texture2D(defaultTexture, inBlock.uv + texel * vec2(i - 1.0, j - 1.0)).rgb;
 				I[int(i)][int(j)] = length(tex);
 			}
 		}
@@ -74,6 +75,6 @@ void main()
 
 	else
 	{
-		outColor = texture2D(defaultTexture, inBlock.UV);
+		outColor = texture2D(defaultTexture, inBlock.uv);
 	}
 }

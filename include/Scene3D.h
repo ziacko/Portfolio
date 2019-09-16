@@ -1,9 +1,6 @@
 ﻿#ifndef SCENE3D_H
 #define SCENE3D_H
 
-#define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
-#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF //TODO: move this to tinyextender eventually
-
 #include <assimp/Importer.hpp>
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
@@ -11,7 +8,6 @@
 #include "Scene.h"
 #include "Texture.h"
 #include "Model.h"
-
 
 struct baseMaterialSettings_t
 {
@@ -71,6 +67,7 @@ public:
 		testModel->loadModel();
 
 		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 	}
 
 protected:

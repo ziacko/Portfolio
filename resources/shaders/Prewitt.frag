@@ -3,21 +3,22 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 out vec4 outColor;
 
-layout(std140, binding = 0)
-uniform defaultSettings
+layout(std140, binding = 0) uniform defaultSettings
 {
 	mat4		projection;
-	mat4		view;
-	mat4		translation;
+	mat4 		view;
+	mat4 		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint 		totalFrames;
 };
 
 layout(std140, binding = 3) 
@@ -49,7 +50,7 @@ void main()
 
 		for(int sampleIndex = 0; sampleIndex < 9; sampleIndex++)
 		{
-			samples[sampleIndex] = texture2D(defaultTexture, inBlock.UV + offsets[sampleIndex]);
+			samples[sampleIndex] = texture2D(defaultTexture, inBlock.uv + offsets[sampleIndex]);
 		}
 
 		vec4 horzontalEdge = samples[2] + samples[5] + samples[8] - (samples[0] + samples[3] + samples[6]);
@@ -69,6 +70,6 @@ void main()
 
 	else
 	{
-		outColor = texture2D(defaultTexture, inBlock.UV);
+		outColor = texture2D(defaultTexture, inBlock.uv);
 	}	
 }

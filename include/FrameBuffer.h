@@ -20,7 +20,7 @@ public:
 		attachment_t(attachmentType_t attachment = attachmentType_t::color,
 			std::string uniformName = "defaultTexture", glm::vec2 resolution = glm::vec2(1280, 720),
 			GLint format = GL_RGBA, GLenum target = GL_TEXTURE_2D,
-			GLenum dataType = GL_UNSIGNED_BYTE,	GLenum internalFormat = GL_RGBA16,
+			GLenum dataType = GL_FLOAT,	GLenum internalFormat = GL_RGBA16,
 			GLuint samples = 0, GLint currentMipmapLevel = 0, GLint mipmapLevels = 1, 
 			GLint border = 0, GLint xOffset = 0, GLint yOffset = 0,
 			GLenum minFilterSetting = GL_LINEAR, GLenum magFilterSetting = GL_LINEAR,
@@ -41,7 +41,8 @@ public:
 			this->mipmapLevels = mipmapLevels;
 			this->border = border;
 			this->dataType = dataType;
-			this->internalDataType = internalFormat;
+			this->internalDataType = internalDataType;
+			this->internalFormat = internalFormat;
 			this->xOffset = xOffset;
 			this->yOffset = yOffset;
 
@@ -50,6 +51,9 @@ public:
 			this->wrapSSetting = wrapSSetting;
 			this->wrapTSetting = wrapTSetting;
 			this->wrapRSetting = wrapRSetting;
+			this->bitsPerPixel = 0;
+			this->uniformHandle = 0;
+			this->data = nullptr;
 
 			this->handle = 0;
 
@@ -59,18 +63,21 @@ public:
 
 			glGenTextures(1, &handle);
 			glBindTexture(target, handle);
-			if (samples > 0 && target == gl_texture_2d_multisample)
+
+			//parse internal format as bits per pixel
+
+			/*if (samples > 0 && target == gl_texture_2d_multisample)
 			{
 				glTexStorage2DMultisample(target, sampleCount, internalFormat, width, height, true);				
 			}
 			else
-			{
+			{*/
 				glTexImage2D(target, currentMipmapLevel, internalFormat, width, height, border, format, dataType, nullptr);
 				glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilterSetting);
 				glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilterSetting);
 				glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapSSetting);
 				glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapTSetting);
-			}			
+			//}			
 
 			UnbindTexture();
 		}
@@ -81,21 +88,18 @@ public:
 			glFramebufferTexture2D(gl_framebuffer, this->attachmentFormat, target, handle, currentMipmapLevel);
 		}
 
-		void Resize(glm::vec2 newSize)
+		void Resize(glm::vec2 newSize, bool unbind = true)
 		{
 			width = newSize.x;
 			height = newSize.y;
 			BindTexture();
-			if (sampleCount > 0 && target == gl_texture_2d_multisample)
-			{
-				glTexStorage2DMultisample(target, sampleCount, internalFormat, width, height, true);
-			}
-			else
-			{
-				glTexImage2D(target, currentMipmapLevel, internalFormat, width, height, border, format, dataType, nullptr);
-			}
 
-			UnbindTexture();
+			glTexImage2D(target, currentMipmapLevel, internalFormat, width, height, border, format, dataType, nullptr);
+
+			//if (unbind)
+			//{
+				UnbindTexture();
+			//}
 		}
 
 	public:
@@ -133,6 +137,17 @@ public:
 		glDrawBuffers(1, &attachments[renderTextureHandle]->attachmentFormat);
 	}
 
+	void DrawAll()
+	{
+		std::vector<GLenum> allImages;
+		for (auto iter : attachments)
+		{
+			allImages.push_back(iter->attachmentFormat);
+		}
+
+		glDrawBuffers(allImages.size(), allImages.data());
+	}
+
 	void DrawDepth()
 	{
 		GLuint test = gl_depth_attachment;
@@ -142,6 +157,39 @@ public:
 	void DrawMultiple(const char* name)
 	{
 
+	}
+
+	void Resize(glm::vec2 newSize/*, bool unbind = true*/)
+	{
+		//delete the framebuffer
+		//glDeleteFramebuffers(1, &bufferHandle);
+
+		//resize the buffers
+		for (size_t iter = 0; iter < attachments.size(); iter++)
+		{
+			//if its the last one, unbind textures
+			//if (iter == attachments.size() - 1)
+			//{
+				attachments[iter]->Resize(newSize);
+			//}
+
+			/*else if(unbind)
+			{
+				attachments[iter]->Resize(newSize, unbind);							   				 			  
+			}*/
+		}
+		
+		//recreate the framebuffer and re-attach the textures
+		/*glGenFramebuffers(1, &bufferHandle);
+
+
+		for (auto iter : attachments)
+		{
+			iter->Initialize(iter->attachmentFormat);
+		}*/
+
+		//unbind that framebuffers
+		//Unbind();
 	}
 
 	void ClearTexture(attachment_t* attachment, float clearColor[4])

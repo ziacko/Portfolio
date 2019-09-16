@@ -53,7 +53,7 @@ public:
 		this->handle = 0;
 
 		this->texType = texType;
-
+		isResident = false;
 		//LoadTexture();
 	}
 
@@ -124,6 +124,8 @@ public:
 		{
 			stbLoad(data);
 		}
+
+		residentHandle = glGetTextureHandleARB(handle);
 	}
 
 	virtual void ReloadTexture(const char* path)
@@ -165,6 +167,30 @@ public:
 			this->minFilterSetting = GL_NEAREST;
 			break;
 		}
+
+		case 2:
+		{
+			this->minFilterSetting = GL_NEAREST_MIPMAP_NEAREST;
+			break;
+		}
+
+		case 3:
+		{
+			this->minFilterSetting = GL_NEAREST_MIPMAP_LINEAR;
+			break;
+		}
+
+		case 4:
+		{
+			this->minFilterSetting = GL_LINEAR_MIPMAP_NEAREST;
+			break;
+		}
+
+		case 5:
+		{
+			this->minFilterSetting = GL_LINEAR_MIPMAP_LINEAR;
+			break;
+		}
 		}
 		BindTexture();
 		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, this->minFilterSetting);
@@ -175,17 +201,41 @@ public:
 	{
 		switch (magFilterSetting)
 		{
-			case 0:
-			{
-				this->magFilterSetting = GL_LINEAR;
-				break;
-			}
+		case 0:
+		{
+			this->magFilterSetting = GL_LINEAR;
+			break;
+		}
 
-			case 1:
-			{
-				this->magFilterSetting = GL_NEAREST;
-				break;
-			}
+		case 1:
+		{
+			this->magFilterSetting = GL_NEAREST;
+			break;
+		}
+
+		case 2:
+		{
+			this->magFilterSetting = GL_NEAREST_MIPMAP_NEAREST;
+			break;
+		}
+
+		case 3:
+		{
+			this->magFilterSetting = GL_NEAREST_MIPMAP_LINEAR;
+			break;
+		}
+
+		case 4:
+		{
+			this->magFilterSetting = GL_LINEAR_MIPMAP_NEAREST;
+			break;
+		}
+
+		case 5:
+		{
+			this->magFilterSetting = GL_LINEAR_MIPMAP_LINEAR;
+			break;
+		}
 		}
 
 		BindTexture();
@@ -341,6 +391,11 @@ public:
 		return handle;
 	}
 
+	unsigned int GetResidentHandle()
+	{
+		return residentHandle;
+	}
+
 	glm::vec2 GetSize()
 	{
 		return glm::vec2(width, height);
@@ -365,6 +420,28 @@ public:
 		glCopyImageSubData(otherTexture->handle, otherTexture->target, otherTexture->currentMipmapLevel, 0, 0, 0,
 			handle, target, currentMipmapLevel, 0, 0, 0,
 			width, height, 1);
+	}
+
+	void ToggleResident()
+	{
+		isResident = !isResident;
+
+		if (isResident)
+		{
+			glMakeTextureHandleResidentARB(residentHandle);
+		}
+
+		else
+		{
+			glMakeTextureHandleNonResidentARB(residentHandle);
+		}
+
+	}
+
+	void Initialize()
+	{
+		
+		
 	}
 
 protected:
@@ -398,6 +475,9 @@ protected:
 	char*			data;
 
 	textureType_t	texType;
+
+	GLuint64		residentHandle;
+	bool			isResident;
 
 private:
 
@@ -450,11 +530,10 @@ private:
 			glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapSSetting);
 			glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapTSetting);
 
+			//glTexStorage2D(target, mipmapLevels, internalDataType, width, height);
+			//glTexSubImage2D(target, currentMipmapLevel, xOffset, yOffset, width, height, internalFormat, dataType, data);
 
-			glTexStorage2D(target, mipmapLevels, internalDataType, width, height);
-			glTexSubImage2D(target, currentMipmapLevel, xOffset, yOffset, width, height, internalFormat, dataType, data);
-
-			//glTexImage2D(target, currentMipmapLevel, internalDataType, width, height, border, internalFormat, dataType, data);
+			glTexImage2D(target, currentMipmapLevel, internalFormat, width, height, border, format, dataType, data);
 			
 			if (mipmapLevels > 0)
 			{
@@ -514,8 +593,8 @@ private:
 		if (mipmapLevels > 0)
 		{
 			glTexParameteri(GL_TEXTURE_2D, gl_texture_max_level, mipmapLevels);
-			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		}
 
 		else
@@ -525,8 +604,8 @@ private:
 		}
 
 		float aniso = 0.0f;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+		glGetFloatv(gl_max_texture_max_anisotropy, &aniso);
+		glTexParameterf(GL_TEXTURE_2D, gl_texture_max_anisotropy, aniso);
 
 		UnbindTexture();
 	}

@@ -2,21 +2,22 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 out vec4 outColor;
 
-layout(std140, binding = 0)
-uniform defaultSettings
+layout(std140, binding = 0) uniform defaultSettings
 {
 	mat4		projection;
-	mat4		view;
-	mat4		translation;
+	mat4 		view;
+	mat4 		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint 		totalFrames;
 };
 
 layout(std140, binding = 1)
@@ -43,14 +44,14 @@ void main()
 		float deltaY = 1.0f / resolution.y;
 		float deltaX = 1.0f / resolution.x;
 
-		float s00 = luma(texture(defaultTexture, inBlock.UV + vec2(-deltaX, deltaY)), redModifier, greenModifier, blueModifier);
-		float s10 = luma(texture(defaultTexture, inBlock.UV + vec2(-deltaX, 0.0)), redModifier, greenModifier, blueModifier);
-		float s20 = luma(texture(defaultTexture, inBlock.UV + vec2(-deltaX, 0.0)), redModifier, greenModifier, blueModifier);
-		float s01 = luma(texture(defaultTexture, inBlock.UV + vec2(0.0, deltaY)), redModifier, greenModifier, blueModifier);
-		float s21 = luma(texture(defaultTexture, inBlock.UV + vec2(0.0, -deltaY)), redModifier, greenModifier, blueModifier);
-		float s02 = luma(texture(defaultTexture, inBlock.UV + vec2(deltaX, deltaY)), redModifier, greenModifier, blueModifier);
-		float s12 = luma(texture(defaultTexture, inBlock.UV + vec2(deltaX, 0.0)), redModifier, greenModifier, blueModifier);
-		float s22 = luma(texture(defaultTexture, inBlock.UV + vec2(deltaX, -deltaY)), redModifier, greenModifier, blueModifier);
+		float s00 = luma(texture(defaultTexture, inBlock.uv + vec2(-deltaX, deltaY)), redModifier, greenModifier, blueModifier);
+		float s10 = luma(texture(defaultTexture, inBlock.uv + vec2(-deltaX, 0.0)), redModifier, greenModifier, blueModifier);
+		float s20 = luma(texture(defaultTexture, inBlock.uv + vec2(-deltaX, 0.0)), redModifier, greenModifier, blueModifier);
+		float s01 = luma(texture(defaultTexture, inBlock.uv + vec2(0.0, deltaY)), redModifier, greenModifier, blueModifier);
+		float s21 = luma(texture(defaultTexture, inBlock.uv + vec2(0.0, -deltaY)), redModifier, greenModifier, blueModifier);
+		float s02 = luma(texture(defaultTexture, inBlock.uv + vec2(deltaX, deltaY)), redModifier, greenModifier, blueModifier);
+		float s12 = luma(texture(defaultTexture, inBlock.uv + vec2(deltaX, 0.0)), redModifier, greenModifier, blueModifier);
+		float s22 = luma(texture(defaultTexture, inBlock.uv + vec2(deltaX, -deltaY)), redModifier, greenModifier, blueModifier);
 
 		float Kernel1 = s00 + 2 * s10 + s20 - (s02 + 2 * s12 + s22);
 		float Kernel2 = s00 + 2 * s01 + s02 - (s20 + 2 * s21 + s22);
@@ -69,7 +70,7 @@ void main()
 
 	else
 	{
-		outColor = texture2D(defaultTexture, inBlock.UV); // SOIL doesn't flip the image automatically and Freeimage wont compile waaaaaaaaaagh
+		outColor = texture2D(defaultTexture, inBlock.uv); // SOIL doesn't flip the image automatically and Freeimage wont compile waaaaaaaaaagh
 	}
 }
 

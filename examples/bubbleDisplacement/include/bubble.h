@@ -81,7 +81,7 @@ protected:
 	int							gridDimensions = 0;
 	bool						enableWireframe = false;
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		//SetupVertexBuffer();
 		scene::InitializeUniforms();

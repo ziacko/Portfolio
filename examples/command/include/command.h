@@ -3,31 +3,6 @@
 
 #include <Scene3D.h>
 
-//rebindable actions
-class command
-{
-public:
-
-	virtual ~command() {};
-	//virtual void Execute() = 0;
-};
-
-class cameraCommand
-{
-public:
-
-};
-
-class cameraUp : public command
-{
-public:
-
-	virtual void Execute(camera* sceneCamera, float camSpeed, float deltaTime) 
-	{
-		sceneCamera->MoveUp(-camSpeed, deltaTime);
-	}
-};
-
 class commandScene : public scene3D
 {
 public:
@@ -41,7 +16,6 @@ public:
 		testModel = model;
 		materialSettingsBuffer = new baseMaterialSettings_t();
 		wireframe = false;
-		cameraUpProc = new cameraUp();
 	}
 
 	~commandScene() {};
@@ -64,7 +38,12 @@ public:
 
 protected:
 	
-	cameraUp* cameraUpProc;
+	camera::up cameraUpProc;
+	camera::down cameraDownProc;
+	camera::left cameraLeftProc;
+	camera::right cameraRightProc;
+	camera::forwards cameraForwardsProc;
+	camera::backwards cameraBackwardsProc;
 
 	virtual void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state) override
 	{
@@ -73,11 +52,11 @@ protected:
 
 	virtual void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition) override
 	{
-		commandScene* thisScene = (commandScene*)window->userData;
+		//commandScene* thisScene = (commandScene*)window->userData;
 		scene::HandleMouseMotion(window, windowPosition, screenPosition);
 
 		glm::vec2 mouseDelta = glm::vec2(window->mousePosition.x - window->previousMousePosition.x, window->mousePosition.y - window->previousMousePosition.y);
-		float deltaTime = (float)thisScene->sceneClock->GetDeltaTime();
+		float deltaTime = (float)sceneClock->GetDeltaTime();
 		if (window->mouseButton[(int)mouseButton_t::right] == buttonState_t::down)
 		{
 			if (mouseDelta.x != 0)
@@ -94,20 +73,20 @@ protected:
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		commandScene* thisScene = (commandScene*)window->userData;
+		//commandScene* thisScene = (commandScene*)window->userData;
 		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		thisScene->sceneCamera->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		thisScene->defaultUniform->resolution = thisScene->sceneCamera->resolution;
-		thisScene->sceneCamera->UpdateProjection();
-		thisScene->defaultUniform->projection = thisScene->sceneCamera->projection;
+		sceneCamera->resolution = glm::vec2(window->resolution.width, window->resolution.height);
+		defaultUniform->resolution = sceneCamera->resolution;
+		sceneCamera->UpdateProjection();
+		defaultUniform->projection = sceneCamera->projection;
 
 		//bind the uniform buffer and refill it
-		UpdateBuffer(thisScene->defaultUniform, thisScene->defaultUniform->bufferHandle, sizeof(defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
+		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		commandScene* thisScene = (commandScene*)window->userData;
+		//commandScene* thisScene = (commandScene*)window->userData;
 
 		glViewport(0, 0, dimensions.width, dimensions.height);
 		sceneCamera->resolution = glm::vec2(dimensions.width, dimensions.height);
@@ -152,32 +131,32 @@ protected:
 		{
 			if (window->keys['w'] == keyState_t::down)
 			{
-				sceneCamera->MoveForward(camSpeed, deltaTime);
+				cameraForwardsProc.Execute(sceneCamera, camSpeed, deltaTime);
 			}
 
 			if (window->keys['s'] == keyState_t::down)
 			{
-				sceneCamera->MoveForward(-camSpeed, deltaTime);
+				cameraBackwardsProc.Execute(sceneCamera, camSpeed, deltaTime);
 			}
 
 			if (window->keys['a'] == keyState_t::down)
 			{
-				sceneCamera->MoveRight(-camSpeed, deltaTime);
+				cameraLeftProc.Execute(sceneCamera, camSpeed, deltaTime);
 			}
 
 			if (window->keys['d'] == keyState_t::down)
 			{
-				sceneCamera->MoveRight(camSpeed, deltaTime);
+				cameraRightProc.Execute(sceneCamera, camSpeed, deltaTime);
 			}
 
 			if (window->keys['e'] == keyState_t::down)
-			{
-				sceneCamera->MoveUp(camSpeed, deltaTime);
+			{				
+				cameraDownProc.Execute(sceneCamera, camSpeed, deltaTime);
 			}
 
 			if (window->keys['q'] == keyState_t::down)
 			{
-				
+				cameraUpProc.Execute(sceneCamera, camSpeed, deltaTime);				
 			}
 
 			if (window->keys['z'] == keyState_t::down)

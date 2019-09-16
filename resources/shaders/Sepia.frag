@@ -3,18 +3,20 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 layout(std140, binding = 0) uniform defaultSettings
 {
 	mat4		projection;
-	mat4		view;
-	mat4		translation;
+	mat4 		view;
+	mat4 		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 
 layout(std140, binding = 1) uniform sepiaSettings
@@ -48,7 +50,7 @@ vec4 Sepia( in vec4 color )
 
 void main()
 {
-	vec4 texColor = texture2D(defaultTexture, inBlock.UV);
+	vec4 texColor = texture(defaultTexture, inBlock.uv);
 
 	if(gl_FragCoord.x < mousePosition.x)
 	{

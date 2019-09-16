@@ -1,4 +1,4 @@
-6
+7
 geometryProgram
 5
 positon
@@ -61,6 +61,20 @@ Vertex
 TexturedFragment
 Fragment
 ../../resources/shaders/Smooth.frag
+
+SharpenProgram
+2
+position
+uv
+1
+outColor
+2
+DefaultVertex
+Vertex
+../../resources/shaders/Default.vert
+SharpenFragment
+Fragment
+../../resources/shaders/Sharpen.frag
 
 compareProgram
 2

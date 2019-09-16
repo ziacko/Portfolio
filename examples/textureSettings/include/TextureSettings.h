@@ -21,7 +21,12 @@ public:
 	void BuildGUI(tWindow* window, ImGuiIO io) override //it's not virtual because i don't really want anything to inherit from it at this point. 
 	{
 		//texturedScene::BuildGUI(io);
+		DrawTextureSettings();
 
+	}
+
+	void DrawTextureSettings()
+	{
 		if (ImGui::ListBox("mag filter setting", &magFilterIndex, magFilterSettings.data(), magFilterSettings.size()))
 		{
 			defaultTexture->SetMagFilter(magFilterSetting);

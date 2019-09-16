@@ -3,7 +3,7 @@
 out defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } outBlock;
 
 layout(std140, binding = 0) uniform defaultSettings
@@ -13,8 +13,10 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 
 layout (std140, binding = 1) uniform bubbleSettings
@@ -60,13 +62,13 @@ void main()
 	{
 		vec2 pushVector = normalize(mouseWindowPosition.xy - quad[gl_VertexID].xy) * distancefromMouse * offset;
 		quad[gl_VertexID].xy += pushVector;
-		outBlock.UV = quad[gl_VertexID].xy * 0.5f + 0.5f;
-		outBlock.UV += distancefromMouse * offset;
+		outBlock.uv = quad[gl_VertexID].xy * 0.5f + 0.5f;
+		outBlock.uv += distancefromMouse * offset;
 	}
 
 	else
 	{
-		outBlock.UV = quad[gl_VertexID].xy * 0.5f + 0.5f;
+		outBlock.uv = quad[gl_VertexID].xy * 0.5f + 0.5f;
 	}
 
 	outBlock.position = quad[gl_VertexID];

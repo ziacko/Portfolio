@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (framebuffer C CXX)
+project (framebuffer_scene C CXX)
 
 set(PROJECT_LABEL "framebuffer")
 
@@ -32,12 +32,14 @@ set (RELEASE_OUTPUT_DIR "./bin/Release/")
 
 set (PORTFOLIO_INCLUDE_DIR "../../include/")
 set (TINYWINDOW_INCLUDE_DIR "../../dependencies/tinywindow/Include")
+set (TINYWINDOW_DEPENDENCIES_DIR "../../dependencies/tinywindow/Dependencies")
 set (TINYEXTENDER_INCLUDE_DIR "../../dependencies/tinyextender/Include")
 set (TINYSHADERS_INCLUDE_DIR "../../dependencies/tinyshaders/Include")
 set (TINYCLOCK_INCLUDE_DIR "../../dependencies/tinyclock/Include")
 set (GLM_INCLUDE_DIR "../../dependencies/glm/")
 set (GLI_INCLUDE_DIR "../../dependencies/gli/")
 set (IMGUI_INCLUDE_DIR "../../dependencies/imgui/")
+set (ASSIMP_INCLUDE_DIR "../../dependencies/assimp/include/")
 set (STB_INCLUDE_DIR "../../dependencies/stb")
 set (SCENE_INCLUDE_DIR "./include")
 
@@ -51,26 +53,31 @@ set (COMMON_HEADERS
 "${COMMON_HEADER_DIR}UniformBuffer.h"
 "${COMMON_HEADER_DIR}Utilities.h"
 "${COMMON_HEADER_DIR}VertexBuffer.h"
+"${COMMON_HEADER_DIR}Model.h"
 "${COMMON_HEADER_DIR}FrameBuffer.h"
+"${COMMON_HEADER_DIR}Scene3D.h"
 "${COMMON_HEADER_DIR}FrameBufferTexture.h")
 
 set (HEADERS "${COMMON_HEADERS}" "./include/framebufferScene.h")
 
 include_directories("${PORTFOLIO_INCLUDE_DIR}")
 include_directories("${TINYWINDOW_INCLUDE_DIR}")
+include_directories("${TINYWINDOW_DEPENDENCIES_DIR}")
 include_directories("${TINYEXTENDER_INCLUDE_DIR}")
 include_directories("${TINYSHADERS_INCLUDE_DIR}")
 include_directories("${TINYCLOCK_INCLUDE_DIR}")
 include_directories("${IMGUI_INCLUDE_DIR}")
 include_directories("${GLM_INCLUDE_DIR}")
 include_directories("${GLI_INCLUDE_DIR}")
+include_directories("${ASSIMP_INCLUDE_DIR}")
 include_directories("${STB_INCLUDE_DIR}")
 include_directories("${SCENE_INCLUDE_DIR}")
 
-link_directories (${LINK_DIRECTORY})
-link_libraries (${LIBS})
-
-set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
+set(ASSIMP_LIB_DIRECTORY "../../dependencies/assimp/lib/Debug")
+set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
 
 add_executable(framebuffer ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET framebuffer PROPERTY OUTPUT_NAME "framebuffer")
+find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
+
+target_link_libraries(framebuffer "${ASSIMP_LIB_DIRECTORY}/assimp-vc140-mt")

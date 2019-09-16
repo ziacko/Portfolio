@@ -1,6 +1,5 @@
-#ifndef TEMPORALAA_H
-#define TEMPORALAA_H
-
+#ifndef TXAA_H
+#define TXAA_H
 
 #include "Scene3D.h"
 #include "FrameBuffer.h"
@@ -86,6 +85,8 @@ struct sharpenSettings_t
 	{
 		this->kernel1 = kernel1;
 		this->kernel2 = kernel2;
+		bufferHandle = 0;
+		uniformHandle = 0;
 	}
 
 	~sharpenSettings_t() { };
@@ -133,6 +134,8 @@ struct FXAASettings_t
 		this->maxSpan = maxSpan;
 		this->reduceMul = reduceMul;
 		this->reduceMin = reduceMin;
+		bufferHandle = 0;
+		uniformHandle = 0;
 	}
 
 	~FXAASettings_t() { };
@@ -158,6 +161,7 @@ public:
 		geometryBuffer = new frameBuffer();
 		unJitteredBuffer = new frameBuffer();
 		FXAABuffer = new frameBuffer();
+		sharpenBuffer = new frameBuffer();
 		
 
 		velocityUniforms = new reprojectSettings_t();
@@ -165,6 +169,7 @@ public:
 		FXAASettings = new FXAASettings_t();
 		sharpenSettings = new sharpenSettings_t();
 		jitterUniforms = new jitterSettings_t();
+		this->sharpenSettings = new sharpenSettings_t();
 
 		for (int iter = 0; iter < 128; iter++)
 		{
@@ -229,14 +234,19 @@ public:
 			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
 			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component24));
 
+		sharpenBuffer->Initialize();
+		sharpenBuffer->Bind();
+		sharpenBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
+			"Sharpen", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
+
 		//geometry automatically gets assigned to 0
 		unjitteredProgram = shaderPrograms[1]->handle;
 		FXAAProgram = shaderPrograms[2]->handle;
 		smoothProgram = shaderPrograms[3]->handle;
 		
-		//sharpenProgram = shaderPrograms[2]->handle;
-		compareProgram = shaderPrograms[4]->handle;
-		finalProgram = shaderPrograms[5]->handle;
+		sharpenProgram = shaderPrograms[4]->handle;
+		compareProgram = shaderPrograms[5]->handle;
+		finalProgram = shaderPrograms[6]->handle;
 
 		averageGPUTimes.reserve(10);
 
@@ -249,13 +259,13 @@ protected:
 	frameBuffer* geometryBuffer;
 	frameBuffer* unJitteredBuffer;
 	frameBuffer* FXAABuffer;
-	//frameBuffer* sharpenBuffer;
+	frameBuffer* sharpenBuffer;
 
 	unsigned int unjitteredProgram = 0;
 	unsigned int FXAAProgram = 0;
 	unsigned int smoothProgram = 0;
 	
-	//unsigned int sharpenProgram = 0;
+	unsigned int sharpenProgram = 0;
 	unsigned int compareProgram = 0;
 	unsigned int finalProgram = 0;
 
@@ -274,7 +284,6 @@ protected:
 	bool enableCompare = true;
 
 	sharpenSettings_t*			sharpenSettings;
-	bool enableSharpen = false;
 
 	jitterSettings_t* jitterUniforms;
 
@@ -351,9 +360,9 @@ protected:
 
 		TAAPass(); //use the positions, colors, depth and velocity to smooth the final image
 
-		//SharpenPass();
+		SharpenPass();
 
-		FinalPass(TAAFrames[currentFrame]->attachments[0], unJitteredBuffer->attachments[0]);
+		FinalPass(sharpenBuffer->attachments[0], unJitteredBuffer->attachments[0]);
 		
 		DrawGUI(windows[0]);
 		
@@ -482,6 +491,25 @@ protected:
 		FXAABuffer->Unbind();
 	}
 
+	virtual void SharpenPass()
+	{
+		sharpenBuffer->Bind();
+		GLenum drawBuffers[1] = {
+			sharpenBuffer->attachments[0]->attachmentFormat
+		};
+		glDrawBuffers(1, drawBuffers);
+
+		//current frame
+		TAAFrames[currentFrame]->attachments[0]->SetActive(0); // color
+
+		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+		glUseProgram(sharpenProgram);
+		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		sharpenBuffer->Unbind();
+	}
+
 	void FinalPass(texture* tex1, texture* tex2)
 	{
 		//draw directly to backbuffer		
@@ -510,7 +538,7 @@ protected:
 		DrawBufferAttachments();
 		DrawTAASettings();
 		DrawFXAASettings();
-		//DrawSharpenSettings();
+		DrawSharpenSettings();
 		//DrawJitterSettings();
 	}
 
@@ -530,7 +558,6 @@ protected:
 	virtual void DrawSharpenSettings()
 	{
 		ImGui::Begin("Sharpen settings");
-		ImGui::Checkbox("enable sharpen", &enableSharpen);
 
 		ImGui::SliderFloat("kernel 1", &sharpenSettings->kernel1, -1.0f, 1.0f);
 		ImGui::SliderFloat("kernel 5", &sharpenSettings->kernel2, 0.0f, 10.0f, "%.5f", 1.0f);		
@@ -594,6 +621,11 @@ protected:
 		ImGui::SameLine();
 		ImGui::Text("%s\n", unJitteredBuffer->attachments[0]->GetUniformName().c_str());
 
+		ImGui::Image((ImTextureID*)sharpenBuffer->attachments[0]->GetHandle(), ImVec2(512, 288),
+			ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+		ImGui::Text("%s\n", sharpenBuffer->attachments[0]->GetUniformName().c_str());
+
 		ImGui::End();
 	}
 
@@ -653,6 +685,11 @@ protected:
 		glClear(GL_DEPTH_BUFFER_BIT);
 		FXAABuffer->Unbind();
 
+		sharpenBuffer->Bind();
+		sharpenBuffer->ClearTexture(sharpenBuffer->attachments[0], clearColor1);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		sharpenBuffer->Unbind();
+
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 		velocityUniforms->previousProjection = sceneCamera->projection;
 		velocityUniforms->previousView = sceneCamera->view;
@@ -680,6 +717,8 @@ protected:
 		//sharpenBuffer->attachments[0]->Resize(resolution);
 		unJitteredBuffer->attachments[0]->Resize(resolution);
 		unJitteredBuffer->attachments[1]->Resize(resolution);
+
+		sharpenBuffer->attachments[0]->Resize(resolution);
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
