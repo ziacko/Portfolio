@@ -6,11 +6,10 @@ normal
 tangent
 biTangent
 uv
-2
+1
 outColor
-outVelocity
 2
-jitterVertex
+modelVertex
 Vertex
 ../../resources/shaders/Model.vert
 TreeFragment

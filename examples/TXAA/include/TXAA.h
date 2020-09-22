@@ -23,6 +23,25 @@ struct temporalAAFrame
 	//also grab the view, translation and projection
 };
 
+struct jitterSettings_t
+{
+	glm::vec2			haltonSequence[128];
+	float				haltonScale;
+	int					haltonIndex;
+	int					enableDithering;
+	float				ditheringScale;
+
+	jitterSettings_t()
+	{
+		haltonIndex = 16;
+		enableDithering = 1;
+		haltonScale = 250.0f;
+		ditheringScale = 0.0f;
+	}
+
+	~jitterSettings_t() {};
+};
+
 struct reprojectSettings_t
 {
 	glm::mat4		previousProjection;
@@ -31,9 +50,6 @@ struct reprojectSettings_t
 
 	glm::mat4		currentView;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	reprojectSettings_t()
 	{
 		this->previousProjection = glm::mat4(1.0f);
@@ -41,9 +57,6 @@ struct reprojectSettings_t
 		this->prevTranslation = glm::mat4(1.0f);
 
 		this->currentView = glm::mat4(1.0f);
-
-		bufferHandle = 0;
-		uniformHandle = 0;
 	}
 
 	~reprojectSettings_t() {};
@@ -58,12 +71,8 @@ struct TAASettings_t
 	//Custom
 	float maxDepthFalloff;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	TAASettings_t()
 	{
-		
 		this->feedbackFactor = 0.9f;
 		this->maxDepthFalloff = 1.0f;
 		this->velocityScale = 1.0f;
@@ -77,41 +86,14 @@ struct sharpenSettings_t
 	GLfloat			kernel1;
 	GLfloat			kernel2;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	sharpenSettings_t(
 		GLfloat kernel1 = -0.125f, GLfloat kernel2 = 1.75f)
 	{
 		this->kernel1 = kernel1;
 		this->kernel2 = kernel2;
-		bufferHandle = 0;
-		uniformHandle = 0;
 	}
 
 	~sharpenSettings_t() { };
-};
-
-struct jitterSettings_t
-{
-	glm::vec2			haltonSequence[128];
-	float				haltonScale;
-	int					haltonIndex;
-	int					enableDithering;
-	float				ditheringScale;
-
-	GLuint				bufferHandle;
-	GLuint				uniformHandle;
-
-	jitterSettings_t()
-	{
-		haltonIndex = 16;
-		enableDithering = 1;
-		haltonScale = 1.0f;
-		ditheringScale = 0.0f;
-	}
-
-	~jitterSettings_t() {};
 };
 
 struct FXAASettings_t
@@ -122,9 +104,6 @@ struct FXAASettings_t
 	GLfloat			reduceMul;
 	GLfloat			reduceMin;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	FXAASettings_t(
 		GLfloat pixelShift = 0.25f, GLfloat vxOffset = 0.0f, GLfloat maxSpan = 8.0f,
 		GLfloat reduceMul = 0.125f, GLfloat reduceMin = 0.0078125f)
@@ -134,8 +113,6 @@ struct FXAASettings_t
 		this->maxSpan = maxSpan;
 		this->reduceMul = reduceMul;
 		this->reduceMin = reduceMin;
-		bufferHandle = 0;
-		uniformHandle = 0;
 	}
 
 	~FXAASettings_t() { };
@@ -164,16 +141,16 @@ public:
 		sharpenBuffer = new frameBuffer();
 		
 
-		velocityUniforms = new reprojectSettings_t();
-		taaUniforms = new TAASettings_t();
-		FXAASettings = new FXAASettings_t();
-		sharpenSettings = new sharpenSettings_t();
-		jitterUniforms = new jitterSettings_t();
-		this->sharpenSettings = new sharpenSettings_t();
+		velocityUniforms = bufferHandler_t<reprojectSettings_t>();
+		taaUniforms = bufferHandler_t<TAASettings_t>();
+		FXAASettings = bufferHandler_t<FXAASettings_t>();
+		sharpenSettings = bufferHandler_t<sharpenSettings_t>();
+		jitterUniforms = bufferHandler_t<jitterSettings_t>();
+		this->sharpenSettings = bufferHandler_t<sharpenSettings_t>();
 
 		for (int iter = 0; iter < 128; iter++)
 		{
-			jitterUniforms->haltonSequence[iter] = glm::vec2(CreateHaltonSequence(iter + 1, 2), CreateHaltonSequence(iter + 1, 3));
+			jitterUniforms.data.haltonSequence[iter] = glm::vec2(CreateHaltonSequence(iter + 1, 2), CreateHaltonSequence(iter + 1, 3));
 		}
 		//glGenQueries(1, &defaultQuery);
 		//glGenQueries(1, &TAAQuery);
@@ -185,26 +162,31 @@ public:
 	{
 		scene3D::Initialize();
 
-		glGenQueries(1, &jitterQuery);
+		//glGenQueries(1, &jitterQuery);
 
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"color", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color",
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"velocity", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
-			gl_rg, GL_TEXTURE_2D, GL_FLOAT, gl_rg16_snorm));
+		FBODescriptor velDesc;
+		velDesc.format = gl_rg;
+		velDesc.internalFormat = gl_rg16_snorm;
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
-			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
-			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component24));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("velocity",
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
+			velDesc));
 
-		FXAABuffer->Initialize();
-		FXAABuffer->Bind();
-		FXAABuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"FXAA", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
+		FBODescriptor depthDesc;
+		depthDesc.dataType = GL_FLOAT;
+		depthDesc.format = GL_DEPTH_COMPONENT;
+		depthDesc.internalFormat = gl_depth_component24;
+		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
+
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth",
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
+			depthDesc));
 
 		for (unsigned int iter = 0; iter < numPrevFrames; iter++)
 		{
@@ -212,32 +194,37 @@ public:
 
 			newBuffer->Initialize();
 			newBuffer->Bind();
-			newBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-				("color" + std::to_string(iter)), glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
+			newBuffer->AddAttachment(new frameBuffer::attachment_t(("color" + std::to_string(iter)),
+				glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
 
-			newBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
-				("depth" + std::to_string(iter)), glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
-				GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component24));
+			newBuffer->AddAttachment(new frameBuffer::attachment_t(("depth" + std::to_string(iter)), glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
+				depthDesc));
 
 			TAAFrames.push_back(newBuffer);
 		}
 
 		/*sharpenBuffer->Bind();
 		sharpenBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"sharp", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));*/
+			"sharp", glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));*/
 
 		unJitteredBuffer->Initialize();
 		unJitteredBuffer->Bind();
-		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"unJittered", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
-		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
-			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
-			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component24));
+		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("unJittered",
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("depth",
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
+			depthDesc));
 
 		sharpenBuffer->Initialize();
 		sharpenBuffer->Bind();
-		sharpenBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"Sharpen", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
+		sharpenBuffer->AddAttachment(new frameBuffer::attachment_t("Sharpen",
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+
+		FXAABuffer->Initialize();
+		FXAABuffer->Bind();
+		FXAABuffer->AddAttachment(new frameBuffer::attachment_t("FXAA",
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+
 
 		//geometry automatically gets assigned to 0
 		unjitteredProgram = shaderPrograms[1]->handle;
@@ -248,7 +235,7 @@ public:
 		compareProgram = shaderPrograms[5]->handle;
 		finalProgram = shaderPrograms[6]->handle;
 
-		averageGPUTimes.reserve(10);
+		//averageGPUTimes.reserve(10);
 
 		frameBuffer::Unbind();
 	}
@@ -275,17 +262,17 @@ protected:
 
 	GLuint numPrevFrames = 2; //don't need this right now
 
-	reprojectSettings_t* velocityUniforms;
+	bufferHandler_t<reprojectSettings_t>	velocityUniforms;
 
-	TAASettings_t*			taaUniforms;
-	FXAASettings_t*			FXAASettings;
+	bufferHandler_t<TAASettings_t>			taaUniforms;
+	bufferHandler_t<FXAASettings_t>			FXAASettings;
 
 	std::vector<const char*>		TAAResolveSettings = { "SMAA", "Inside", "Inside2", "Custom", "Experimental" };
 	bool enableCompare = true;
 
-	sharpenSettings_t*			sharpenSettings;
+	bufferHandler_t<sharpenSettings_t>			sharpenSettings;
 
-	jitterSettings_t* jitterUniforms;
+	bufferHandler_t<jitterSettings_t> jitterUniforms;
 
 	bool currentFrame = 0;
 
@@ -303,44 +290,44 @@ protected:
 			sceneClock->UpdateClockAdaptive();
 		}
 
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
-		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
-		defaultUniform->totalFrames++;
+		defaultPayload.data.deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultPayload.data.totalTime = (float)sceneClock->GetTotalTime();
+		defaultPayload.data.framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultPayload.data.totalFrames++;
 
-		UpdateBuffer(taaUniforms, taaUniforms->bufferHandle, sizeof(*taaUniforms), gl_uniform_buffer, gl_dynamic_draw);
-		UpdateBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), gl_uniform_buffer, gl_dynamic_draw);
-		UpdateBuffer(jitterUniforms, jitterUniforms->bufferHandle, sizeof(*jitterUniforms), gl_uniform_buffer, gl_dynamic_draw);
-		UpdateBuffer(FXAASettings, FXAASettings->bufferHandle, sizeof(*FXAASettings), gl_uniform_buffer, gl_dynamic_draw);
+		taaUniforms.Update();
+		sharpenSettings.Update();
+		jitterUniforms.Update();
+		FXAASettings.Update();
 	
-		currentFrame = ((defaultUniform->totalFrames % 2) == 0) ? 0 : 1;//if even frame then write to 1 and read from 0 and vice versa
+		currentFrame = ((defaultPayload.data.totalFrames % 2) == 0) ? 0 : 1;//if even frame then write to 1 and read from 0 and vice versa
 	}
 
 	void UpdateDefaultBuffer()
 	{
 		sceneCamera->UpdateProjection();
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->view = sceneCamera->view;
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.view = sceneCamera->view;
 		if (sceneCamera->currentProjectionType == camera::projection_t::perspective)
 		{
-			defaultUniform->translation = testModel->makeTransform();
+			defaultPayload.data.translation = testModel->makeTransform();
 		}
 
 		else
 		{
-			defaultUniform->translation = sceneCamera->translation;
+			defaultPayload.data.translation = sceneCamera->translation;
 		}
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
-		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultPayload.data.deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultPayload.data.totalTime = (float)sceneClock->GetTotalTime();
+		defaultPayload.data.framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
 
-		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
-		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
+		defaultPayload.Update();
+		defaultVertexBuffer->UpdateBuffer(defaultPayload.data.resolution);
 	}
 
 	virtual void Draw()
 	{
-		velocityUniforms->currentView = sceneCamera->view; //set to the previous view matrix?
+		velocityUniforms.data.currentView = sceneCamera->view; //set to the previous view matrix?
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 		sceneCamera->Update();
 
@@ -376,8 +363,8 @@ protected:
 		geometryBuffer->Bind();
 
 		GLenum drawbuffers[2] = {
-			geometryBuffer->attachments[0]->attachmentFormat, //color
-			geometryBuffer->attachments[1]->attachmentFormat //velocity
+			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //color
+			geometryBuffer->attachments[1]->FBODesc.attachmentFormat //velocity
 		};
 
 		glDrawBuffers(2, drawbuffers);
@@ -395,7 +382,7 @@ protected:
 
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
 			glUseProgram(this->programGLID);
-			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 			glCullFace(GL_BACK);
 
 			if (wireframe)
@@ -414,7 +401,7 @@ protected:
 		unJitteredBuffer->Bind();
 
 		GLenum drawbuffers[1] = {
-			unJitteredBuffer->attachments[0]->attachmentFormat, //color
+			unJitteredBuffer->attachments[0]->FBODesc.attachmentFormat, //color
 		};
 
 		glDrawBuffers(1, drawbuffers);
@@ -432,7 +419,7 @@ protected:
 
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
 			glUseProgram(unjitteredProgram);
-			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 			glCullFace(GL_BACK);
 
 			if (wireframe)
@@ -450,7 +437,7 @@ protected:
 	{
 		TAAFrames[currentFrame]->Bind();
 		GLenum drawBuffers[1] = {
-			TAAFrames[currentFrame]->attachments[0]->attachmentFormat
+			TAAFrames[currentFrame]->attachments[0]->FBODesc.attachmentFormat
 		};
 		glDrawBuffers(1, drawBuffers);
 
@@ -466,7 +453,7 @@ protected:
 		
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(smoothProgram);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		TAAFrames[currentFrame]->Unbind();
@@ -476,7 +463,7 @@ protected:
 	{
 		FXAABuffer->Bind();
 		GLenum drawBuffers[1] = {
-			FXAABuffer->attachments[0]->attachmentFormat
+			FXAABuffer->attachments[0]->FBODesc.attachmentFormat
 		};
 		glDrawBuffers(1, drawBuffers);
 
@@ -485,7 +472,7 @@ protected:
 
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(FXAAProgram);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		FXAABuffer->Unbind();
@@ -495,7 +482,7 @@ protected:
 	{
 		sharpenBuffer->Bind();
 		GLenum drawBuffers[1] = {
-			sharpenBuffer->attachments[0]->attachmentFormat
+			sharpenBuffer->attachments[0]->FBODesc.attachmentFormat
 		};
 		glDrawBuffers(1, drawBuffers);
 
@@ -504,7 +491,7 @@ protected:
 
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(sharpenProgram);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		sharpenBuffer->Unbind();
@@ -516,7 +503,7 @@ protected:
 		tex1->SetActive(0);
 		
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		if (enableCompare)
 		{
 			tex2->SetActive(1);
@@ -546,11 +533,11 @@ protected:
 	{
 		ImGui::Begin("FXAA Settings");
 		ImGui::Checkbox("enable Compare", &enableCompare);
-		ImGui::SliderFloat("Sub pixel drift", &FXAASettings->pixelShift, 0.0f, 1.0f, "%.1f");
-		ImGui::SliderFloat("vertex Offset", &FXAASettings->vxOffset, 0.0f, 1.0f, "%.3f");
-		ImGui::SliderFloat("max span", &FXAASettings->maxSpan, 0.0f, 10.0f, "%.1f");
-		ImGui::SliderFloat("reduce multiplier", &FXAASettings->reduceMul, 0.0f, 1.0f, "%.5f");
-		ImGui::SliderFloat("reduce minimizer", &FXAASettings->reduceMin, 0.0f, 1.0f, "%.8f");
+		ImGui::SliderFloat("Sub pixel drift", &FXAASettings.data.pixelShift, 0.0f, 1.0f, "%.1f");
+		ImGui::SliderFloat("vertex Offset", &FXAASettings.data.vxOffset, 0.0f, 1.0f, "%.3f");
+		ImGui::SliderFloat("max span", &FXAASettings.data.maxSpan, 0.0f, 10.0f, "%.1f");
+		ImGui::SliderFloat("reduce multiplier", &FXAASettings.data.reduceMul, 0.0f, 1.0f, "%.5f");
+		ImGui::SliderFloat("reduce minimizer", &FXAASettings.data.reduceMin, 0.0f, 1.0f, "%.8f");
 
 		ImGui::End();
 	}
@@ -559,8 +546,8 @@ protected:
 	{
 		ImGui::Begin("Sharpen settings");
 
-		ImGui::SliderFloat("kernel 1", &sharpenSettings->kernel1, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 5", &sharpenSettings->kernel2, 0.0f, 10.0f, "%.5f", 1.0f);		
+		ImGui::SliderFloat("kernel 1", &sharpenSettings.data.kernel1, -1.0f, 1.0f);
+		ImGui::SliderFloat("kernel 5", &sharpenSettings.data.kernel2, 0.0f, 10.0f, "%.5f", 1.0f);		
 
 		ImGui::End();
 	}
@@ -569,22 +556,22 @@ protected:
 	{
 		ImGui::Begin("TAA Settings");
 		ImGui::Checkbox("enable Compare", &enableCompare);
-		ImGui::SliderFloat("feedback factor", &taaUniforms->feedbackFactor, 0.0f, 1.0f);
-		ImGui::InputFloat("max depth falloff", &taaUniforms->maxDepthFalloff, 0.01f);
+		ImGui::SliderFloat("feedback factor", &taaUniforms.data.feedbackFactor, 0.0f, 1.0f);
+		ImGui::InputFloat("max depth falloff", &taaUniforms.data.maxDepthFalloff, 0.01f);
 
 		//velocity settings
 		ImGui::Separator();
 		ImGui::SameLine();
 		ImGui::Text("Velocity settings");
-		ImGui::SliderFloat("Velocity scale", &taaUniforms->velocityScale, 0.0f, 10.0f);
+		ImGui::SliderFloat("Velocity scale", &taaUniforms.data.velocityScale, 0.0f, 10.0f);
 
 		//jitter settings
 		ImGui::Separator();
 		//ImGui::SameLine();
-		ImGui::DragFloat("halton scale", &jitterUniforms->haltonScale, 0.1f, 0.0f, 15.0f, "%.3f");
-		ImGui::DragInt("halton index",  &jitterUniforms->haltonIndex, 1.0f, 0, 128);
-		ImGui::DragInt("enable dithering", &jitterUniforms->enableDithering, 1.0f, 0, 1);
-		ImGui::DragFloat("dithering scale", &jitterUniforms->ditheringScale, 1.0f, 0.0f, 1000.0f, "%.3f");
+		ImGui::DragFloat("halton scale", &jitterUniforms.data.haltonScale, 0.1f, 0.0f, 15.0f, "%.3f");
+		ImGui::DragInt("halton index",  &jitterUniforms.data.haltonIndex, 1.0f, 0, 128);
+		ImGui::DragInt("enable dithering", &jitterUniforms.data.enableDithering, 1.0f, 0, 1);
+		ImGui::DragFloat("dithering scale", &jitterUniforms.data.ditheringScale, 1.0f, 0.0f, 1000.0f, "%.3f");
 
 		ImGui::End();
 	}
@@ -640,7 +627,7 @@ protected:
 	virtual void DrawCameraStats() override
 	{
 		//set up the view matrix
-		ImGui::Begin("camera", &isGUIActive, ImVec2(0, 0));
+		ImGui::Begin("camera", &isGUIActive);
 
 		ImGui::DragFloat("near plane", &sceneCamera->nearPlane);
 		ImGui::DragFloat("far plane", &sceneCamera->farPlane);
@@ -691,10 +678,10 @@ protected:
 		sharpenBuffer->Unbind();
 
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
-		velocityUniforms->previousProjection = sceneCamera->projection;
-		velocityUniforms->previousView = sceneCamera->view;
-		velocityUniforms->prevTranslation = testModel->makeTransform();
-		UpdateBuffer(velocityUniforms, velocityUniforms->bufferHandle, sizeof(*velocityUniforms), gl_uniform_buffer, gl_dynamic_draw);
+		velocityUniforms.data.previousProjection = sceneCamera->projection;
+		velocityUniforms.data.previousView = sceneCamera->view;
+		velocityUniforms.data.prevTranslation = testModel->makeTransform();
+		velocityUniforms.Update();
 	}
 
 	virtual void ResizeBuffers(glm::vec2 resolution)
@@ -723,32 +710,33 @@ protected:
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		defaultUniform->resolution = glm::vec2(dimensions.width, dimensions.height);	
+		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);	
 		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		ResizeBuffers(defaultUniform->resolution);
+		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		ResizeBuffers(defaultPayload.data.resolution);
 	}
 
 	virtual void InitializeUniforms() override
 	{
-		defaultUniform = new defaultUniformBuffer(sceneCamera);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		defaultPayload = bufferHandler_t<defaultUniformBuffer>(sceneCamera);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
-		defaultUniform->resolution = glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height);
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->translation = sceneCamera->translation;
-		defaultUniform->view = sceneCamera->view;
+		defaultPayload.data.resolution = glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.translation = sceneCamera->translation;
+		defaultPayload.data.view = sceneCamera->view;
 
-		SetupBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), 0, gl_uniform_buffer, gl_dynamic_draw);
-		SetupBuffer(velocityUniforms, velocityUniforms->bufferHandle, sizeof(*velocityUniforms), 1, gl_uniform_buffer, gl_dynamic_draw);
-		SetupBuffer(taaUniforms, taaUniforms->bufferHandle, sizeof(*taaUniforms), 2, gl_uniform_buffer, gl_dynamic_draw);
-		SetupBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), 3, gl_uniform_buffer, gl_dynamic_draw);
-		SetupBuffer(jitterUniforms, jitterUniforms->bufferHandle, sizeof(*jitterUniforms), 4, gl_uniform_buffer, gl_dynamic_draw);
-		SetupBuffer(FXAASettings, FXAASettings->bufferHandle, sizeof(*FXAASettings), 5, gl_uniform_buffer, gl_dynamic_draw);
+		defaultPayload.Initialize(0);
+		velocityUniforms.Initialize(1);
+		taaUniforms.Initialize(2);
+		sharpenSettings.Initialize(3);
+		jitterUniforms.Initialize(4);
+		FXAASettings.Initialize(5);
+
 		SetupVertexBuffer();
 	}
 

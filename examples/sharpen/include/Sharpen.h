@@ -15,9 +15,6 @@ struct sharpenSettings_t
 	GLfloat			kernel8;
 	GLfloat			kernel9;*/
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	sharpenSettings_t(
 		GLfloat kernel1 = 0.0f, GLfloat kernel2 = 1.0f/*, GLfloat kernel3 = -1.0f,
 		GLfloat kernel4 = -1.0f, GLfloat kernel5 = 9.0f, GLfloat kernel6 = -1.0f,
@@ -33,42 +30,38 @@ struct sharpenSettings_t
 		this->kernel7 = kernel7;
 		this->kernel8 = kernel8;
 		this->kernel9 = kernel9;*/
-
-		bufferHandle = 0;
-		uniformHandle = 0;
 	}
 
 	~sharpenSettings_t(){ };
 };
-
 
 class sharpenScene : public texturedScene
 {
 public:
 
 	sharpenScene(
-		sharpenSettings_t* sharpenSettings = new sharpenSettings_t(),
+		bufferHandler_t<sharpenSettings_t> sharpenSettings = bufferHandler_t<sharpenSettings_t>(),
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (sharpen)",
 		camera* sharpencamera = new camera(),
 		const char* shaderConfigPath = "../../resources/shaders/Sharpen.txt")
 		: texturedScene(defaultTexture, windowName, sharpencamera, shaderConfigPath)
 	{
-		this->sharpenSettings = sharpenSettings;
+		this->sharpen = sharpenSettings;
 	}
 
 	~sharpenScene(){};
 
 protected:
 
-	sharpenSettings_t*			sharpenSettings;
+	bufferHandler_t<sharpenSettings_t>		sharpen;
 
 	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(window, io);
 
-		ImGui::SliderFloat("kernel 1", &sharpenSettings->kernel1, -10.0f, 10.0f);
-		ImGui::SliderFloat("kernel 2", &sharpenSettings->kernel2, -10.0f, 10.0f);
+		ImGui::SliderFloat("kernel 1", &sharpen.data.kernel1, -10.0f, 10.0f);
+		ImGui::SliderFloat("kernel 2", &sharpen.data.kernel2, -10.0f, 10.0f);
 /*
 		ImGui::SliderFloat("kernel 3", &sharpenSettings->kernel3, -1.0f, 1.0f);
 		ImGui::SliderFloat("kernel 4", &sharpenSettings->kernel4, -1.0f, 1.0f);
@@ -82,13 +75,13 @@ protected:
 	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		SetupBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), 3, gl_uniform_buffer, gl_dynamic_draw);
+		sharpen.Initialize(3);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(sharpenSettings, sharpenSettings->bufferHandle, sizeof(*sharpenSettings), gl_uniform_buffer, gl_dynamic_draw);
+		sharpen.Update();
 	}
 };
 

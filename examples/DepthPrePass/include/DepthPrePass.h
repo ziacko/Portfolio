@@ -21,7 +21,6 @@ public:
 		glHint(gl_generate_mipmap_hint, GL_NICEST);
 
 		geometryBuffer = new frameBuffer();
-		earlyDepth = new frameBuffer();
 	}
 
 	~DepthPrePassScene() {};
@@ -30,21 +29,20 @@ public:
 	{
 		scene3D::Initialize();
 
-		earlyDepth->Initialize();
-		earlyDepth->Bind();
-
-		earlyDepth->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
-			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
-			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component32f));
-
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"color", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
-			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
-			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_FLOAT, gl_depth_component32f));
+		FBODescriptor depthDesc;
+		depthDesc.dataType = GL_FLOAT;
+		depthDesc.format = GL_DEPTH_COMPONENT;
+		depthDesc.internalFormat = gl_depth_component24;
+		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
+
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", 
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", 
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), depthDesc));
 
 		frameBuffer::Unbind();
 
@@ -56,10 +54,10 @@ public:
 protected:
 
 	frameBuffer* geometryBuffer;
-	frameBuffer* earlyDepth;
 
 	unsigned int earlyDepthProgram = 0;
 	unsigned int finalProgram = 0;
+
 	unsigned int compareProgram = 0;
 
 	bool enableCompare = true;
@@ -76,34 +74,35 @@ protected:
 			sceneClock->UpdateClockAdaptive();
 		}
 
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
-		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
-		defaultUniform->totalFrames++;
+		defaultPayload.data.deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultPayload.data.totalTime = (float)sceneClock->GetTotalTime();
+		defaultPayload.data.framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultPayload.data.totalFrames++;
 
-		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
+		defaultVertexBuffer->UpdateBuffer(defaultPayload.data.resolution);
 	}
 
 	void UpdateDefaultBuffer()
 	{
 		sceneCamera->UpdateProjection();
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->view = sceneCamera->view;
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.view = sceneCamera->view;
 		if (sceneCamera->currentProjectionType == camera::projection_t::perspective)
 		{
-			defaultUniform->translation = testModel->makeTransform();
+			defaultPayload.data.translation = testModel->makeTransform();
 		}
 
 		else
 		{
-			defaultUniform->translation = sceneCamera->translation;
+			defaultPayload.data.translation = sceneCamera->translation;
 		}
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
-		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultPayload.data.deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultPayload.data.totalTime = (float)sceneClock->GetTotalTime();
+		defaultPayload.data.framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
 
-		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
-		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
+		defaultPayload.Update();
+
+		defaultVertexBuffer->UpdateBuffer(defaultPayload.data.resolution);
 	}
 
 	void Draw() override
@@ -131,10 +130,10 @@ protected:
 
 	virtual void EarlyDepthPass()
 	{
-		earlyDepth->Bind();
+		geometryBuffer->Bind();
 
 		GLenum drawbuffers[1] = {
-			earlyDepth->attachments[0]->attachmentFormat, //depth
+			geometryBuffer->attachments[1]->FBODesc.attachmentFormat, //depth
 		};
 
 		glDrawBuffers(1, drawbuffers);
@@ -152,7 +151,7 @@ protected:
 
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
 			glUseProgram(earlyDepthProgram);
-			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
 			if (wireframe)
 			{
@@ -162,7 +161,7 @@ protected:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		earlyDepth->Unbind();
+		geometryBuffer->Unbind();
 	}
 
 	virtual void GeometryPass()
@@ -170,7 +169,7 @@ protected:
 		geometryBuffer->Bind();
 
 		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[0]->attachmentFormat, //color
+			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //color
 		};
 
 		glDrawBuffers(1, drawbuffers);
@@ -188,7 +187,7 @@ protected:
 
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
 			glUseProgram(programGLID);
-			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
 			//glCullFace(GL_BACK);
 
@@ -209,7 +208,7 @@ protected:
 		tex1->SetActive(0);
 
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		if (enableCompare)
 		{
 			tex2->SetActive(1);
@@ -243,18 +242,13 @@ protected:
 			ImGui::Text("%s\n", iter->GetUniformName().c_str());
 		}
 
-		ImGui::Image((ImTextureID)earlyDepth->attachments[0]->GetHandle(), ImVec2(512, 288),
-			ImVec2(0, 1), ImVec2(1, 0));
-		ImGui::SameLine();
-		ImGui::Text("%s\n", earlyDepth->attachments[0]->GetUniformName().c_str());
-
 		ImGui::End();
 	}
 
 	virtual void DrawCameraStats() override
 	{
 		//set up the view matrix
-		ImGui::Begin("camera", &isGUIActive, ImVec2(0, 0));
+		ImGui::Begin("camera", &isGUIActive);
 
 		ImGui::DragFloat("near plane", &sceneCamera->nearPlane);
 		ImGui::DragFloat("far plane", &sceneCamera->farPlane);
@@ -276,44 +270,37 @@ protected:
 		glClear(GL_DEPTH_BUFFER_BIT);
 		geometryBuffer->Unbind();
 
-		earlyDepth->Bind();
-		earlyDepth->ClearTexture(earlyDepth->attachments[0], clearColor1);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		earlyDepth->Unbind();
-
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 	}
 
 	virtual void ResizeBuffers(glm::vec2 resolution)
 	{
 		geometryBuffer->Resize(resolution);
-		earlyDepth->Resize(resolution);
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		defaultUniform->resolution = glm::vec2(dimensions.width, dimensions.height);
+		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);
 		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		ResizeBuffers(defaultUniform->resolution);
+		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		ResizeBuffers(defaultPayload.data.resolution);
 	}
 
 	virtual void InitializeUniforms() override
 	{
-		defaultUniform = new defaultUniformBuffer(sceneCamera);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
-		defaultUniform->resolution = glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height);
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->translation = sceneCamera->translation;
-		defaultUniform->view = sceneCamera->view;
+		defaultPayload.data.resolution = glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.translation = sceneCamera->translation;
+		defaultPayload.data.view = sceneCamera->view;
 
 		SetupVertexBuffer();
-		SetupBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), 0, gl_uniform_buffer, gl_dynamic_draw);	
+		defaultPayload.Initialize(0);
 	}
 };
 

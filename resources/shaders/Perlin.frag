@@ -3,7 +3,7 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 out vec4 outColor;
@@ -15,12 +15,17 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 
 layout(std140, binding = 1) uniform perlinSettings
 {
+	vec2		uvOffset;
+	vec2 		uvScale;
+
 	float		modValue;
 	float		permuteValue;
 	float		taylorInverse;
@@ -55,7 +60,7 @@ layout(std140, binding = 1) uniform perlinSettings
 	float		pattern2Value8;//4.0
 	float		pattern2Value9;//8.3
 	float		pattern2Value10;//2.8
-	float		pattern2Value11;//4.0
+	float		pattern2Value11;//4.0	
 };
 
 vec4 ModifyValue(vec4 value)
@@ -180,17 +185,17 @@ float FBM(vec2 perlinVector, uint numOctaves, float lacunarity, float gain)
 	return sum;
 }
 
-/*float Pattern(in vec2 perlinVector)
+float Pattern(in vec2 perlinVector)
 {
-	float l = pattern1Value1;
-	float g = pattern1Value2;
+	float l = pattern2Value1;
+	float g = pattern2Value2;
 	//int NumOctaves = 10;
 
-	vec2 q = vec2(FBM(perlinVector + vec2(0.0, 0.0), numOctaves, 1, g), FBM(perlinVector + vec2(pattern1Value3, pattern1Value4), numOctaves, 1, g));
-	vec2 r = vec2(FBM(perlinVector + pattern1Value5 * q + vec2(pattern1Value6, pattern1Value7), numOctaves, 1, g), FBM(perlinVector + pattern1Value8 * q + vec2(pattern1Value9, pattern1Value10), numOctaves, 1, g));
+	vec2 q = vec2(FBM(perlinVector + vec2(0.0, 0.0), numOctaves, 1, g), FBM(perlinVector + vec2(pattern2Value3, pattern2Value4), numOctaves, 1, g));
+	vec2 r = vec2(FBM(perlinVector + pattern2Value5 * q + vec2(pattern2Value6, pattern2Value7), numOctaves, 1, g), FBM(perlinVector + pattern2Value8 * q + vec2(pattern2Value9, pattern2Value10), numOctaves, 1, g));
 
-	return FBM(perlinVector + pattern1Value11 * r, numOctaves, 1, g);
-}*/
+	return FBM(perlinVector + pattern2Value11 * r, numOctaves, 1, g);
+}
 
 float Pattern2(in vec2 perlinVector, out vec2 q, out vec2 r, in float time)
 {
@@ -209,7 +214,8 @@ float Pattern2(in vec2 perlinVector, out vec2 q, out vec2 r, in float time)
 
 void main()
 {
-	vec2 q = inBlock.UV;
+	vec2 q = inBlock.uv + uvOffset;
+	q *= uvScale;
 	vec2 p = -1.0 + 2.0 * q;
 	vec2 qQ;
 	vec2 r;

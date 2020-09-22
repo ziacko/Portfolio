@@ -60,6 +60,7 @@ void main()
 	OffsetX = float[4](0.25f, 0.75f, 0.5f, 0.0f);
 	OffsetY = float[4](0.0f, 0.25f, 0.75f, 0.5f);
 
+	//dithering?
 	uint index = totalFrames % 4;
     float randomX = fract(dot(gl_FragCoord.xy, vec2(0.375, -0.125)) + (OffsetY[index] * deltaWidth));
     float randomY = fract(dot(vec2(-0.125,  0.375), gl_FragCoord.xy)) - (OffsetX[index] / deltaHeight);

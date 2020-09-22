@@ -10,7 +10,7 @@ public:
 		const char* windowName = "Ziyad Barakat's portfolio (textured Model)",
 		camera* texModelCamera = new camera(glm::vec2(1280, 720), 1.0f, camera::projection_t::perspective, 0.1f, 1000000.f),
 		const char* shaderConfigPath = "../../resources/shaders/texturedModel.txt",
-		model_t* model = new model_t("../../resources/models/SoulSpear/SoulSpear.fbx"))
+		model_t* model = new model_t("../../resources/models/Blaze/Blaze.fbx"))
 		: scene3D(windowName, texModelCamera, shaderConfigPath, model)
 	{
 
@@ -75,18 +75,17 @@ protected:
 				continue;
 			}
 			//set the materials per mesh
-			materialSettingsBuffer->diffuse = iter.diffuse;
-			materialSettingsBuffer->ambient = iter.ambient;
-			materialSettingsBuffer->specular = iter.specular;
-			materialSettingsBuffer->reflective = iter.reflective;
-			UpdateBuffer(materialSettingsBuffer, materialSettingsBuffer->bufferHandle, sizeof(*materialSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
+			materialBuffer.data.diffuse = iter.diffuse;
+			materialBuffer.data.ambient = iter.ambient;
+			materialBuffer.data.specular = iter.specular;
+			materialBuffer.data.reflective = iter.reflective;
+			materialBuffer.Update(gl_uniform_buffer, gl_dynamic_draw);
 
 			//glBindBuffer(gl_element_array_buffer, iter.indexBufferHandle);
 			glBindVertexArray(iter.vertexArrayHandle);
 			glUseProgram(this->programGLID);
 
-
-			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
 			if (!iter.textures.empty())
 			{

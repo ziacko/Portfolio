@@ -13,9 +13,6 @@ struct FXAASettings_t
 	GLfloat			reduceMul;
 	GLfloat			reduceMin;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	FXAASettings_t(
 		GLfloat pixelShift = 0.25f, GLfloat vxOffset = 0.0f, GLfloat maxSpan = 8.0f, 
 		GLfloat reduceMul = 0.125f, GLfloat reduceMin = 0.0078125f)
@@ -30,11 +27,11 @@ struct FXAASettings_t
 	~FXAASettings_t() { };
 };
 
-class FXAA : public scene3D
+class FXAA_Scene : public scene3D
 {
 public:
 
-	FXAA(
+	FXAA_Scene(
 		const char* windowName = "Ziyad Barakat's portfolio (FXAA)",
 		camera* texModelCamera = new camera(glm::vec2(1280, 720), 5.0f, camera::projection_t::perspective, 0.1f, 2000.f),
 		const char* shaderConfigPath = "../../resources/shaders/FXAA.txt",
@@ -50,28 +47,35 @@ public:
 		geometryBuffer = new frameBuffer();
 		FXAABuffer = new frameBuffer();
 
-		FXAASettings = new FXAASettings_t();
+		FXAA = bufferHandler_t<FXAASettings_t>();
 	}
 
-	~FXAA() {};
+	~FXAA_Scene() {};
 
 	virtual void Initialize() override
 	{
 		scene3D::Initialize();
 
+		FBODescriptor depthDesc;
+		depthDesc.target = GL_TEXTURE_2D;
+		depthDesc.dataType = GL_FLOAT;
+		depthDesc.format = GL_DEPTH_COMPONENT;
+		depthDesc.internalDataType = gl_depth_component24;
+		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
+
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"color", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::depth,
-			"depth", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height),
-			GL_DEPTH_COMPONENT, GL_TEXTURE_2D, GL_UNSIGNED_BYTE, gl_depth_component16));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", 
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", 
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
+			depthDesc));
 
 		FXAABuffer->Initialize();
 		FXAABuffer->Bind();
-		FXAABuffer->AddAttachment(new frameBuffer::attachment_t(frameBuffer::attachment_t::attachmentType_t::color,
-			"FXAA", glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height)));
+		FXAABuffer->AddAttachment(new frameBuffer::attachment_t("FXAA", 
+			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
 
 		frameBuffer::Unbind();
 
@@ -91,7 +95,7 @@ protected:
 
 	bool enableCompare = true;
 
-	FXAASettings_t*			FXAASettings;
+	bufferHandler_t<FXAASettings_t>		FXAA;
 
 	virtual void Update() override
 	{
@@ -105,35 +109,35 @@ protected:
 			sceneClock->UpdateClockAdaptive();
 		}
 
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
-		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
-		defaultUniform->totalFrames++;
+		defaultPayload.data.deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultPayload.data.totalTime = (float)sceneClock->GetTotalTime();
+		defaultPayload.data.framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultPayload.data.totalFrames++;
 
-		UpdateBuffer(FXAASettings, FXAASettings->bufferHandle, sizeof(*FXAASettings), gl_uniform_buffer, gl_dynamic_draw);
-		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
+		FXAA.Update();
+		defaultVertexBuffer->UpdateBuffer(defaultPayload.data.resolution);
 	}
 
 	void UpdateDefaultBuffer()
 	{
 		sceneCamera->UpdateProjection();
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->view = sceneCamera->view;
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.view = sceneCamera->view;
 		if (sceneCamera->currentProjectionType == camera::projection_t::perspective)
 		{
-			defaultUniform->translation = testModel->makeTransform();
+			defaultPayload.data.translation = testModel->makeTransform();
 		}
 
 		else
 		{
-			defaultUniform->translation = sceneCamera->translation;
+			defaultPayload.data.translation = sceneCamera->translation;
 		}
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
-		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultPayload.data.deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultPayload.data.totalTime = (float)sceneClock->GetTotalTime();
+		defaultPayload.data.framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
 
-		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
-		defaultVertexBuffer->UpdateBuffer(defaultUniform->resolution);
+		defaultPayload.Update();
+		defaultVertexBuffer->UpdateBuffer(defaultPayload.data.resolution);
 	}
 
 	void Draw() override
@@ -164,7 +168,7 @@ protected:
 		geometryBuffer->Bind();
 
 		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[0]->attachmentFormat, //color
+			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //color
 		};
 
 		glDrawBuffers(1, drawbuffers);
@@ -182,7 +186,7 @@ protected:
 
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
 			glUseProgram(programGLID);
-			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 			
 			//glCullFace(GL_BACK);
 
@@ -201,7 +205,7 @@ protected:
 	{
 		FXAABuffer->Bind();
 		GLenum drawBuffers[1] = {
-			FXAABuffer->attachments[0]->attachmentFormat
+			FXAABuffer->attachments[0]->FBODesc.attachmentFormat
 		};
 		glDrawBuffers(1, drawBuffers);
 
@@ -210,7 +214,7 @@ protected:
 		
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(FXAAProgram);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		FXAABuffer->Unbind();
@@ -222,7 +226,7 @@ protected:
 		tex1->SetActive(0);
 		
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		if (enableCompare)
 		{
 			tex2->SetActive(1);
@@ -249,11 +253,11 @@ protected:
 	{
 		ImGui::Begin("FXAA Settings");
 		ImGui::Checkbox("enable Compare", &enableCompare);
-		ImGui::SliderFloat("Sub pixel drift", &FXAASettings->pixelShift, 0.0f, 1.0f, "%.1f");
-		ImGui::SliderFloat("vertex Offset", &FXAASettings->vxOffset, 0.0f, 1.0f, "%.3f");
-		ImGui::SliderFloat("max span", &FXAASettings->maxSpan, 0.0f, 10.0f, "%.1f");
-		ImGui::SliderFloat("reduce multiplier", &FXAASettings->reduceMul, 0.0f, 1.0f, "%.5f");
-		ImGui::SliderFloat("reduce minimizer", &FXAASettings->reduceMin, 0.0f, 1.0f, "%.8f");
+		ImGui::SliderFloat("Sub pixel drift", &FXAA.data.pixelShift, 0.0f, 1.0f, "%.1f");
+		ImGui::SliderFloat("vertex Offset", &FXAA.data.vxOffset, 0.0f, 1.0f, "%.3f");
+		ImGui::SliderFloat("max span", &FXAA.data.maxSpan, 0.0f, 10.0f, "%.1f");
+		ImGui::SliderFloat("reduce multiplier", &FXAA.data.reduceMul, 0.0f, 1.0f, "%.5f");
+		ImGui::SliderFloat("reduce minimizer", &FXAA.data.reduceMin, 0.0f, 1.0f, "%.8f");
 
 		ImGui::End();
 	}
@@ -324,28 +328,29 @@ protected:
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		defaultUniform->resolution = glm::vec2(dimensions.width, dimensions.height);	
+		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);	
 		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultUniform->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		ResizeBuffers(defaultUniform->resolution);
+		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		ResizeBuffers(defaultPayload.data.resolution);
 	}
 
 	virtual void InitializeUniforms() override
 	{
-		defaultUniform = new defaultUniformBuffer(sceneCamera);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		defaultPayload = bufferHandler_t<defaultUniformBuffer>(sceneCamera);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
-		defaultUniform->resolution = glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height);
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->translation = sceneCamera->translation;
-		defaultUniform->view = sceneCamera->view;
+		defaultPayload.data.resolution = glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.translation = sceneCamera->translation;
+		defaultPayload.data.view = sceneCamera->view;
 
-		SetupBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), 0, gl_uniform_buffer, gl_dynamic_draw);
-		SetupBuffer(FXAASettings, FXAASettings->bufferHandle, sizeof(*FXAASettings), 5, gl_uniform_buffer, gl_dynamic_draw);
+		defaultPayload.Initialize(0);
+		FXAA.Initialize(5);
+
 		SetupVertexBuffer();
 	}
 };

@@ -3,7 +3,7 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 layout(std140, binding = 0) uniform defaultSettings
@@ -13,8 +13,10 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 
 layout(std140, binding = 1) uniform pixelizeSettings
@@ -31,7 +33,7 @@ void main()
 {
 	if(gl_FragCoord.x < mousePosition.x)
 	{
-		outColor = texture2D(defaultTexture, inBlock.UV);
+		outColor = texture2D(defaultTexture, inBlock.uv);
 	}
 
 	else
@@ -39,8 +41,8 @@ void main()
 		float deltaX = pixelWidth * (1.0 / resolution.x);
 		float deltaY = pixelHeight * (1.0 / resolution.y);
 
-		vec2 uv = vec2(deltaX * floor(inBlock.UV.x / deltaX),
-		deltaY * floor(inBlock.UV.y / deltaY));
+		vec2 uv = vec2(deltaX * floor(inBlock.uv.x / deltaX),
+		deltaY * floor(inBlock.uv.y / deltaY));
 
 		outColor = texture2D(defaultTexture, uv);
 	}

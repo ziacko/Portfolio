@@ -80,4 +80,4 @@ add_executable(framebuffer ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS}
 set_property(TARGET framebuffer PROPERTY OUTPUT_NAME "framebuffer")
 find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
 
-target_link_libraries(framebuffer "${ASSIMP_LIB_DIRECTORY}/assimp-vc140-mt")
+target_link_libraries(framebuffer "${ASSIMP_LIB_DIRECTORY}/assimp-vc142-mtd")

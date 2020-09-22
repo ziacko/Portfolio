@@ -43,7 +43,7 @@ public:
 		renderTextures = new frameBuffer();
 		//add 2 render textures, one for the first pass and one for the second?
 		//or just one and keep passing it through
-		renderTextures->AddAttachment("gaussian", new frameBuffer::attachment_t());
+		renderTextures->AddAttachment(new frameBuffer::attachment_t());
 	}
 
 	virtual void Draw() override
@@ -53,8 +53,8 @@ public:
 		//ok first do the the vertical pass
 		//then the horizontal pass
 		//then draw the final image?
-		renderTextures->Draw("gaussian");
-		renderTextures->Bind(gl_draw_framebuffer);
+		renderTextures->Draw(0);
+		renderTextures->Bind();
 	
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(verticalProgramHandle);
@@ -86,7 +86,7 @@ protected:
 		ImGui::SliderFloat("weight", &gaussianSettingsBuffer->weight, 0.0f, 1.0f);
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
 		SetupBuffer(gaussianSettingsBuffer, gaussianSettingsBuffer->bufferHandle, sizeof(*gaussianSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);

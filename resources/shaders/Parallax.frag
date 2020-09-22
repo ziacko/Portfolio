@@ -3,7 +3,7 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 } inBlock;
 
 out vec4 outColor;
@@ -15,8 +15,10 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 
 layout(std140, binding = 1) uniform parallaxSettings
@@ -42,8 +44,8 @@ void main()
 
 	float stepSize = 1.0f / numSamples;
 
-	vec2 dX = dFdx(inBlock.UV);
-	vec2 dY = dFdy(inBlock.UV);
+	vec2 dX = dFdx(inBlock.uv);
+	vec2 dY = dFdy(inBlock.uv);
 
 	float currentRayHeight = rayHeight;
 	vec2 currentOffset = vec2(0);
@@ -54,7 +56,7 @@ void main()
 
 	for(float currentSample = 0.0f; currentSample < numSamples; numSamples)
 	{
-		currentSampledHeight = textureGrad(heightMap, inBlock.UV + currentOffset, dX, dY).a;
+		currentSampledHeight = textureGrad(heightMap, inBlock.uv + currentOffset, dX, dY).a;
 		if(currentSampledHeight > currentRayHeight)
 		{
 			float delta1 = currentSampledHeight - currentRayHeight;
@@ -74,6 +76,6 @@ void main()
 		}
 	}
 
-	vec2 finalCoords = inBlock.UV + currentOffset;
+	vec2 finalCoords = inBlock.uv + currentOffset;
 	outColor = texture2D(diffuseMap, finalCoords);
 }

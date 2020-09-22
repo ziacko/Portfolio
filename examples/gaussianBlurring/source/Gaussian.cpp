@@ -3,7 +3,7 @@
 int main()
 {
 	
-	gaussianScene* exampleScene = new gaussianScene(new gaussianSettings_t(), 
+	gaussianScene* exampleScene = new gaussianScene(bufferHandler_t<gaussianSettings_t>(), 
 		new texture("../../resources/textures/crate_sideup.png"));
 	exampleScene->Initialize();
 	exampleScene->Run();

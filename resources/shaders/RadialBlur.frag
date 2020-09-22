@@ -3,7 +3,7 @@
 in defaultBlock
 {
 	vec4		position;
-	vec2		UV;
+	vec2		uv;
 } inBlock;
 
 out vec4 outColor;
@@ -15,8 +15,10 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 
 layout(std140, binding = 1) uniform radialSettings
@@ -32,12 +34,12 @@ uniform sampler2D defaultTexture;
 
 vec4 radialBlur()
 {
-	vec4 color = texture2D(defaultTexture, inBlock.UV);
+	vec4 color = texture2D(defaultTexture, inBlock.uv);
 	vec2 deltaCoord = vec2(gl_FragCoord.x - mousePosition.x, mousePosition.y - gl_FragCoord.y);
 	deltaCoord *= 1.0 /  float(samples) * density;
 	float startDecay = 1.0;
 	
-	vec2 uv = inBlock.UV;
+	vec2 uv = inBlock.uv;
 
 	for(int i = 0; i < samples ; i++)
 	{
@@ -55,5 +57,5 @@ vec4 radialBlur()
 
 void main()
 {
-	outColor = texture2D(defaultTexture, inBlock.UV) + radialBlur();
+	outColor = texture2D(defaultTexture, inBlock.uv) + radialBlur();
 }

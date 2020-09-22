@@ -330,7 +330,12 @@ public:
 
 			if (!skip)
 			{
-				texture newTex(localPath.c_str(), uniformName.c_str(), inTexType, GL_RGBA, GL_TEXTURE_2D, 0, 10);
+				//textureDescriptor texDesc;
+				//texDesc.internalFormat = GL_RGBA;
+				//texDesc.target = gl_texture_2d;
+
+
+				texture newTex(localPath, inTexType, uniformName);
 				newTex.LoadTexture();
 				textures.push_back(newTex);
 				loadedTextures.push_back(newTex);

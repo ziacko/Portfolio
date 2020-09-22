@@ -10,20 +10,20 @@ public:
 	transform()
 	{
 		//no parent
-		childIterEvent = nullptr;
-		parent = nullptr;
-		root = this;
+		iterEvent = nullptr;
+		parent = worldRoot.get();
+		//root = nullptr;
 		hierarchyCount = 0;
 
-		position = glm::vec3(0);
+		position = glm::vec4(0);
 		rotation = glm::quat();
-		scale = glm::vec3(1);
-		eulerAngles = glm::vec3(0);
+		scale = glm::vec4(1);
+		eulerAngles = glm::vec4(0);
 
-		localPosition = glm::vec3(0);
+		localPosition = glm::vec4(0);
 		localRotation = glm::quat();
-		localScale = glm::vec3(0);
-		localEulerAngles = glm::vec3(0);
+		localScale = glm::vec4(0);
+		localEulerAngles = glm::vec4(0);
 		
 		lossyScale = 1;
 
@@ -31,44 +31,74 @@ public:
 		forward = glm::conjugate(rotation) * globalForward;
 		up = glm::conjugate(rotation) * globalUp;
 		childIter = children.begin();
+
+		//setup space matrices
+		UpdateSpaceMatrices();
 	}
 
-	enum class treeTrav_t
+	transform(transform* parent)
 	{
-		trav_continue,
-		trav_quit
-	};
+		//no parent
+		iterEvent = nullptr;
+		this->parent = parent;
+		//root.reset(this);
+		hierarchyCount = 0;
+
+		position = glm::vec4(0);
+		rotation = glm::quat();
+		scale = glm::vec4(1);
+		eulerAngles = glm::vec4(0);
+
+		localPosition = glm::vec4(0);
+		localRotation = glm::quat();
+		localScale = glm::vec4(0);
+		localEulerAngles = glm::vec4(0);
+
+		lossyScale = 1;
+
+		right = glm::conjugate(rotation) * globalRight;
+		forward = glm::conjugate(rotation) * globalForward;
+		up = glm::conjugate(rotation) * globalUp;
+		childIter = children.begin();
+
+		//setup space matrices
+		UpdateSpaceMatrices();
+	}
 
 	enum class space_t
 	{
-		self,
+		local,
 		world
 	};
 
 	//setters and getters
 
 	//global
-	glm::vec3 GetPosition() { return position; }	
+	glm::vec4 GetPosition() { return position; }	
 	glm::quat GetRotation()	{ return rotation; }	
-	glm::vec3 GetScale() { return scale; }	
-	glm::vec3 GetEulerAngles() { return eulerAngles; }
+	glm::vec4 GetScale() { return scale; }	
+	glm::vec4 GetEulerAngles() { return eulerAngles; }
 
-	void SetPosition(glm::vec3 position) 
+	void SetPosition(glm::vec4 position) 
 	{ 
 		this->position = position; 
 		//set local position
+
+		//update transformation matrices when these are updated. 
+		//only if this has a parent. or just do it anyway?
 	}
 	void SetRotation(glm::quat rotation) 
 	{ 
 		this->rotation = rotation; 
 		//set local rotation
 	}
-	void SetScale(glm::vec3 scale) 
+	void SetScale(glm::vec4 scale) 
 	{ 
 		this->scale = scale; 
+		this->localScale = scale * worldToLocalMatrix;
 		//set local scale
 	}
-	void SetEulerAngles(glm::vec3 eulerAngles) 
+	void SetEulerAngles(glm::vec4 eulerAngles) 
 	{ 
 		this->eulerAngles = eulerAngles;
 		//set local euler angles
@@ -80,100 +110,110 @@ public:
 	glm::vec3 GetLocalScale() { return scale; }
 	glm::vec3 GetLocalEulerAngles() { return localEulerAngles; }
 
-	void SetLocalPosition(glm::vec3 localPosition) 
+	void SetLocalPosition(glm::vec4 localPosition) 
 	{ 
 		this->localPosition = localPosition;
-		//set local position
+		//set global position
 	}
 	void SetLocalRotation(glm::quat localRotation)
 	{
 		this->localRotation = localRotation; 
-		//set local rotation
+		//set global rotation
 	}
-	void SetLocalScale(glm::vec3 localScale) 
+	void SetLocalScale(glm::vec4 localScale) 
 	{
 		this->localScale = localScale; 
-		//set blobal scale
+		//set global scale
 	}
-	void SetLocalEulerAngles(glm::vec3 localEulerAngles) 
+	void SetLocalEulerAngles(glm::vec4 localEulerAngles) 
 	{ 
 		this->localEulerAngles = localEulerAngles;
+		//set global euler scales
 	}
 
-	using childIterEvent_t = std::function<treeTrav_t(transform* current, transform* child)>;
-	childIterEvent_t childIterEvent;
+//private:
 
-private:
+	//use smart pointers later
+	std::vector<std::unique_ptr<transform>> children; //should only children have unique pointers?
+	std::vector<std::unique_ptr<transform>>::iterator childIter;
 
-	//hierarchy
-
-	//use smart pointers
-	std::vector<std::unique_ptr<transform>> children;
-	std::vector< std::unique_ptr<transform>>::iterator childIter;
-
-	//a global list of transforms without parents?
-	static std::vector<std::unique_ptr<transform>> parentless;
+	static const std::unique_ptr<transform> worldRoot; //or just make these children or root
 
 	transform* parent;
-	transform* root;
+	//std::unique_ptr<transform> root;
 	unsigned int hierarchyCount;
 
 	//global
-	glm::vec3 position;				//hmm. operator overloading to automatically change local position when global has been changed
+	glm::vec4 position;		//hmm. operator overloading to automatically change local position when global has been changed?
 	glm::quat rotation;
-	glm::vec3 scale;
-	glm::vec3 eulerAngles;	
+	glm::vec4 scale;
+	glm::vec4 eulerAngles;	
 
 	//local members
-	glm::vec3 localPosition;
+	glm::vec4 localPosition;
 	glm::quat localRotation;
-	glm::vec3 localScale;
-	glm::vec3 localEulerAngles;
+	glm::vec4 localScale;
+	glm::vec4 localEulerAngles;
 
 	//conversion matrices
-	//const glm::mat4 localToWorldMatrix; (PositionRotationScale)
-	//const glm::mat4 worldToLocalMatrix; (lPositionlRotationlScale)
+	glm::mat4 localToWorldMatrix;// change when P/S/R has changed? when to change? assuming this has a parent?
+	glm::mat4 worldToLocalMatrix;
 
 	//angles
-	static const glm::vec3 globalRight;// = glm::vec3(1, 0, 0);
-	static const glm::vec3 globalForward;// = glm::vec3(0, 0, 1);
-	static const glm::vec3 globalUp;// = glm::vec3(0, 1, 0);
+	static const glm::vec4 globalRight;// = glm::vec3(1, 0, 0);
+	static const glm::vec4 globalForward;// = glm::vec3(0, 0, 1);
+	static const glm::vec4 globalUp;// = glm::vec3(0, 1, 0);
 
-	glm::vec3 right;
-	glm::vec3 forward;
-	glm::vec3 up;
+	glm::vec4 right;
+	glm::vec4 forward;
+	glm::vec4 up;
 
 	float lossyScale;//global scale of object as a scalar?
 
-	void DetachChild(transform* child)
-	{		
-		//make each child its own root,
-		//and set each parent to null
-		child->parent = nullptr;
-		child->root = child;
+	using iterEvent_t = std::function<void(transform* current)>;
+	iterEvent_t iterEvent;
 
-		//iterate though all of its children and set their root			
-		child->childIterEvent = std::bind(&transform::SetNewRoot, this, _1, _2);
-		child->IterateChildren();
-		childIterEvent = nullptr; //reset to nullptr
+	using IterFunction = void (transform::*)(transform* current);
+
+	//also keep a local vector of transform pointers so we don't have to iterate back down from root
+	std::vector<transform*> trimmedTree;
+
+	void DetachSelf(transform* newParent)
+	{
+		if(newParent == nullptr)
+		{
+			newParent = worldRoot.get();
+		}
+		//change parent to root
+		parent = worldRoot.get();
+		//this->root.reset(newRoot); //root should never change?
+		//remove self from parent vector
+		int selfID = GetSiblingIndex();
+
+		transform* newChild = parent->children[selfID].release();
+
+		//should be free to delete the child now
+		parent->children.erase(parent->children.begin() + selfID);
+
+		//now move the new child into newparent's children
+		newParent->children.push_back(std::make_unique<transform>(newChild));
+
+		//iterate though all of its children and update matrices?
+		//or only make a ~worldToLocal matrix when needed?
+		//IterateThroughChildren(this, &transform::SetRootProc);
 	}
 
+	//detach all immediate children
 	void DetachChildren()
 	{
-		//just step through the top most layer,
-		//detach each child,
-		//move pointer ownership to parentless
+		//just step through the top most layer of children
 		for (auto& iter : children)
 		{
-			//make a temp unique pointer and transfer ownership to parentless
-			transform* child = iter.release();
-			DetachChild(child);
-			std::unique_ptr<transform> uniqueChild;
-			uniqueChild.reset(child);
-			parentless.push_back(std::move(uniqueChild));
+			//make parent worldRoot
+			iter->DetachSelf(worldRoot.get());
 		}
 
-		children.clear(); //this should remove all the empty unique pointers
+		children.clear(); //this should remove all the empty/useless pointers
 	}
 
 	transform* GetChild(size_t childIndex)
@@ -207,6 +247,7 @@ private:
 		std::iter_swap(parent->children.begin() + GetSiblingIndex(), parent->children.begin() + newIndex);
 	}
 
+	//I don't remember why these were here tbh
 	void SetAsFirstSibling()
 	{
 		//just swap for now. figure out how to re-order later
@@ -225,35 +266,20 @@ private:
 		if (parent != nullptr)
 		{
 			//transfer pointer ownership
-			//parent->
-			return;
+			DetachSelf(newParent);
 		}
 
-
 		parent = newParent;
-		//share the same root
-		root = newParent->root;		
+
+		//ok set the local PRS to be relative to the new parent
+		localPosition = parent->position - position;
+		localScale = parent->scale - scale; //what if they're both vec3(1)?
+
 
 		//have parent push back this object into it's children
 		//parent->children.push_back(std::move(this));
 		//we need to shift pointer ownership. from global transform list?
 
-	}
-
-	transform* IterateChildren()
-	{
-		for (auto& iter : children)
-		{
-			//the current node in tree
-			if (childIterEvent != nullptr)
-			{
-				if (childIterEvent(this, iter.get()) == treeTrav_t::trav_quit)
-				{
-					return this;
-				}
-			}
-			iter->IterateChildren();
-		}
 	}
 
 	bool IsChildOf(transform* parent)
@@ -270,107 +296,288 @@ private:
 		return false;
 	}
 
-	treeTrav_t SetNewRoot(transform* currentTransform, transform* child)
+	void IterateThroughChildren(transform* newRoot, IterFunction pFun)
 	{
-		child->root = currentTransform;
-		return treeTrav_t::trav_continue;
+		//for every child, set their callback to whatever is passed in and call it
+		for (size_t iter = 0; iter < children.size(); iter++)
+		{
+			//bind the function pointer to the current child iter
+			//iterEvent = std::bind(pFun, children[iter], _1);
+			if (iterEvent != nullptr)
+			{
+				//call the event and then use recursion
+				iterEvent(newRoot); //there is a chance that it only works for the original node, resetting root for this object over and over
+				children[iter]->iterEvent = this->iterEvent;
+			}
+			IterateThroughChildren(children[iter].get(), pFun);
+			//reset the callback to nullptr
+			children[iter]->iterEvent = nullptr;
+		}
 	}
 
+	void IterateToRoot(transform* original, IterFunction pFun)
+	{
+		//if parent is root then don't bother
+		while(parent != worldRoot.get())
+		{
+			iterEvent = std::bind(pFun, this, _1);
+			if(iterEvent != nullptr)
+			{
+				iterEvent(parent);
+				parent->iterEvent = this->iterEvent;
+			}
+
+			IterateToRoot(original, pFun);
+			parent->iterEvent = nullptr;
+		}
+	}
+
+	void RootToNode(IterFunction pFun)
+	{
+		//go backwards?
+		for(size_t iter = trimmedTree.size() - 1; iter > 0; iter--)
+		{
+			trimmedTree[iter]->UpdateWorldPRS(this);
+		}
+	}
+
+	/*void SetRootProc(transform* root)
+	{
+		//this->root = root;
+	}*/
+
+	void RecursiveUpdate(transform* original)
+	{
+		trimmedTree.push_back(parent); //just need the critical path back to root?
+		IterateToRoot(original, &transform::UpdateLocalPRS);
+		RootToNode(&transform::UpdateWorldPRS);
+	}
+
+	//maths section
+
 	//Sets the world space position and rotation of the Transform component.
-	void SetPositionAndRotation(glm::vec3 position, glm::quat rotation)
+	void SetWorldPositionAndRotation(glm::vec4 position, glm::quat rotation)
 	{
 		this->position = position;
 		this->rotation = rotation;
+
+		//TODO: also update the localToWorld matrices of the children.
+		//also update the locals if parent != worldRoot;
 	}
 
 	//Moves the transform in the direction and distance of translation. -- 
 	void Translate(float x, float y, float z)
 	{
+		//position += arguments in wold space
+		position += glm::vec4(x, y, z, 1);
 
+		//need to update local position
+		//and the local/world positions of all children
 	}
 
 	//Moves the transform in the direction and distance of translation. -- 
-	void Translate(float x, float y, float z, space_t relativeTo = space_t::self)
+	void Translate(float x, float y, float z, space_t relativeTo = space_t::local)
 	{
+		if (relativeTo == space_t::local)
+		{
+			localPosition += glm::vec4(x, y, z, 0);
+			//TODO: update world position, etc
+		}
+
+		else
+		{
+			position += glm::vec4(x, y, z, 0);
+			//TODO: update local position, etc.
+		}
 
 	}
 
 	//Moves the transform in the direction and distance of translation. -- 
 	void Translate(float x, float y, float z, transform* relativeTo)
 	{
+		//position += relativeTo.position - glm::vec3(x, y, z)
 
+		//...ok first get our position in relation to the argument?
+		//or create a vec3 for translation values relative to argument?
+		//make an augmented localToWorld?
+		//or multiply the vec3 by arg's world-to-local and apply it to me. then update matrices?
 	}
 
-	//Moves the transform in the directionand distance of translation. --
+	//Moves the transform in the direction and distance of translation. -- in world space
 	void Translate(glm::vec3 translation)
 	{
 		//move in global space?
-
+		position += glm::vec4(translation.x, translation.y, translation.z, 0);
+		//TODO: update local position, etc.
 
 	}
 
 	//Moves the transform in the direction and distance of translation. -- 
-	void Translate(glm::vec3 translation, space_t relativeTo = space_t::self)
+	void Translate(glm::vec3 translation, space_t relativeTo = space_t::local)
 	{
 		switch (relativeTo)
 		{
-		case space_t::self:
-		{
-			break;
-		}
+			case space_t::local:
+			{
+				localPosition += glm::vec4(translation.x, translation.y, translation.z, 0);
+				break;
+			}
 
-		case space_t::world:
-		{
-			break;
+			case space_t::world:
+			{
+				position += glm::vec4(translation.x, translation.y, translation.z, 0);
+				break;
+			}
 		}
-		}
-	}
-	//Use Transform.Rotate to rotate GameObjects in a variety of ways. The rotation is often provided as a Euler angle and not a Quaternion. --
-	void Rotate(glm::vec3 eulerAngles, space_t relativeTo = space_t::self)
-	{
-
-	}
-	//Use Transform.Rotate to rotate GameObjects in a variety of ways. The rotation is often provided as a Euler angle and not a Quaternion. --
-	void Rotate(float xAngle, float yAngle, float zAngle, space_t relativeTo = space_t::self)
-	{
-
 	}
 
 	//Use Transform.Rotate to rotate GameObjects in a variety of ways. The rotation is often provided as a Euler angle and not a Quaternion. --
-	void Rotate(glm::vec3 axis, float angle, space_t relativeTo = space_t::self)
+	void Rotate(glm::vec3 eulerAngles, space_t relativeTo = space_t::local)
 	{
+		rotation = glm::rotate(rotation, eulerAngles);
+	}
 
+	//Use Transform.Rotate to rotate GameObjects in a variety of ways. The rotation is often provided as a Euler angle and not a Quaternion. --
+	void Rotate(float xAngle, float yAngle, float zAngle, space_t relativeTo = space_t::local)
+	{
+		rotation = glm::rotate(rotation, glm::vec3(xAngle, yAngle, zAngle));
+	}
+
+	//Use Transform.Rotate to rotate GameObjects in a variety of ways. The rotation is often provided as a Euler angle and not a Quaternion. --
+	void Rotate(glm::vec3 axis, float angle, space_t relativeTo = space_t::local)
+	{
+		rotation = glm::rotate(rotation, angle, axis);
 	}
 
 	//Rotates the transform about axis passing through point in world coordinates by angle degrees. --
-	void RotateAround(glm::vec3 point, glm::vec3 axis, float angle)
+	void RotateAround(const glm::vec3& point, glm::vec3 axis, float angle)
 	{
-
+		
 	}
 
 	//Rotates the transform so the forward vector points at /target/'s current position.
-	void LookAt(transform* target)
+	void LookAt(const transform* target)
 	{
-
+		rotation = glm::lookAt(glm::vec3(position.x, position.y, position.z), glm::vec3(target->position.x, target->position.y, target->position.z), glm::vec3(up.x, up.y, up.z));
+		//will also need to change local rotation for all of these, children, etc.
 	}
 
-	void LookAt(transform* target, glm::vec3 worldUp = globalUp)
+	void LookAt(const transform* target, glm::vec3 worldUp = globalUp)
 	{
-
+		rotation = glm::lookAt(glm::vec3(position.x, position.y, position.z), glm::vec3(target->position.x, target->position.y, target->position.z), glm::vec3(worldUp.x, worldUp.y, worldUp.z));
 	}
 
-	void LookAt(glm::vec3 worldPosition)
+	void LookAt(const glm::vec3& worldPosition)
 	{
-
+		rotation = glm::quatLookAt(glm::vec3(worldPosition.x, worldPosition.y, worldPosition.z), glm::vec3(up.x, up.y, up.z));
 	}
 
-	void LookAt(glm::vec3 worldPosition, glm::vec3 worldUp = globalUp)
+	void LookAt(const glm::vec3& worldPosition, glm::vec3 worldUp = globalUp)
 	{
-
+		rotation = glm::toQuat(glm::lookAt(glm::vec3(position.x, position.y, position.z), worldPosition, worldUp));
 	}
 
-	/*
-Find	Finds a child by n and returns it. -- need to add a string to each transform? string name?
+	void UpdateLocalPRS(transform* leaf)
+	{
+		//assuming this has a parent
+		glm::mat4 localISR = glm::mat4(1.0f); //Identity, Scale and Rotation
+		localISR = glm::scale(localISR, glm::vec3(localScale.x, localScale.y, localScale.z)) * glm::toMat4(localRotation);
+		localISR[3] = localPosition;
+		if(parent != nullptr)
+		{
+			leaf->localToWorldMatrix = leaf->localToWorldMatrix * localISR;//i hope this is right
+		}
+
+		else
+		{
+			leaf->localToWorldMatrix = leaf->localToWorldMatrix * localISR;
+		}
+	}
+
+	void UpdateWorldPRS(transform* leaf)
+	{
+		glm::mat4 worldISR = glm::mat4(1.0f);
+		worldISR = glm::scale(worldISR, glm::vec3(scale.x, scale.y, scale.z)) * glm::toMat4(rotation);
+		worldISR[3] = position;
+		if (parent != nullptr)
+		{
+			leaf->worldToLocalMatrix = leaf->worldToLocalMatrix * worldISR;
+		}
+		else
+		{
+			leaf->worldToLocalMatrix = leaf->worldToLocalMatrix * worldISR;
+		}
+	}
+
+	//depends on what was updated first?
+	void UpdateSpaceMatrices(space_t changeSpace = space_t::world)
+	{
+		//assuming the transform has no parent.
+		if (parent == worldRoot.get())
+		{
+			if (changeSpace == space_t::world)
+			{
+				//assuming this has a parent
+				glm::mat4 localISR = glm::mat4(1.0f); //Identity, Scale and Rotation
+				localISR = glm::scale(localISR, glm::vec3(localScale.x, localScale.y, localScale.z)) * glm::toMat4(localRotation);
+				localISR[3] = localPosition;
+				localToWorldMatrix = localISR;
+			}
+
+			else
+			{
+				glm::mat4 worldISR = glm::mat4(1.0f);
+				worldISR = glm::scale(worldISR, glm::vec3(scale.x, scale.y, scale.z)) * glm::toMat4(rotation);
+				worldISR[3] = position;
+				worldToLocalMatrix = worldISR;
+			}
+		}
+
+		//if there is a parent, this gets way more complicated
+		else
+		{
+			//ok let's start from me and work all the way up to root
+			RecursiveUpdate(this);
+			trimmedTree.clear();
+		}
+	}
+
+	//ok we need a function to update local and global variables
+	void UpdateLocalAndGlobal(space_t changeSpace = space_t::world)
+	{		
+		//so in what space have the stats been changed?
+		if (changeSpace == space_t::world)
+		{
+			//so the transform has been changed in world space
+			//meaning that we have to update the local space values
+			//first create a fresh world-to-local matrix with the new world space PRS
+			//then use that new matrix to update the local space PRS
+
+			UpdateSpaceMatrices(space_t::world); //assuming a world space setting has been changed
+
+			localPosition = worldToLocalMatrix * position;
+			localRotation = glm::toQuat(glm::toMat4(rotation) * worldToLocalMatrix);
+			localScale = worldToLocalMatrix * scale;
+			localEulerAngles = glm::vec4(glm::eulerAngles(localRotation), 1.0f);
+			UpdateSpaceMatrices(space_t::local); //create a new localToWorld matrix
+		}
+
+		else
+		{
+			//invert the above
+
+			UpdateSpaceMatrices(space_t::local); //assuming a local space setting has been changed
+
+			position = localToWorldMatrix * localPosition;
+			rotation = glm::toQuat(glm::toMat4(localRotation) * localToWorldMatrix);
+			scale = localToWorldMatrix * localScale;
+			eulerAngles = glm::vec4(glm::eulerAngles(rotation), 1.0f);
+			UpdateSpaceMatrices(space_t::world); //create a new worldToLocal matrix
+		}
+	}
+
+	/* yes i stole these from unity. eat my ass
+Find	Finds a child by n and returns it. -- need to add a string to each transform? string name? hashtable?
 
 TransformDirection	Transforms direction from local space to world space.
 TransformPoint	Transforms position from local space to world space.
@@ -382,10 +589,11 @@ InverseTransformVector	Transforms a vector from world space to local space. The 
 	*/
 };
 
-const glm::vec3 transform::globalRight = glm::vec3(1, 0, 0);
-const glm::vec3 transform::globalForward = glm::vec3(0, 0, 1);
-const glm::vec3 transform::globalUp = glm::vec3(0, 1, 0);
+const glm::vec4 transform::globalRight = glm::vec4(1, 0, 0, 1);
+const glm::vec4 transform::globalForward = glm::vec4(0, 0, 1, 1);
+const glm::vec4 transform::globalUp = glm::vec4(0, 1, 0, 1);
 
+const std::unique_ptr<transform> transform::worldRoot = std::make_unique<transform>();
 
 /*
 

@@ -76,7 +76,7 @@ add_executable(TXAA ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET TXAA PROPERTY OUTPUT_NAME "TXAA")
 find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
 
-target_link_libraries(TXAA "${ASSIMP_LIB_DIRECTORY}/assimp-vc140-mt")
+target_link_libraries(TXAA "${ASSIMP_LIB_DIRECTORY}/assimp-vc142-mtd")
 
 set (SHADER_DIR "../../resources/shaders/")
 file(GLOB GLSL_SOURCE_FILES "${SHADER_DIR}/Model.txt" "${SHADER_DIR}/Model.vert" "${SHADER_DIR}/Model.frag")

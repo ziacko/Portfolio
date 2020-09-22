@@ -21,8 +21,8 @@ layout(std140, binding = 0) uniform defaultSettings
 
 out vec4 outColor;
 
-layout(binding = 0) uniform sampler2D compareTexture;
-layout(binding = 1) uniform sampler2D defaultTexture;
+layout(binding = 0) uniform sampler2D defaultTexture;
+layout(binding = 1) uniform sampler2D compareTexture;
 
 void main()
 {

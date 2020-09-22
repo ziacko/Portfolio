@@ -2,60 +2,45 @@
 #define GAMMA_H
 #include <TexturedScene.h>
 
-struct gammaSettings_t
-{
-	glm::vec3		gammaSettings;
-
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
-	gammaSettings_t(glm::vec3 gammaSettings = glm::vec3(1.2, 3.7, 2.0))
-	{
-		this->gammaSettings = gammaSettings;
-	}
-
-	~gammaSettings_t(){};
-};
-
 class gammaScene : public texturedScene
 {
 public:
 
 	gammaScene(
-		gammaSettings_t* gammaSettings = new gammaSettings_t(),
+		glm::vec3 gammaSettings = glm::vec3(1.2, 3.7, 2.0),
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (gamma)",
 		camera* gammaCamera = new camera(),
 		const char* shaderConfigPath = "../../resources/shaders/Gamma.txt")
 		: texturedScene(defaultTexture, windowName, gammaCamera, shaderConfigPath)
 	{
-		this->gammaSettings = gammaSettings;
+		this->gamma = bufferHandler_t<glm::vec3>(gammaSettings);
 	}
 
 	~gammaScene(){};
 
 protected:
 
-	gammaSettings_t*		gammaSettings;
+	bufferHandler_t<glm::vec3>		gamma;
 
 	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(window, io);
-		ImGui::SliderFloat("gamma red", &gammaSettings->gammaSettings.r, 0.f, 10.0f);
-		ImGui::SliderFloat("gamma green", &gammaSettings->gammaSettings.g, 0.0f, 10.0f);
-		ImGui::SliderFloat("gamma blue", &gammaSettings->gammaSettings.b, 0.0f, 10.0f);
+		ImGui::SliderFloat("gamma red", &gamma.data.r, 0.f, 10.0f);
+		ImGui::SliderFloat("gamma green", &gamma.data.g, 0.0f, 10.0f);
+		ImGui::SliderFloat("gamma blue", &gamma.data.b, 0.0f, 10.0f);
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		SetupBuffer(gammaSettings, gammaSettings->bufferHandle, sizeof(*gammaSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
+		gamma.Initialize(1);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(gammaSettings, gammaSettings->bufferHandle, sizeof(*gammaSettings), gl_uniform_buffer, gl_dynamic_draw);
+		gamma.Update(gl_uniform_buffer, gl_dynamic_draw);
 	}
 };
 

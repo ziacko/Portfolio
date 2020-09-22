@@ -1,7 +1,7 @@
 # Open Asset Import Library (assimp)
 # ----------------------------------------------------------------------
 #
-# Copyright (c) 2006-2018, assimp team
+# Copyright (c) 2006-2020, assimp team
 
 
 # All rights reserved.
@@ -37,17 +37,19 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #----------------------------------------------------------------------
-cmake_minimum_required( VERSION 2.6 )
+cmake_minimum_required( VERSION 3.0 )
 
 INCLUDE_DIRECTORIES(
-	../contrib/gtest/include
-	../contrib/gtest/
+	${Assimp_SOURCE_DIR}/contrib/gtest/include
+	${Assimp_SOURCE_DIR}/contrib/gtest/
+    ${Assimp_SOURCE_DIR}/test/unit
     ${Assimp_SOURCE_DIR}/include
     ${Assimp_SOURCE_DIR}/code
 )
 if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
 endif()
+
 # Add the temporary output directories to the library path to make sure the
 # Assimp library can be found, even if it is not installed system-wide yet.
 LINK_DIRECTORIES( ${Assimp_BINARY_DIR} ${AssetImporter_BINARY_DIR}/lib )
@@ -59,6 +61,14 @@ SET( COMMON
   unit/utIssues.cpp
   unit/utAnim.cpp
   unit/AssimpAPITest.cpp
+  unit/AssimpAPITest_aiMatrix3x3.cpp
+  unit/AssimpAPITest_aiMatrix4x4.cpp
+  unit/AssimpAPITest_aiQuaternion.cpp
+  unit/AssimpAPITest_aiVector2D.cpp
+  unit/AssimpAPITest_aiVector3D.cpp
+  unit/MathTest.cpp
+  unit/MathTest.h
+  unit/RandomNumberGeneration.h
   unit/utBatchLoader.cpp
   unit/utDefaultIOStream.cpp
   unit/utFastAtof.cpp
@@ -74,10 +84,15 @@ SET( COMMON
   unit/utProfiler.cpp
   unit/utSharedPPData.cpp
   unit/utStringUtils.cpp
+  unit/Common/uiScene.cpp
+  unit/Common/utLineSplitter.cpp
+  unit/Common/utSpatialSort.cpp
 )
 
 SET( IMPORTERS
+  unit/ImportExport/Assxml/utAssxmlImportExport.cpp
   unit/utLWSImportExport.cpp
+  unit/utLWOImportExport.cpp
   unit/utSMDImportExport.cpp
   unit/utglTFImportExport.cpp
   unit/utglTF2ImportExport.cpp
@@ -85,6 +100,7 @@ SET( IMPORTERS
   unit/utIFCImportExport.cpp
   unit/utFBXImporterExporter.cpp
   unit/utImporter.cpp
+  unit/ImportExport/utExporter.cpp
   unit/ut3DImportExport.cpp
   unit/ut3DSImportExport.cpp
   unit/utACImportExport.cpp
@@ -113,7 +129,27 @@ SET( IMPORTERS
   unit/utColladaImportExport.cpp
   unit/utCSMImportExport.cpp
   unit/utB3DImportExport.cpp
+  unit/utM3DImportExport.cpp
   unit/utMDCImportExport.cpp
+  unit/utAssbinImportExport.cpp
+  unit/ImportExport/utAssjsonImportExport.cpp
+  unit/ImportExport/utCOBImportExport.cpp
+  unit/ImportExport/utOgreImportExport.cpp
+  unit/ImportExport/utQ3BSPFileImportExport.cpp
+  unit/ImportExport/utOFFImportExport.cpp
+  unit/ImportExport/utNFFImportExport.cpp
+  unit/ImportExport/utXGLImportExport.cpp
+  unit/ImportExport/utMD2Importer.cpp
+  unit/ImportExport/utMD3Importer.cpp
+  unit/ImportExport/utMD5Importer.cpp
+  unit/ImportExport/utMDLImporter.cpp
+  unit/ImportExport/MDL/MDLHL1TestFiles.h
+  unit/ImportExport/MDL/utMDLImporter_HL1_ImportSettings.cpp
+  unit/ImportExport/MDL/utMDLImporter_HL1_Materials.cpp
+  unit/ImportExport/MDL/utMDLImporter_HL1_Nodes.cpp
+  #unit/ImportExport/IRR/utIrrImportExport.cpp
+  unit/ImportExport/RAW/utRAWImportExport.cpp
+  unit/ImportExport/Terragen/utTerragenImportExport.cpp
 )
 
 SET( MATERIAL
@@ -135,6 +171,7 @@ SET( POST_PROCESSES
   unit/utRemoveRedundantMaterials.cpp
   unit/utRemoveVCProcess.cpp
   unit/utScaleProcess.cpp
+  unit/utArmaturePopulate.cpp
   unit/utJoinVertices.cpp
   unit/utRemoveComments.cpp
   unit/utRemoveComponent.cpp
@@ -149,20 +186,21 @@ SET( POST_PROCESSES
   unit/utTargetAnimation.cpp
   unit/utSortByPType.cpp
   unit/utSceneCombiner.cpp
+  unit/utGenBoundingBoxesProcess.cpp
 )
 
 SOURCE_GROUP( UnitTests\\Compiler     FILES  unit/CCompilerTest.c )
-SOURCE_GROUP( UnitTests\\Common      FILES  ${COMMON} )
-SOURCE_GROUP( UnitTests\\Importers   FILES  ${IMPORTERS} )
-SOURCE_GROUP( UnitTests\\Material    FILES  ${MATERIAL} )
-SOURCE_GROUP( UnitTests\\Math        FILES  ${MATH} )
-SOURCE_GROUP( UnitTests\\PostProcess FILES  ${POST_PROCESSES})
+SOURCE_GROUP( UnitTests\\Common       FILES  ${COMMON} )
+SOURCE_GROUP( UnitTests\\ImportExport FILES  ${IMPORTERS} )
+SOURCE_GROUP( UnitTests\\Material     FILES  ${MATERIAL} )
+SOURCE_GROUP( UnitTests\\Math         FILES  ${MATH} )
+SOURCE_GROUP( UnitTests\\PostProcess  FILES  ${POST_PROCESSES})
 
 add_executable( unit
     ../contrib/gtest/src/gtest-all.cc
     unit/CCompilerTest.c
     unit/Main.cpp
-    ../code/Version.cpp
+    ../code/Common/Version.cpp
 	${COMMON}
 	${IMPORTERS}
 	${MATERIAL}
@@ -171,25 +209,19 @@ add_executable( unit
 )
 
 add_definitions(-DASSIMP_TEST_MODELS_DIR="${CMAKE_CURRENT_LIST_DIR}/models")
+add_definitions(-DASSIMP_TEST_MODELS_NONBSD_DIR="${CMAKE_CURRENT_LIST_DIR}/models-nonbsd")
 
 SET_PROPERTY( TARGET assimp PROPERTY DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX} )
 
 IF( WIN32 )
     SET( platform_libs )
-ELSE( WIN32 )
+ELSE()
     SET( platform_libs pthread )
-ENDIF( WIN32 )
-
-IF( WIN32 )
-  ADD_CUSTOM_COMMAND(TARGET unit
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:assimp> $<TARGET_FILE_DIR:unit>
-    MAIN_DEPENDENCY assimp)
-ENDIF( WIN32 )
+ENDIF()
 
 IF(MSVC)
 		add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-ENDIF(MSVC)
+ENDIF()
 
 target_link_libraries( unit assimp ${platform_libs} )
 

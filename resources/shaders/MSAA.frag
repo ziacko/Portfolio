@@ -26,11 +26,11 @@ layout(binding = 0) uniform sampler2DMS MSAATex;
 void main()
 {
     vec4 result = vec4(0.0);
-    ivec2 coord = ivec2(inBlock.uv);
-    for(int i = 0; i < 4; i++)
+    ivec2 coord = ivec2(gl_FragCoord.xy);
+    for(int i = 0; i < 8; i++)
     {
-        result = max(result, texelFetch(MSAATex, coord, i));
+        result += texelFetch(MSAATex, coord, i);
     }
 
-	outColor = result;
+	outColor = result / 8;
 }

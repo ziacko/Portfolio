@@ -3,7 +3,7 @@
 in defaultBlock
 {
 	vec4 position;
-	vec2 UV;
+	vec2 uv;
 
 } inBlock;
 
@@ -14,8 +14,10 @@ layout(std140, binding = 0) uniform defaultSettings
 	mat4		translation;
 	vec2		resolution;
 	vec2		mousePosition;
-	double		deltaTime;
-	double		totalTime;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint		totalFrames;
 };
 
 layout(std140, binding = 1) uniform gaussianSettings
@@ -48,22 +50,22 @@ vec4 Gaussian()
 	float deltaX = 1.0 / resolution.x;
 	float deltaY = 1.0 / resolution.y;
 	
-	vec4 sum = texture(defaultTexture, inBlock.UV) * weight1;
+	vec4 sum = texture(defaultTexture, inBlock.uv) * weight1;
 
-	sum += texture(defaultTexture, (inBlock.UV + vec2(0.0f, offset1)) / resolution.x ) * weight1;
-	sum += texture(defaultTexture, (inBlock.UV - vec2(0.0f, offset1)) / resolution.y ) * weight1;
+	sum += texture(defaultTexture, (inBlock.uv + vec2(0.0f, offset1)) / resolution.x ) * weight1;
+	sum += texture(defaultTexture, (inBlock.uv - vec2(0.0f, offset1)) / resolution.y ) * weight1;
 
-	sum += texture(defaultTexture, (inBlock.UV + vec2(0.0f, offset2)) / resolution.x ) * weight2;
-	sum += texture(defaultTexture, (inBlock.UV - vec2(0.0f, offset2)) / resolution.y ) * weight2;
+	sum += texture(defaultTexture, (inBlock.uv + vec2(0.0f, offset2)) / resolution.x ) * weight2;
+	sum += texture(defaultTexture, (inBlock.uv - vec2(0.0f, offset2)) / resolution.y ) * weight2;
 
-	sum += texture(defaultTexture, (inBlock.UV + vec2(0.0f, offset3)) / resolution.x ) * weight3;
-	sum += texture(defaultTexture, (inBlock.UV - vec2(0.0f, offset3)) / resolution.y ) * weight3;
+	sum += texture(defaultTexture, (inBlock.uv + vec2(0.0f, offset3)) / resolution.x ) * weight3;
+	sum += texture(defaultTexture, (inBlock.uv - vec2(0.0f, offset3)) / resolution.y ) * weight3;
 
-	sum += texture(defaultTexture, (inBlock.UV + vec2(0.0f, offset4)) / resolution.x ) * weight4;
-	sum += texture(defaultTexture, (inBlock.UV - vec2(0.0f, offset4)) / resolution.y ) * weight4;
+	sum += texture(defaultTexture, (inBlock.uv + vec2(0.0f, offset4)) / resolution.x ) * weight4;
+	sum += texture(defaultTexture, (inBlock.uv - vec2(0.0f, offset4)) / resolution.y ) * weight4;
 
-	sum += texture(defaultTexture, (inBlock.UV + vec2(0.0f, offset5)) / resolution.x ) * weight5;
-	sum += texture(defaultTexture, (inBlock.UV - vec2(0.0f, offset5)) / resolution.y ) * weight5;
+	sum += texture(defaultTexture, (inBlock.uv + vec2(0.0f, offset5)) / resolution.x ) * weight5;
+	sum += texture(defaultTexture, (inBlock.uv - vec2(0.0f, offset5)) / resolution.y ) * weight5;
 
 	return sum;
 }

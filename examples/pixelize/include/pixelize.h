@@ -7,9 +7,6 @@ struct pixelizeSettings_t
 	GLfloat			pixelWidth;
 	GLfloat			pixelHeight;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	pixelizeSettings_t(GLfloat pixelWidth = 8.0f, GLfloat pixelHeight = 8.0f)
 	{
 		this->pixelWidth = pixelWidth;
@@ -24,40 +21,40 @@ class pixelizeScene : public texturedScene
 public:
 
 	pixelizeScene(
-		pixelizeSettings_t* pixelizeSettings = new pixelizeSettings_t(),
+		bufferHandler_t<pixelizeSettings_t> pixelizeSettings = bufferHandler_t<pixelizeSettings_t>(),
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (pixelize)",
 		camera* pixelizeCamera = new camera(),
 		const char* shaderConfigPath = "../../resources/shaders/Pixelize.txt")
 		: texturedScene(defaultTexture, windowName, pixelizeCamera, shaderConfigPath)
 	{
-		this->pixelizeSettings = pixelizeSettings;
+		this->pixel = pixelizeSettings;
 	}
 
 	~pixelizeScene(void){}
 
 protected:
 
-	pixelizeSettings_t*		pixelizeSettings;
+	bufferHandler_t<pixelizeSettings_t>		pixel;
 
 	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(window, io);
 
-		ImGui::SliderFloat("pixel width", &pixelizeSettings->pixelWidth, 0.0f, 100.0f, "%.0f");
-		ImGui::SliderFloat("pixel height", &pixelizeSettings->pixelHeight, 0.0f, 100.0f, "%.0f");
+		ImGui::SliderFloat("pixel width", &pixel.data.pixelWidth, 0.0f, 100.0f, "%.0f");
+		ImGui::SliderFloat("pixel height", &pixel.data.pixelHeight, 0.0f, 100.0f, "%.0f");
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		SetupBuffer(pixelizeSettings, pixelizeSettings->bufferHandle, sizeof(*pixelizeSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
+		pixel.Initialize(1);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(pixelizeSettings, pixelizeSettings->bufferHandle, sizeof(*pixelizeSettings), gl_uniform_buffer, gl_dynamic_draw);
+		pixel.Update();
 	}
 
 };

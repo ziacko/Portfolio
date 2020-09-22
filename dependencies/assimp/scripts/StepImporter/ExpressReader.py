@@ -5,7 +5,7 @@
 # Open Asset Import Library (ASSIMP)
 # ---------------------------------------------------------------------------
 #
-# Copyright (c) 2006-2010, ASSIMP Development Team
+# Copyright (c) 2006-2020, ASSIMP Development Team
 #
 # All rights reserved.
 #
@@ -43,7 +43,8 @@
 """Parse an EXPRESS file and extract basic information on all
 entities and data types contained"""
 
-import sys, os, re
+import sys
+import re
 from collections import OrderedDict
 
 re_match_entity = re.compile(r"""

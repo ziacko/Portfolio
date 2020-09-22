@@ -1,10 +1,10 @@
-#include "FXAA.h"
+#include "SMAA.h"
 
 int main()
 {
-	FXAA* exampleScene = new FXAA();
+	SMAA* exampleScene = new SMAA();
 	exampleScene->Initialize();
 	exampleScene->Run();
-
+	delete exampleScene;
 	return 0;
 }

@@ -2,24 +2,6 @@
 #define BINDLESS_H
 #include <TexturedScene.h>
 
-//need to update Tinyextender to make this work properly
-struct bindlessTextures_t
-{
-	GLuint		defaultTex;
-
-	GLuint		bufferHandle;
-	GLuint		uniformHandle;
-
-	bindlessTextures_t(GLuint defaultTex)
-	{
-		this->defaultTex = defaultTex;
-		bufferHandle = 0;
-		uniformHandle = 0;
-	}
-
-	~bindlessTextures_t() {};
-};
-
 class Bindless : public texturedScene
 {
 public:
@@ -31,7 +13,7 @@ public:
 		const char* shaderConfigPath = "../../resources/shaders/Bindless.txt")
 		: texturedScene(defaultTexture, windowName, cam, shaderConfigPath)
 	{
-		bindlessTex = new bindlessTextures_t(0);
+		bindless = bufferHandler_t<GLuint>(0);
 	}
 
 	~Bindless(){};
@@ -55,19 +37,19 @@ public:
 
 protected:
 
-	bindlessTextures_t*			bindlessTex;
+	bufferHandler_t<GLuint>		bindless;
 
 	void InitializeUniforms() override
 	{
-		scene::InitializeUniforms();		
-		SetupBuffer(bindlessTex, bindlessTex->bufferHandle, sizeof(*bindlessTex), 1, gl_uniform_buffer, gl_dynamic_draw);
+		scene::InitializeUniforms();
+		bindless.Initialize(1);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		bindlessTex->defaultTex = defaultTexture->GetResidentHandle();
-		UpdateBuffer(bindlessTex, bindlessTex->bufferHandle, sizeof(*bindlessTex), gl_uniform_buffer, gl_dynamic_draw);
+		bindless.data = defaultTexture->GetResidentHandle();
+		bindless.Update(gl_uniform_buffer, gl_dynamic_draw);
 	}
 };
 

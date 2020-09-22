@@ -1,0 +1,17 @@
+1
+transformProgram
+5
+position
+normal
+tangent
+biTangent
+uv
+1
+outColor
+2
+TransformVertex
+Vertex
+../../resources/shaders/Transform.vert
+ModelFragment
+Fragment
+../../resources/shaders/texturedModel.frag

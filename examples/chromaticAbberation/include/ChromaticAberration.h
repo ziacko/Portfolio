@@ -8,9 +8,6 @@ struct chromaticSettings_t
 	float			blueOffset;
 	float			greenOffset;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	chromaticSettings_t(GLfloat redOffset = 0.0f, GLfloat greenOffset = 0.0f, GLfloat blueOffset = 0.0f)
 	{
 		this->redOffset = redOffset;
@@ -27,7 +24,7 @@ class chromaticScene : public texturedScene
 public:
 
 	chromaticScene(
-		chromaticSettings_t* chromaticSettings = new chromaticSettings_t(),
+		chromaticSettings_t chromaticSettings = chromaticSettings_t(),
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (chromatic aberration)",
 		camera* chromaticCamera = new camera(),
@@ -41,39 +38,27 @@ public:
 
 protected:
 
-	static chromaticSettings_t*		chromaticSettings;
+	bufferHandler_t<chromaticSettings_t>	chromaticSettings;
 
 	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(window, io);
 
-		ImGui::SliderFloat("red offset", &chromaticSettings->redOffset, -1.0f, 1.0f, "%0.10f");
-		ImGui::SliderFloat("green offset", &chromaticSettings->greenOffset, -1.0f, 1.0f, "%0.10f");
-		ImGui::SliderFloat("blue offset", &chromaticSettings->blueOffset, -1.0f, 1.0f, "%0.10f");
+		ImGui::SliderFloat("red offset", &chromaticSettings.data.redOffset, -1.0f, 1.0f, "%0.10f");
+		ImGui::SliderFloat("green offset", &chromaticSettings.data.greenOffset, -1.0f, 1.0f, "%0.10f");
+		ImGui::SliderFloat("blue offset", &chromaticSettings.data.blueOffset, -1.0f, 1.0f, "%0.10f");
 	}
 
-	void SetupChromaticBuffer()
-	{
-		glGenBuffers(1, &chromaticSettings->bufferHandle);
-
-		glBindBuffer(gl_uniform_buffer, chromaticSettings->bufferHandle);
-		glBufferData(gl_uniform_buffer, sizeof(*chromaticSettings), chromaticSettings, gl_dynamic_draw);
-		glBindBufferBase(gl_uniform_buffer, 1, this->chromaticSettings->bufferHandle);
-	}
-
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		SetupChromaticBuffer();
+		chromaticSettings.Initialize(1);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(chromaticSettings, chromaticSettings->bufferHandle, sizeof(*chromaticSettings), gl_uniform_buffer, gl_dynamic_draw);
+		chromaticSettings.Update(gl_uniform_buffer, gl_dynamic_draw);
 	}
 };
-
-chromaticSettings_t* chromaticScene::chromaticSettings = nullptr;
-
 #endif

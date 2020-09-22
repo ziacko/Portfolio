@@ -23,3 +23,6 @@ vcxproj.filters
 *.ipch
 
 
+*.exe
+*.log
+*.user

@@ -6,7 +6,6 @@ Some fancy helper functions.
 
 import os
 import ctypes
-from ctypes import POINTER
 import operator
 
 from distutils.sysconfig import get_python_lib
@@ -14,7 +13,7 @@ import re
 import sys
 
 try: import numpy
-except: numpy = None
+except ImportError: numpy = None
 
 import logging;logger = logging.getLogger("pyassimp")
 
@@ -176,6 +175,7 @@ def try_load_functions(library_path, dll):
                           load from filename function,
                           load from memory function,
                           export to filename function,
+                          export to blob function,
                           release function,
                           ctypes handle to assimp library)
     '''
@@ -185,15 +185,17 @@ def try_load_functions(library_path, dll):
         release  = dll.aiReleaseImport
         load_mem = dll.aiImportFileFromMemory
         export   = dll.aiExportScene
+        export2blob = dll.aiExportSceneToBlob
     except AttributeError:
         #OK, this is a library, but it doesn't have the functions we need
         return None
 
     # library found!
-    from .structs import Scene
-    load.restype = POINTER(Scene)
-    load_mem.restype = POINTER(Scene)
-    return (library_path, load, load_mem, export, release, dll)
+    from .structs import Scene, ExportDataBlob
+    load.restype = ctypes.POINTER(Scene)
+    load_mem.restype = ctypes.POINTER(Scene)
+    export2blob.restype = ctypes.POINTER(ExportDataBlob)
+    return (library_path, load, load_mem, export, export2blob, release, dll)
 
 def search_library():
     '''
@@ -203,6 +205,7 @@ def search_library():
     Returns: tuple, (load from filename function,
                      load from memory function,
                      export to filename function,
+                     export to blob function,
                      release function,
                      dll)
     '''
@@ -271,6 +274,8 @@ def hasattr_silent(object, name):
     """
 
     try:
+        if not object:
+            return False
         return hasattr(object, name)
-    except:
+    except AttributeError:
         return False

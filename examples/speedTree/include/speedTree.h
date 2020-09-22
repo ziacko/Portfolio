@@ -36,19 +36,19 @@ protected:
 				continue;
 			}
 			//set the materials per mesh
-			materialSettingsBuffer->diffuse = testModel->meshes[iter].diffuse;
-			materialSettingsBuffer->ambient = testModel->meshes[iter].ambient;
-			materialSettingsBuffer->specular = testModel->meshes[iter].specular;
-			materialSettingsBuffer->reflective = testModel->meshes[iter].reflective;
-			UpdateBuffer(materialSettingsBuffer, materialSettingsBuffer->bufferHandle, sizeof(*materialSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
-			//leavesDiffuse->UnbindTexture();
+			materialBuffer.data.diffuse = testModel->meshes[iter].diffuse;
+			materialBuffer.data.ambient = testModel->meshes[iter].ambient;
+			materialBuffer.data.specular = testModel->meshes[iter].specular;
+			materialBuffer.data.reflective = testModel->meshes[iter].reflective;
+
+			materialBuffer.Update();
 			//trial and error
 			testModel->meshes[iter].textures[0].SetActive(0);
 
 			//glBindBuffer(gl_element_array_buffer, iter.indexBufferHandle);
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
 			glUseProgram(this->programGLID);
-			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 			glCullFace(GL_BACK);
 
 			if (wireframe)

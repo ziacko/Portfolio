@@ -2,11 +2,22 @@
 build
 .project
 *.kdev4*
+.DS_Store
+
+# build artefacts
+*.o
+*.a
 
 # Visual Studio
 *.sln
 *.ncb
 *.vcproj
+*.vcxproj.user
+*.VC.db
+*.VC.db-shm
+*.VC.db-wal
+*.VC.opendb
+*.ipch
 
 # Output
 bin/
@@ -17,6 +28,7 @@ CMakeLists.txt.user
 
 # Generated
 assimp.pc
+assimp.aps
 revision.h
 contrib/zlib/zconf.h
 contrib/zlib/zlib.pc
@@ -31,6 +43,7 @@ cmake_uninstall.cmake
 *.dir/
 assimp-config.cmake
 assimp-config-version.cmake
+assimpTargets*.cmake
 
 # MakeFile
 Makefile

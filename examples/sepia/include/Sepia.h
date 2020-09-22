@@ -18,9 +18,6 @@ struct sepiaSettings_t
 	GLfloat			blueModifier2;
 	GLfloat			blueModifier3;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	sepiaSettings_t(GLfloat factor = 0.75f,
 		GLfloat redModifier1 = 0.393f, GLfloat redModifier2 = 0.349f, GLfloat redModifier3 = 0.272f,
 		GLfloat greenModifier1 = 0.769f, GLfloat greenModifier2 = 0.686f, GLfloat greenModifier3 = 0.534f,
@@ -48,7 +45,7 @@ class sepiaScene : public texturedScene
 public:
 
 	sepiaScene(
-		sepiaSettings_t* sepiaSettings = new sepiaSettings_t(),
+		bufferHandler_t<sepiaSettings_t> sepiaSettings = bufferHandler_t<sepiaSettings_t>(),
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's portfolio (sepia)",
 		camera* sepiaCamera = new camera(),
@@ -62,37 +59,37 @@ public:
 
 protected:
 
-	sepiaSettings_t*		sepiaSettings;
+	bufferHandler_t<sepiaSettings_t>  sepiaSettings;
 
 	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(window, io);
 
-		ImGui::SliderFloat("factor", &sepiaSettings->factor, 0.0f, 1.0f);
+		ImGui::SliderFloat("factor", &sepiaSettings.data.factor, 0.0f, 1.0f);
 
-		ImGui::SliderFloat("red modifier 1", &sepiaSettings->redModifier1, 0.0f, 1.0f);
-		ImGui::SliderFloat("red modifier 2", &sepiaSettings->redModifier2, 0.0f, 1.0f);
-		ImGui::SliderFloat("red modifier 3", &sepiaSettings->redModifier3, 0.0f, 1.0f);
+		ImGui::SliderFloat("red modifier 1", &sepiaSettings.data.redModifier1, 0.0f, 1.0f);
+		ImGui::SliderFloat("red modifier 2", &sepiaSettings.data.redModifier2, 0.0f, 1.0f);
+		ImGui::SliderFloat("red modifier 3", &sepiaSettings.data.redModifier3, 0.0f, 1.0f);
 
-		ImGui::SliderFloat("green modifier 1", &sepiaSettings->greenModifier1, 0.0f, 1.0f);
-		ImGui::SliderFloat("green modifier 2", &sepiaSettings->greenModifier2, 0.0f, 1.0f);
-		ImGui::SliderFloat("green modifier 3", &sepiaSettings->greenModifier3, 0.0f, 1.0f);
+		ImGui::SliderFloat("green modifier 1", &sepiaSettings.data.greenModifier1, 0.0f, 1.0f);
+		ImGui::SliderFloat("green modifier 2", &sepiaSettings.data.greenModifier2, 0.0f, 1.0f);
+		ImGui::SliderFloat("green modifier 3", &sepiaSettings.data.greenModifier3, 0.0f, 1.0f);
 
-		ImGui::SliderFloat("blue modifier 1", &sepiaSettings->blueModifier1, 0.0f, 1.0f);
-		ImGui::SliderFloat("blue modifier 2", &sepiaSettings->blueModifier2, 0.0f, 1.0f);
-		ImGui::SliderFloat("blue modifier 3", &sepiaSettings->blueModifier3, 0.0f, 1.0f);
+		ImGui::SliderFloat("blue modifier 1", &sepiaSettings.data.blueModifier1, 0.0f, 1.0f);
+		ImGui::SliderFloat("blue modifier 2", &sepiaSettings.data.blueModifier2, 0.0f, 1.0f);
+		ImGui::SliderFloat("blue modifier 3", &sepiaSettings.data.blueModifier3, 0.0f, 1.0f);
 	}
 
 	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		SetupBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), 1, gl_uniform_buffer, gl_dynamic_draw);
+		sepiaSettings.Initialize(1);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(sepiaSettings, sepiaSettings->bufferHandle, sizeof(*sepiaSettings), gl_uniform_buffer, gl_dynamic_draw);
+		sepiaSettings.Update();
 	}
 };
 #endif

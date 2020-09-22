@@ -76,7 +76,7 @@ add_executable(FXAA ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET FXAA PROPERTY OUTPUT_NAME "FXAA")
 find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
 
-target_link_libraries(FXAA "${ASSIMP_LIB_DIRECTORY}/assimp-vc140-mt")
+target_link_libraries(FXAA "${ASSIMP_LIB_DIRECTORY}/assimp-vc142-mtd")
 
 set (SHADER_DIR "../../resources/shaders/")
 file(GLOB GLSL_SOURCE_FILES "${SHADER_DIR}/FXAA.txt" "${SHADER_DIR}/Model.vert" "${SHADER_DIR}/Model.frag")

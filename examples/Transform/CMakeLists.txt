@@ -70,13 +70,14 @@ include_directories("${STB_INCLUDE_DIR}")
 include_directories("${SCENE_INCLUDE_DIR}")
 
 set(ASSIMP_LIB_DIRECTORY "../../dependencies/assimp/lib/Debug")
-set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
+set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp" 
+"${IMGUI_INCLUDE_DIR}/ImCurveEdit.cpp" "${IMGUI_INCLUDE_DIR}/ImGradient.cpp" "${IMGUI_INCLUDE_DIR}/ImSequencer.cpp" "${IMGUI_INCLUDE_DIR}/ImGuizmo.cpp")
 
 add_executable(transformScene ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET transformScene PROPERTY OUTPUT_NAME "transformScene")
 find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
 
-target_link_libraries(transformScene "${ASSIMP_LIB_DIRECTORY}/assimp-vc140-mt")
+target_link_libraries(transformScene "${ASSIMP_LIB_DIRECTORY}/assimp-vc142-mtd")
 
 set (SHADER_DIR "../../resources/shaders/")
 file(GLOB GLSL_SOURCE_FILES "${SHADER_DIR}/Model.txt" "${SHADER_DIR}/Model.vert" "${SHADER_DIR}/Model.frag")

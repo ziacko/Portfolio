@@ -80,4 +80,4 @@ add_executable(DepthPrePass ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS
 set_property(TARGET DepthPrePass PROPERTY OUTPUT_NAME "DepthPrePass")
 find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
 
-target_link_libraries(DepthPrePass "${ASSIMP_LIB_DIRECTORY}/assimp-vc140-mt")
+target_link_libraries(DepthPrePass "${ASSIMP_LIB_DIRECTORY}/assimp-vc142-mtd")

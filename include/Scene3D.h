@@ -17,9 +17,6 @@ struct baseMaterialSettings_t
 	glm::vec4								emissive;
 	glm::vec4								reflective;
 
-	GLuint		bufferHandle;
-	GLuint		uniformHandle;
-
 	baseMaterialSettings_t()
 	{
 		diffuse = glm::vec4(0.0f);
@@ -27,8 +24,6 @@ struct baseMaterialSettings_t
 		ambient = glm::vec4(0.0f);
 		emissive = glm::vec4(0.0f);
 		reflective = glm::vec4(0.0f);
-		bufferHandle = 0;
-		uniformHandle = 0;
 	}
 };
 
@@ -43,7 +38,6 @@ public:
 		scene(windowName, camera3D, shaderConfigPath)
 	{
 		testModel = model;
-		materialSettingsBuffer = new baseMaterialSettings_t();
 		wireframe = false;
 	}
 
@@ -74,24 +68,24 @@ protected:
 
 	model_t* testModel;
 	//texture* diffuse;
-	baseMaterialSettings_t*	materialSettingsBuffer;
+	bufferHandler_t<baseMaterialSettings_t>	materialBuffer;
 	bool wireframe;
 
 	virtual void Draw() override 
 	{
 		//for each mesh in the model
-		for(auto iter : testModel->meshes)
+		for(const auto& iter : testModel->meshes)
 		{
 			if (iter.isCollision)
 			{
 				continue;
 			}
 			//set the materials per mesh
-			materialSettingsBuffer->diffuse = iter.diffuse;
-			materialSettingsBuffer->ambient = iter.ambient;
-			materialSettingsBuffer->specular = iter.specular;
-			materialSettingsBuffer->reflective = iter.reflective;
-			UpdateBuffer(materialSettingsBuffer, materialSettingsBuffer->bufferHandle, sizeof(*materialSettingsBuffer), gl_uniform_buffer, gl_dynamic_draw);
+			materialBuffer.data.diffuse = iter.diffuse;
+			materialBuffer.data.ambient = iter.ambient;
+			materialBuffer.data.specular = iter.specular;
+			materialBuffer.data.reflective = iter.reflective;
+			materialBuffer.Update(gl_uniform_buffer, gl_dynamic_draw);
 
 			//glBindBuffer(gl_element_array_buffer, iter.indexBufferHandle);
 			glBindVertexArray(iter.vertexArrayHandle);
@@ -102,7 +96,7 @@ protected:
 
 				iter.textures[0].GetUniformLocation(programGLID);
 			}*/
-			glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
 			if (wireframe)
 			{
@@ -128,24 +122,24 @@ protected:
 		sceneCamera->Update();
 		sceneClock->UpdateClockAdaptive();
 
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
-		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
-		defaultUniform->totalFrames++;
+		defaultPayload.data.deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultPayload.data.totalTime = (float)sceneClock->GetTotalTime();
+		defaultPayload.data.framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultPayload.data.totalFrames++;
 
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->view = sceneCamera->view;
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.view = sceneCamera->view;
 		if (sceneCamera->currentProjectionType == camera::projection_t::perspective)
 		{
-			defaultUniform->translation = testModel->makeTransform();
+			defaultPayload.data.translation = testModel->makeTransform();
 		}
 
 		else
 		{
-			defaultUniform->translation = sceneCamera->translation;
+			defaultPayload.data.translation = sceneCamera->translation;
 		}
 		
-		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
+		defaultPayload.Update(gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	virtual void BuildGUI(tWindow* window, ImGuiIO io) override
@@ -154,7 +148,7 @@ protected:
 		ImGuiCameraSettings();
 
 		//set up the view matrix
-		ImGui::Begin("camera transform", &testModel->isGUIActive, ImVec2(0, 0));
+		ImGui::Begin("camera transform", &testModel->isGUIActive);
 		if (ImGui::CollapsingHeader("view matrix", NULL))
 		{
 			ImGui::DragFloat4("right", (float*)&sceneCamera->view[0], 0.1f, -100.0f, 100.0f);
@@ -212,16 +206,18 @@ protected:
 
 	virtual void InitializeUniforms() override
 	{
-		defaultUniform = new defaultUniformBuffer(sceneCamera);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
+		defaultPayload.data = defaultUniformBuffer(sceneCamera);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
-		defaultUniform->resolution = glm::vec2(windows[0]->resolution.width, windows[0]->resolution.height);
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->translation = sceneCamera->translation;
-		defaultUniform->view = sceneCamera->view;
+		defaultPayload.data.resolution = glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.translation = sceneCamera->translation;
+		defaultPayload.data.view = sceneCamera->view;
 
-		SetupBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), 0, gl_uniform_buffer, gl_dynamic_draw);
-		SetupBuffer(materialSettingsBuffer, materialSettingsBuffer->bufferHandle, sizeof(*materialSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
+		materialBuffer.data = baseMaterialSettings_t();
+
+		defaultPayload.Initialize(0);
+		materialBuffer.Initialize(1);
 	}
 
 	virtual void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state) override
@@ -231,7 +227,7 @@ protected:
 
 	virtual void HandleMouseMotion(tWindow* window, vec2_t<int> windowPosition, vec2_t<int> screenPosition) override
 	{
-		scene3D* thisScene = (scene3D*)window->userData;
+		scene3D* thisScene = (scene3D*)window->settings.userData;
 		scene::HandleMouseMotion(window, windowPosition, screenPosition);
 
 		glm::vec2 mouseDelta = glm::vec2(window->mousePosition.x - window->previousMousePosition.x, window->mousePosition.y - window->previousMousePosition.y);
@@ -252,30 +248,29 @@ protected:
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		scene3D* thisScene = (scene3D*)window->userData;
-		glViewport(0, 0, window->resolution.width, window->resolution.height);
-		thisScene->sceneCamera->resolution = glm::vec2(window->resolution.width, window->resolution.height);
-		thisScene->defaultUniform->resolution = thisScene->sceneCamera->resolution;
-		thisScene->sceneCamera->UpdateProjection();
-		thisScene->defaultUniform->projection = thisScene->sceneCamera->projection;
+		glViewport(0, 0, window->settings.resolution.width, window->settings.resolution.height);
+		sceneCamera->resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		defaultPayload.data.resolution = sceneCamera->resolution;
+		sceneCamera->UpdateProjection();
+		defaultPayload.data.projection = sceneCamera->projection;
 
 		//bind the uniform buffer and refill it
-		UpdateBuffer(thisScene->defaultUniform, thisScene->defaultUniform->bufferHandle, sizeof(defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
+		defaultPayload.Update(gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		scene3D* thisScene = (scene3D*)window->userData;
+		scene3D* thisScene = (scene3D*)window->settings.userData;
 		glViewport(0, 0, dimensions.width, dimensions.height);
 		sceneCamera->resolution = glm::vec2(dimensions.width, dimensions.height);
-		defaultUniform->resolution = sceneCamera->resolution;
+		defaultPayload.data.resolution = sceneCamera->resolution;
 		sceneCamera->UpdateProjection();
-		defaultUniform->projection = sceneCamera->projection;
-		defaultUniform->deltaTime = (float)sceneClock->GetDeltaTime();
-		defaultUniform->totalTime = (float)sceneClock->GetTotalTime();
-		defaultUniform->framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
+		defaultPayload.data.projection = sceneCamera->projection;
+		defaultPayload.data.deltaTime = (float)sceneClock->GetDeltaTime();
+		defaultPayload.data.totalTime = (float)sceneClock->GetTotalTime();
+		defaultPayload.data.framesPerSec = (float)(1.0 / sceneClock->GetDeltaTime());
 
-		UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
+		defaultPayload.Update(gl_uniform_buffer, gl_dynamic_draw);
 	}
 
 	virtual void HandleKey(tWindow* window, int key, keyState_t state)	override

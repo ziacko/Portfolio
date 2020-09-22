@@ -1,13 +1,14 @@
 #---------------------------------------------------------------------------
 #Open Asset Import Library (assimp)
 #---------------------------------------------------------------------------
-# Copyright (c) 2006-2017, assimp team
+# Copyright (c) 2006-2020, assimp team
 #
 # License see LICENSE file
 #
 function generate() {
     OPTIONS="-DASSIMP_WERROR=ON"
-
+    OPTIONS="$OPTIONS -DASSIMP_NO_EXPORT=NO"
+    
     if [ "$DISABLE_EXPORTERS" = "YES" ] ; then
         OPTIONS="$OPTIONS -DASSIMP_NO_EXPORT=YES"
     else

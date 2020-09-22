@@ -2,7 +2,7 @@
 
 int main()
 {
-	FXAA* exampleScene = new FXAA();
+	FXAA_Scene* exampleScene = new FXAA_Scene();
 	exampleScene->Initialize();
 	exampleScene->Run();
 

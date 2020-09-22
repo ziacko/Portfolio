@@ -10,9 +10,6 @@ struct radialBlur_t
 	GLfloat		weight;
 	int			samples;
 
-	GLuint			bufferHandle;
-	GLuint			uniformHandle;
-
 	radialBlur_t(GLfloat exposure = 0.01f, GLfloat decay = 0.975f, GLfloat density = 0.00005f,
 		GLfloat weight = 1.0f, GLuint samples = 100)
 	{
@@ -30,7 +27,7 @@ class radialScene : public texturedScene
 {
 public:
 
-	radialScene(radialBlur_t* radial = new radialBlur_t(),
+	radialScene(bufferHandler_t<radialBlur_t> radial = bufferHandler_t<radialBlur_t>(),
 		texture* defaultTexture = new texture(),
 		const char* windowName = "Ziyad Barakat's Portfolio (radial blur)",
 		camera* radialCamera = new camera(),
@@ -38,35 +35,34 @@ public:
 		texturedScene(defaultTexture, windowName, radialCamera, shaderConfigPath)
 	{
 		this->radialBlur = radial;
-		radialBlur = new radialBlur_t();
 	}
 
 	~radialScene(){};
 
 protected:
 
-	radialBlur_t*		radialBlur;
+	bufferHandler_t<radialBlur_t>		radialBlur;
 
 	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		texturedScene::BuildGUI(window, io);
-		ImGui::SliderFloat("exposure", &radialBlur->exposure, 0.0f, 1.0f);
-		ImGui::SliderFloat("decay", &radialBlur->decay, 0.0f, 1.0f);
-		ImGui::SliderFloat("density", &radialBlur->density, 0.0f, 0.01f, "%.10f", 100.0f);
-		ImGui::SliderFloat("weight", &radialBlur->weight, 0.0f, 10.0f);
-		ImGui::SliderInt("samples", &radialBlur->samples, 0, 1000);
+		ImGui::SliderFloat("exposure", &radialBlur.data.exposure, 0.0f, 1.0f);
+		ImGui::SliderFloat("decay", &radialBlur.data.decay, 0.0f, 1.0f);
+		ImGui::SliderFloat("density", &radialBlur.data.density, 0.0f, 0.01f, "%.10f", 100.0f);
+		ImGui::SliderFloat("weight", &radialBlur.data.weight, 0.0f, 10.0f);
+		ImGui::SliderInt("samples", &radialBlur.data.samples, 0, 1000);
 	}
 
-	void InitializeBuffers() override
+	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		SetupBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), 1, gl_uniform_buffer, gl_dynamic_draw);
+		radialBlur.Initialize(1);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		UpdateBuffer(radialBlur, radialBlur->bufferHandle, sizeof(*radialBlur), gl_uniform_buffer, gl_dynamic_draw);
+		radialBlur.Update();
 	}
 };
 #endif

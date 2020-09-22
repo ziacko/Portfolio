@@ -76,7 +76,7 @@ add_executable(SMAA ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
 set_property(TARGET SMAA PROPERTY OUTPUT_NAME "SMAA")
 find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
 
-target_link_libraries(SMAA "${ASSIMP_LIB_DIRECTORY}/assimp-vc140-mt")
+target_link_libraries(SMAA "${ASSIMP_LIB_DIRECTORY}/assimp-vc142-mtd")
 
 set (SHADER_DIR "../../resources/shaders/")
 file(GLOB GLSL_SOURCE_FILES "${SHADER_DIR}/SMAA.txt" "${SHADER_DIR}/Model.vert" "${SHADER_DIR}/Model.frag")

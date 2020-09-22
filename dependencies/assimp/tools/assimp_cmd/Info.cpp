@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2018, assimp team
+Copyright (c) 2006-2020, assimp team
 
 
 
@@ -51,26 +51,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 
 const char* AICMD_MSG_INFO_HELP_E =
-"assimp info <file> [-r] [-v]\n"
-"\tPrint basic structure of a 3D model\n"
-"\t-r,--raw: No postprocessing, do a raw import\n"
-"\t-v,--verbose: Print verbose info such as node transform data\n";
+    "assimp info <file> [-r] [-v]\n"
+    "\tPrint basic structure of a 3D model\n"
+    "\t-r,--raw: No postprocessing, do a raw import\n"
+    "\t-v,--verbose: Print verbose info such as node transform data\n"
+    "\t-s, --silent: Print only minimal info\n";
 
-const std::string TREE_BRANCH_ASCII = "|-";
-const std::string TREE_BRANCH_UTF8 = "\xe2\x94\x9c\xe2\x95\xb4";
-const std::string TREE_STOP_ASCII = "'-";
-const std::string TREE_STOP_UTF8 = "\xe2\x94\x94\xe2\x95\xb4";
-const std::string TREE_CONTINUE_ASCII = "| ";
-const std::string TREE_CONTINUE_UTF8 = "\xe2\x94\x82 ";
+const char *TREE_BRANCH_ASCII = "|-";
+const char *TREE_BRANCH_UTF8 = "\xe2\x94\x9c\xe2\x95\xb4";
+const char *TREE_STOP_ASCII = "'-";
+const char *TREE_STOP_UTF8 = "\xe2\x94\x94\xe2\x95\xb4";
+const char *TREE_CONTINUE_ASCII = "| ";
+const char *TREE_CONTINUE_UTF8 = "\xe2\x94\x82 ";
 
-// note: by default this is outputing utf-8 text.
+// note: by default this is using utf-8 text.
 // this is well supported on pretty much any linux terminal.
 // if this causes problems on some platform,
 // put an #ifdef to use the ascii version for that platform.
-const std::string TREE_BRANCH = TREE_BRANCH_UTF8;
-const std::string TREE_STOP = TREE_STOP_UTF8;
-const std::string TREE_CONTINUE = TREE_CONTINUE_UTF8;
-
+const char *TREE_BRANCH = TREE_BRANCH_UTF8;
+const char *TREE_STOP = TREE_STOP_UTF8;
+const char *TREE_CONTINUE = TREE_CONTINUE_UTF8;
 
 // -----------------------------------------------------------------------------------
 unsigned int CountNodes(const aiNode* root)
@@ -279,25 +279,18 @@ void PrintHierarchy(
 
 // -----------------------------------------------------------------------------------
 // Implementation of the assimp info utility to print basic file info
-int Assimp_Info (const char* const* params, unsigned int num)
-{
-	if (num < 1) {
-		printf("assimp info: Invalid number of arguments. "
-			"See \'assimp info --help\'\n");
-		return 1;
-	}
-
+int Assimp_Info (const char* const* params, unsigned int num) {
 	// --help
 	if (!strcmp( params[0],"-h")||!strcmp( params[0],"--help")||!strcmp( params[0],"-?") ) {
 		printf("%s",AICMD_MSG_INFO_HELP_E);
-		return 0;
+		return AssimpCmdError::Success;
 	}
 
 	// asssimp info <file> [-r]
 	if (num < 1) {
 		printf("assimp info: Invalid number of arguments. "
 			"See \'assimp info --help\'\n");
-		return 1;
+		return AssimpCmdError::InvalidNumberOfArguments;
 	}
 
 	const std::string in  = std::string(params[0]);
@@ -305,6 +298,7 @@ int Assimp_Info (const char* const* params, unsigned int num)
 	// get -r and -v arguments
 	bool raw = false;
 	bool verbose = false;
+	bool silent = false;
 	for(unsigned int i = 1; i < num; ++i) {
 		if (!strcmp(params[i],"--raw")||!strcmp(params[i],"-r")) {
 			raw = true;
@@ -312,12 +306,26 @@ int Assimp_Info (const char* const* params, unsigned int num)
 		if (!strcmp(params[i],"--verbose")||!strcmp(params[i],"-v")) {
 			verbose = true;
 		}
+		if (!strcmp(params[i], "--silent") || !strcmp(params[i], "-s")) {
+			silent = true;
+		}
 	}
 
-	// do maximum post-processing unless -r was specified
+	// Verbose and silent at the same time are not allowed
+	if ( verbose && silent ) {
+		printf("assimp info: Invalid arguments, verbose and silent at the same time are forbitten. ");
+		return AssimpCmdInfoError::InvalidCombinaisonOfArguments;
+	}
+	
+	// Parse post-processing flags unless -r was specified
 	ImportData import;
 	if (!raw) {
-		import.ppFlags = aiProcessPreset_TargetRealtime_MaxQuality;
+		// get import flags
+		ProcessStandardArguments(import, params + 1, num - 1);
+
+		//No custom post process flags defined, we set all the post process flags active
+		if(import.ppFlags == 0)
+			import.ppFlags |= aiProcessPreset_TargetRealtime_MaxQuality;
 	}
 
 	// import the main model
@@ -325,7 +333,7 @@ int Assimp_Info (const char* const* params, unsigned int num)
 	if (!scene) {
 		printf("assimp info: Unable to load input file %s\n",
 			in.c_str());
-		return 5;
+		return AssimpCmdError::FailedToLoadInputFile;
 	}
 
 	aiMemoryInfo mem;
@@ -380,6 +388,12 @@ int Assimp_Info (const char* const* params, unsigned int num)
 		)
 	;
 
+	if (silent)
+	{
+		printf("\n");
+		return AssimpCmdError::Success;
+	}
+
 	// meshes
 	if (scene->mNumMeshes) {
 		printf("\nMeshes:  (name) [vertices / bones / faces | primitive_types]\n");
@@ -430,6 +444,12 @@ int Assimp_Info (const char* const* params, unsigned int num)
 			aiTextureType_DISPLACEMENT,
 			aiTextureType_LIGHTMAP,
 			aiTextureType_REFLECTION,
+			aiTextureType_BASE_COLOR,
+			aiTextureType_NORMAL_CAMERA,
+			aiTextureType_EMISSION_COLOR,
+			aiTextureType_METALNESS,
+			aiTextureType_DIFFUSE_ROUGHNESS,
+			aiTextureType_AMBIENT_OCCLUSION,
 			aiTextureType_UNKNOWN
 		};
 		for(unsigned int type = 0; type < sizeof(types)/sizeof(types[0]); ++type) {
@@ -459,5 +479,5 @@ int Assimp_Info (const char* const* params, unsigned int num)
 	PrintHierarchy(scene->mRootNode,"",verbose);
 
 	printf("\n");
-	return 0;
+	return AssimpCmdError::Success;
 }

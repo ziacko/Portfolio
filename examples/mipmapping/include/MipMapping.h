@@ -2,34 +2,18 @@
 #define MIPMAPPING_H
 #include "TextureSettings.h"
 
-struct mipSettings_t
-{
-	int			mipLevel;
-	GLuint		bufferHandle;
-	GLuint		uniformHandle;
-
-	mipSettings_t(GLuint mipLevel)
-	{
-		this->mipLevel = mipLevel;
-		bufferHandle = 0;
-		uniformHandle = 0;
-	}
-
-	~mipSettings_t() {};
-};
-
 class MipMappingScene : public textureSettings
 {
 public:
 	//this was never finished so I'm going to leave it for last
-	MipMappingScene(texture* defaultTexture = new texture("../../resources/textures/earth_diffuse.tga", "defaultTexture",
-		texture::textureType_t::image, GL_RGBA, GL_TEXTURE_2D, 0, 10),
+	MipMappingScene(texture* defaultTexture = new texture("../../resources/textures/earth_diffuse.tga",
+		texture::textureType_t::image, "defaultTexture", textureDescriptor()),
 		const char* windowName = "Ziyad Barakat's Portfolio (mip mapping)",
 		camera* edgeCamera = new camera(),
 		const char* shaderConfigPath = "../../resources/shaders/MipMapping.txt")
 		: textureSettings(defaultTexture, windowName, edgeCamera, shaderConfigPath)
 	{
-		mipSettingsBuffer = new mipSettings_t(0);
+		mip = bufferHandler_t<int>(0);
 	}
 
 	void Initialize() override
@@ -41,11 +25,11 @@ public:
 	{
 		texturedScene::BuildGUI(window, io);
 
-		ImGui::SliderInt("mip level", &mipSettingsBuffer->mipLevel, 0, 10);
+		ImGui::SliderInt("mip level", &mip.data, 0, 10);
 		DrawTextureSettings();
 	}
 
-	void DrawTextureSettings()
+	void DrawTextureSettings() override
 	{
 		//min
 		if (ImGui::ListBox("min filter setting", &minFilterIndex, filterSettings.data(), filterSettings.size()))
@@ -58,17 +42,17 @@ public:
 	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		SetupBuffer(mipSettingsBuffer, mipSettingsBuffer->bufferHandle, sizeof(*mipSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
+		mip.Initialize(1);
 	}
 
 	void Update() override
 	{
 		scene::Update();
-		SetupBuffer(mipSettingsBuffer, mipSettingsBuffer->bufferHandle, sizeof(*mipSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
+		mip.Update();
 	}
 
 protected:
 
-	mipSettings_t*					mipSettingsBuffer;
+	bufferHandler_t<int>	mip;
 };
 #endif
