@@ -126,7 +126,7 @@ protected:
 		geometryBuffer->Bind();
 
 		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[0]->FBODesc.format, //color
+			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //color
 		};
 
 		glDrawBuffers(1, drawbuffers);

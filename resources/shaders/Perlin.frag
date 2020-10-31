@@ -6,7 +6,7 @@ in defaultBlock
 	vec2 uv;
 } inBlock;
 
-out vec4 outColor;
+out float outColor;
 
 layout(std140, binding = 0) uniform defaultSettings
 {
@@ -21,11 +21,10 @@ layout(std140, binding = 0) uniform defaultSettings
 	uint		totalFrames;
 };
 
-layout(std140, binding = 1) uniform perlinSettings
+layout(binding = 1) uniform perlinSettings
 {
-	vec2		uvOffset;
+			vec2		uvOffset;
 	vec2 		uvScale;
-
 	float		modValue;
 	float		permuteValue;
 	float		taylorInverse;
@@ -61,6 +60,7 @@ layout(std140, binding = 1) uniform perlinSettings
 	float		pattern2Value9;//8.3
 	float		pattern2Value10;//2.8
 	float		pattern2Value11;//4.0	
+
 };
 
 vec4 ModifyValue(vec4 value)
@@ -214,16 +214,16 @@ float Pattern2(in vec2 perlinVector, out vec2 q, out vec2 r, in float time)
 
 void main()
 {
-	vec2 q = inBlock.uv + uvOffset;
+	vec2 q = (inBlock.uv + uvOffset) * uvScale;
 	q *= uvScale;
 	vec2 p = -1.0 + 2.0 * q;
 	vec2 qQ;
 	vec2 r;
-	float color = Pattern2(p, qQ, r, float(totalTime)) * colorBias;
+	float color = Pattern2(p, qQ, r, float(totalTime * 0.1)) * colorBias;
 
 	//Color *= 3.5;
 
-	color = color - int(color);
+	//color = color - int(color);
 
-	outColor = vec4(color);	
+	outColor = color;	
 }

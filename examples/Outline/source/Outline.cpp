@@ -2,7 +2,7 @@
 
 int main()
 {
-	stencil* exampleScene = new stencil();
+	outline* exampleScene = new outline();
 	exampleScene->Initialize();
 	exampleScene->Run();
 	return 0;

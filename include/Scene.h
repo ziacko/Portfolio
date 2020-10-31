@@ -81,7 +81,7 @@ public:
 		
 	}
 
-	~scene(){}
+	virtual ~scene(){};
 
 	virtual void Run()
 	{
@@ -140,20 +140,20 @@ public:
 	
 protected:
 
-	windowManager*				manager;
+	windowManager*							manager;
 
-	std::map<tWindow*, ImGuiContext*> windowContextMap;
-	std::vector<tWindow*>		windows;
+	std::map<tWindow*, ImGuiContext*>		windowContextMap;
+	std::vector<tWindow*>					windows;
 
-	shaderManager*               shaderHandler;
-	std::vector<tShaderProgram*> shaderPrograms;
+	shaderManager*							shaderHandler;
+	std::vector<tShaderProgram*>			shaderPrograms;
 
-	tinyClock_t*				sceneClock;
+	tinyClock_t*							sceneClock;
 
 	//defaultUniformBuffer*		defaultUniform;
-	vertexBuffer_t*				defaultVertexBuffer;
+	vertexBuffer_t*							defaultVertexBuffer;
 
-	bufferHandler_t<defaultUniformBuffer>				defaultPayload;
+	bufferHandler_t<defaultUniformBuffer>	defaultPayload;
 
 	camera*						sceneCamera;
 	const char*					windowName;
@@ -295,7 +295,7 @@ protected:
 		
 		sceneCamera->resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
 		//create a separate window that displays all possible rendering resolutions
-		DrawCameraStats();
+		//DrawCameraStats();
 	}
 
 	virtual void DrawCameraStats()

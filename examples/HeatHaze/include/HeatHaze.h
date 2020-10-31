@@ -3,11 +3,10 @@
 #include "bubble.h"
 #include "FrameBuffer.h"
 
-struct perlinSettings_t
+struct perlinSettings_t//	: public uniformBuffer_t
 {
 	glm::vec2		uvOffset;
 	glm::vec2		uvScale;
-
 	float			modValue;
 	float			permuteValue;
 	float			taylorInverse;
@@ -33,17 +32,16 @@ struct perlinSettings_t
 	float			patternValue11;//4.0
 
 
-
-
-	perlinSettings_t(GLfloat modValue = 289.0f, GLfloat permuteValue = 34.0f,
+	perlinSettings_t(GLfloat modValue = 289.0f, GLfloat permuteValue = 29.33f,
 		GLfloat taylorInverse = 1.79284291400159f, GLfloat fadeValue1 = 6.0f, GLfloat fadeValue2 = 15.0f,
-		GLfloat fadeValue3 = 10.0f, GLuint numOctaves = 4,
-		GLuint colorBias = 20,
-		GLfloat noiseValue = 41.0f, GLfloat noiseValue2 = 2.3f,
-		GLfloat patternValue1 = 0.3f, GLfloat patternValue2 = 0.8f, GLfloat patternValue3 = 5.2f,
+		GLfloat fadeValue3 = 10.0f, GLuint numOctaves = 20,
+		GLuint colorBias = 2,
+		GLfloat noiseValue = 79.66f, GLfloat noiseValue2 = 5.6f,
+
+		GLfloat patternValue1 = 2.5f, GLfloat patternValue2 = 0.4f, GLfloat patternValue3 = 5.2f,
 		GLfloat patternValue4 = 1.3f, GLfloat patternValue5 = 4.0f, GLfloat patternValue6 = 1.7f,
 		GLfloat patternValue7 = 9.2f, GLfloat patternValue8 = 4.0f, GLfloat patternValue9 = 8.3f,
-		GLfloat patternValue10 = 2.8f, GLfloat	patternValue11 = 4.0f)
+		GLfloat patternValue10 = 2.8f, GLfloat	patternValue11 = 2.02f)
 	{
 		this->modValue = modValue;
 		this->permuteValue = permuteValue;
@@ -57,18 +55,6 @@ struct perlinSettings_t
 
 		this->noiseValue = noiseValue;
 		this->noiseValue2 = noiseValue2;
-
-		/*this->pattern1Value1 = pattern1Value1;
-		this->pattern1Value2 = pattern1Value2;
-		this->pattern1Value3 = pattern1Value3;
-		this->pattern1Value4 = pattern1Value4;
-		this->pattern1Value5 = pattern1Value5;
-		this->pattern1Value6 = pattern1Value6;
-		this->pattern1Value7 = pattern1Value7;
-		this->pattern1Value8 = pattern1Value8;
-		this->pattern1Value9 = pattern1Value9;
-		this->pattern1Value10 = pattern1Value10;
-		this->pattern1Value11 = pattern1Value11;*/
 
 		this->patternValue1 = patternValue1;
 		this->patternValue2 = patternValue2;
@@ -119,7 +105,8 @@ public:
 		FBODescriptor perlinDesc;
 		perlinDesc.dataType = GL_FLOAT;
 		perlinDesc.format = gl_rg;
-		perlinDesc.internalFormat = gl_rg16;
+		perlinDesc.internalFormat = gl_rg16f;
+		perlinDesc.internalFormat = gl_rg16f;
 
 		perlinBuffer->AddAttachment(new frameBuffer::attachment_t("perlin",
 			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), perlinDesc));
@@ -131,7 +118,6 @@ public:
 		scene::InitializeUniforms();
 		bubble.Initialize(2);
 		perlin.Initialize(1);
-
 	}
 
 protected:
@@ -216,10 +202,9 @@ protected:
 		defaultVertexBuffer = new vertexBuffer_t(glm::vec2(cellWidth, cellHeight));
 
 		perlinVBuffer = new vertexBuffer_t(defaultPayload.data.resolution);
-
 	}
 
-	void Update() override
+	virtual void Update() override
 	{
 		scene::Update();
 		bubble.Update();
@@ -232,7 +217,7 @@ protected:
 
 		GLenum drawBuffers[1] =
 		{
-			perlinBuffer->attachments[0]->FBODesc.format
+			gl_color_attachment0
 		};
 
 		glDrawBuffers(1, drawBuffers);
@@ -291,20 +276,22 @@ protected:
 	{
 		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);
 		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
+		Resize(window, glm::vec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
 		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
 		ResizeBuffers(defaultPayload.data.resolution);
+		Resize(window, defaultPayload.data.resolution);
 	}
 
-	virtual void Resize(tWindow* window, glm::vec2 dimensions /* = glm::vec2(0) */) override
+	virtual void Resize(tWindow* window, glm::vec2 dimensions = glm::vec2(0)) override
 	{
 		scene::Resize(window, dimensions);
 
 		perlinVBuffer->UpdateBuffer(dimensions);
-
+		ResizeBuffers(dimensions);
 	}
 };
 

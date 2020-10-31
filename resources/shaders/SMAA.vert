@@ -1,5 +1,5 @@
 #version 440
-#define SMAA_MAX_SEARCH_STEPS 8
+#define SMAA_MAX_SEARCH_STEPS 32
 
 layout (location = 0) in vec4 position;
 layout (location = 1) in vec2 uv;

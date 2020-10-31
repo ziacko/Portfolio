@@ -4,6 +4,18 @@
 #include "Scene3D.h"
 #include "FrameBuffer.h"
 
+struct SMAA_Settings_t
+{
+	float		weightScale;
+	float		threshold;
+	float		contrastAdaptationFactor;
+
+	int			searchSteps;
+	int			searchStepsDiag;
+	int			cornerRounding;
+};
+
+
 class SMAA : public scene3D
 {
 public:

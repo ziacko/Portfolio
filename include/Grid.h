@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VertexAttribute.h"
+
 class grid
 {
 
@@ -8,26 +10,24 @@ public:
 	unsigned int vertexArrayHandle;
 	unsigned int vertexBufferHandle;
 	unsigned int indexBufferHandle;
-	glm::ivec2 dimensions;	
-	glm::mat4 position;
-	glm::mat4 scale;
-	glm::mat4 rotation;
-	std::vector<glm::vec4> vertices;
+	glm::ivec2 dimensions;
+	std::vector<vertexAttribute_t> vertices;
 	std::vector<unsigned int> indices;
+	bool tiled;
 
-	grid(glm::ivec2 dimensions)
+	grid(glm::ivec2 dimensions, bool tiled = false)
 	{
 		this->dimensions = dimensions;
-		vertices = std::vector<glm::vec4>(dimensions.x * dimensions.y);
+		vertices = std::vector<vertexAttribute_t>(dimensions.x * dimensions.y);
 		indices = std::vector<unsigned int>((dimensions.x * dimensions.y) * 6);
 		vertexArrayHandle = 0;
 		vertexBufferHandle = 0;
 		indexBufferHandle = 0;
+		this->tiled = tiled;
 
 		//create the grid from here and store it a as a vector of vec4?
 		GenerateGrid();
 		GenerateBuffers();
-
 	}
 
 	void GenerateGrid()
@@ -37,7 +37,18 @@ public:
 		{
 			for (int columnIter = 0; columnIter < dimensions.y; ++columnIter)
 			{
-				vertices[rowIter * dimensions.y + columnIter] = glm::vec4(columnIter, 1.0f, rowIter, 1.0f);
+				vertices[rowIter * dimensions.y + columnIter].position = glm::vec4(columnIter, rowIter, 1.0f, 1.0f);
+				vertices[rowIter * dimensions.y + columnIter].normal = glm::vec4(0, 1, 0, 0);
+				if(tiled)
+				{
+					vertices[rowIter * dimensions.y + columnIter].uv = glm::vec2(columnIter, rowIter);
+				}
+
+				else
+				{
+					vertices[rowIter * dimensions.y + columnIter].uv = glm::vec2(columnIter / (float)(dimensions.y - 1), rowIter / (float)(dimensions.x - 1));
+				}
+				
 			}
 		}
 
@@ -68,12 +79,20 @@ public:
 		glBindBuffer(gl_array_buffer, vertexBufferHandle);
 		glBindBuffer(gl_element_array_buffer, indexBufferHandle);
 
-		glBufferData(gl_array_buffer, vertices.size() * sizeof(glm::vec4), vertices.data(), gl_static_draw);
+		glBufferData(gl_array_buffer, vertices.size() * sizeof(vertexAttribute_t), vertices.data(), gl_static_draw);
 		glBufferData(gl_element_array_buffer, indices.size() * sizeof(unsigned int), &indices[0], gl_static_draw);
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (char*)0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(4);
 
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::position);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::normal);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::tangent);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::biNormal);
+		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::uv);
 		glBindVertexArray(0);
 	}
 

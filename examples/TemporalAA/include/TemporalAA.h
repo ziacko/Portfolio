@@ -104,7 +104,7 @@ public:
 		const char* windowName = "Ziyad Barakat's portfolio (temporal AA)",
 		camera* texModelCamera = new camera(glm::vec2(1280, 720), 5.0f, camera::projection_t::perspective, 0.1f, 2000.f),
 		const char* shaderConfigPath = "../../resources/shaders/TemporalAA.txt",
-		model_t* model = new model_t("../../resources/models/fbx_foliage/Palm_well/Palm_In_Well.FBX"))
+		model_t* model = new model_t("../../resources/models/fbx_foliage/broadleaf_field/Broadleaf_Desktop_Field.FBX"))
 		: scene3D(windowName, texModelCamera, shaderConfigPath, model)
 	{
 		glDisable(GL_BLEND);
@@ -130,7 +130,7 @@ public:
 		//glGenQueries(1, &TAAQuery);
 	}
 
-	~temporalAA() {};
+	virtual ~temporalAA() {};
 
 	virtual void Initialize() override
 	{
@@ -448,28 +448,7 @@ protected:
 		historyFrames[currentFrame]->Unbind();
 	}
 
-	/*void SharpenPass()
-	{
-		//sharpen up TAA		
-		sharpenBuffer->Bind();
-		GLenum drawBuffers[1] = {
-			sharpenBuffer->attachments[0]->attachmentFormat
-		};
-		glDrawBuffers(1, drawBuffers);
-
-		TAAFrames[currentFrame]->attachments[0]->SetActive(0);
-
-		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glViewport(0, 0, windows[0]->resolution.width, windows[0]->resolution.height);
-
-		glUseProgram(sharpenProgram);
-
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		//texture::UnbindTexture(GL_TEXTURE_2D, 0);
-		sharpenBuffer->Unbind();
-	}*/
-
-	void FinalPass(texture* tex1, texture* tex2)
+	virtual void FinalPass(texture* tex1, texture* tex2)
 	{
 		//draw directly to backbuffer		
 		tex1->SetActive(0);
@@ -571,21 +550,6 @@ protected:
 		ImGui::Begin("Jitter Settings");
 		
 
-		ImGui::End();
-	}
-
-	virtual void DrawCameraStats() override
-	{
-		//set up the view matrix
-		ImGui::Begin("camera", &isGUIActive);
-
-		ImGui::DragFloat("near plane", &sceneCamera->nearPlane);
-		ImGui::DragFloat("far plane", &sceneCamera->farPlane);
-		ImGui::SliderFloat("Field of view", &sceneCamera->fieldOfView, 0, 90, "%.0f");
-
-		ImGui::InputFloat("camera speed", &sceneCamera->speed, 0.f);
-		ImGui::InputFloat("x sensitivity", &sceneCamera->xSensitivity, 0.f);
-		ImGui::InputFloat("y sensitivity", &sceneCamera->ySensitivity, 0.f);
 		ImGui::End();
 	}
 

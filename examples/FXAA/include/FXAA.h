@@ -60,7 +60,7 @@ public:
 		depthDesc.target = GL_TEXTURE_2D;
 		depthDesc.dataType = GL_FLOAT;
 		depthDesc.format = GL_DEPTH_COMPONENT;
-		depthDesc.internalDataType = gl_depth_component24;
+		depthDesc.internalFormat = gl_depth_component24;
 		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
 
 		geometryBuffer->Initialize();
@@ -287,7 +287,7 @@ protected:
 	virtual void DrawCameraStats() override
 	{
 		//set up the view matrix
-		ImGui::Begin("camera", &isGUIActive, ImVec2(0, 0));
+		ImGui::Begin("camera", &isGUIActive);
 
 		ImGui::DragFloat("near plane", &sceneCamera->nearPlane);
 		ImGui::DragFloat("far plane", &sceneCamera->farPlane);

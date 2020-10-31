@@ -1,5 +1,7 @@
+#pragma once
+
 #include <Scene.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include "UniformBuffer.h"
 
 class golScene : public scene
@@ -23,7 +25,7 @@ public:
 		float			dimensions; // change to vec2 for more flexibility
 
 		golSettings_t(
-			float dimensions, glm::vec4 aliveColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), //green
+			float dimensions = 10, glm::vec4 aliveColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), //green
 			glm::vec4 deadColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), //red
 			glm::vec4 emptyColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)) //blue
 		{
@@ -34,11 +36,7 @@ public:
 			this->emptyColor = emptyColor;
 		}
 
-		golSettings_t()
-		{
-
-
-		}
+		~golSettings_t() {};
 	};
 
 	struct cells_t
@@ -76,8 +74,7 @@ public:
 		this->cellProbability = cellProbability;
 		this->tweakBarName = windowName;
 
-		//pass a pointer to scene just for random generator seed? sheesh past me is dumb!
-		gol = bufferHandler_t<golSettings_t>();
+		//gol = bufferHandler_t<golSettings_t>(dimensions);
 		gol.data.dimensions = dimensions;
 		cellBuffer = bufferHandler_t<cells_t>(cells_t(this, dimensions));
 		cellDimensions = glm::vec2(0);
@@ -106,8 +103,8 @@ protected:
 	void Update() override
 	{
 		scene::Update();
-		gol.Update(gl_uniform_buffer, gl_dynamic_draw);
-		cellBuffer.Update(gl_shader_storage_buffer, gl_dynamic_draw);
+		gol.Update();
+		cellBuffer.Update(gl_shader_storage_buffer, gl_dynamic_draw, sizeof(int) * cellBuffer.data.cells.size(), cellBuffer.data.cells.data());
 		//UpdateBuffer(gol, gol->bufferHandle, sizeof(*gol), gl_uniform_buffer, gl_dynamic_draw);
 		//UpdateBuffer(cellBuffer->cells.data(), cellBuffer->bufferHandle, sizeof(int) * cellBuffer->cells.size(), gl_shader_storage_buffer, gl_dynamic_draw);
 		//UpdateDefaultBuffer();
@@ -130,7 +127,6 @@ protected:
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(gol.data.dimensions * gol.data.dimensions));
 		
 		DrawGUI(windows[0]);
-
 		windows[0]->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
@@ -313,7 +309,7 @@ protected:
 	{
 		scene::InitializeUniforms();
 		gol.Initialize(1);
-		cellBuffer.Initialize(2);
+		cellBuffer.Initialize(0, gl_shader_storage_buffer);
 		//SetupBuffer(gol, gol->bufferHandle, sizeof(*gol), 1, gl_uniform_buffer, gl_dynamic_draw);
 		//SetupBuffer(cellBuffer, cellBuffer->bufferHandle, GLuint(sizeof(int) * cellBuffer->cells.size()), 0, gl_shader_storage_buffer, gl_dynamic_draw);
 	}

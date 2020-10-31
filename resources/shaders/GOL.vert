@@ -13,7 +13,7 @@ out defaultBlock
 //unsigned int NeighborCount = 0;
 //unsigned int DeadNeighborCount = 0;
 
-layout(packed, binding = 0) uniform defaultSettings 
+layout(std140, binding = 0) uniform defaultSettings 
 {
 	mat4		projection;
 	mat4 		view;
@@ -34,7 +34,7 @@ layout(std140, binding = 1) uniform GOLSettings
 	float Dimensions;
 };
 
-layout(std430, binding = 0) buffer GOLStatus 
+layout(binding = 0) buffer GOLStatus 
 {
 	int Status[];
 };

@@ -16,6 +16,8 @@ public:
 		testModel = model;
 		geometryBuffer = new frameBuffer();
 
+
+
 	}
 
 	~stencil() {};
@@ -24,41 +26,28 @@ public:
 	{
 		scene3D::Initialize();
 
-		geometryBuffer->Initialize();
-		geometryBuffer->Bind();
-
 		FBODescriptor depthDesc;
-		//depthDesc.dataType = GL_FLOAT;
-		//depthDesc.format = GL_DEPTH_COMPONENT;
-		//depthDesc.internalFormat = gl_depth_component24;
-		//depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
 		depthDesc.dataType = gl_unsigned_int_24_8;
 		depthDesc.format = gl_depth_stencil;
 		depthDesc.internalFormat = gl_depth24_stencil8;
 		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depthAndStencil;
+		depthDesc.sampleCount = 1;
+		depthDesc.wrapRSetting = GL_CLAMP;
+		depthDesc.wrapSSetting = GL_CLAMP;
+		depthDesc.wrapTSetting = GL_CLAMP;
 
 		FBODescriptor stencilDesc;
 		stencilDesc.dataType = GL_UNSIGNED_INT;
 		stencilDesc.format = GL_STENCIL_INDEX;
 		stencilDesc.internalFormat = gl_stencil_index8;
 		stencilDesc.attachmentType = FBODescriptor::attachmentType_t::stencil;
+		stencilDesc.sampleCount = 1;
 
 		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color",
 			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
 
 		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth",
 			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), depthDesc));
-
-		//geometryBuffer->AddAttachment(new frameBuffer::attachment_t("stencil",
-		//	glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), stencilDesc));
-
-		frameBuffer::Unbind();
-
-		DepthStencilProgram = shaderPrograms[1]->handle;
-		compareProgram = shaderPrograms[2]->handle;
-		finalProgram = shaderPrograms[3]->handle;
-
-		
 	}
 
 protected:
@@ -150,7 +139,8 @@ protected:
 		
 
 		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[1]->FBODesc.attachmentFormat, //depth
+			gl_depth_attachment
+			//geometryBuffer->attachments[1]->FBODesc.format, //depth
 		};
 
 		glDrawBuffers(1, drawbuffers);
@@ -219,7 +209,7 @@ protected:
 		geometryBuffer->Unbind();
 	}
 
-	void FinalPass(texture* tex1, frameBuffer::attachment_t* tex2)
+	virtual void FinalPass(texture* tex1, frameBuffer::attachment_t* tex2)
 	{
 		//draw directly to backbuffer		
 		tex1->SetActive(0);

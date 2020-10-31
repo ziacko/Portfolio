@@ -341,9 +341,7 @@ protected:
 		historyFrames[!currentFrame]->attachments[0]->SetActive(2); //previous color
 		historyFrames[!currentFrame]->attachments[1]->SetActive(3);//previous depth
 
-		geometryBuffer->attachments[1]->SetActive(4); //velocity
-		
-		
+		geometryBuffer->attachments[1]->SetActive(4); //velocity		
 
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(resolveProgram);

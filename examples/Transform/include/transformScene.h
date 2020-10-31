@@ -87,7 +87,7 @@ protected:
 		
 		TransformRedundancy();
 
-		scene3D::ImGuiCameraSettings();
+		scene3D::DrawCameraStats();
 	}
 
 	virtual void BuildTransformStuff(tWindow* window)

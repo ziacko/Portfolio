@@ -89,6 +89,7 @@ protected:
 	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
+		gaussianSettingsBuffer->
 		SetupBuffer(gaussianSettingsBuffer, gaussianSettingsBuffer->bufferHandle, sizeof(*gaussianSettingsBuffer), 1, gl_uniform_buffer, gl_dynamic_draw);
 	}
 

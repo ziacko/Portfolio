@@ -38,10 +38,18 @@ public:
 		glUniformBlockBinding(programGLID, uniformHandle, blockBindingIndex);
 	}
 
-	void Update(GLenum target = gl_uniform_buffer, GLenum usage = gl_dynamic_draw)
+	void Update(GLenum target = gl_uniform_buffer, GLenum usage = gl_dynamic_draw, size_t dataSize = 0, void* inData = nullptr)
 	{
 		glBindBuffer(target, bufferHandle);
-		glBufferData(target, sizeof(data), &data, usage);
+		if(dataSize > 0 && inData != nullptr)
+		{
+			glBufferData(target, dataSize, inData, usage);
+		}
+		else
+		{
+			glBufferData(target, sizeof(data), &data, usage);
+		}
+		
 		//printf("%i \n", sizeof(data));
 	}
 

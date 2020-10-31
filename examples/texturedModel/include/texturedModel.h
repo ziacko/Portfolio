@@ -53,7 +53,7 @@ protected:
 		ImGui::ListBox("loaded textures", &currentTexture, textureNames.data(), textureNames.size());
 		ImGui::End();
 
-		scene3D::ImGuiCameraSettings();
+		scene3D::DrawCameraStats();
 	}
 
 	virtual void Draw()

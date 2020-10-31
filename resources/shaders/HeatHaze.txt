@@ -11,7 +11,7 @@ Vertex
 ../../resources/shaders/Default.vert
 PerlinFragment
 Fragment
-../../resources/shaders/Perlin.frag
+../../resources/shaders/PerlinHighP.frag
 
 heatProgram
 2

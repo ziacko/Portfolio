@@ -13,6 +13,7 @@ struct textureDescriptor
 	{
 		this->width = 0;
 		this->height = 0;
+		this->depth = 0;
 		this->channels = 4;
 		this->format = format;
 		this->bitsPerPixel = 8;
@@ -37,6 +38,7 @@ struct textureDescriptor
 	//size and pixel depth density settings
 	GLint			width;
 	GLint			height;
+	GLint			depth;
 	GLint			channels;
 	GLenum			format;
 
@@ -477,7 +479,7 @@ public:
 		
 	}
 
-protected:
+//protected:
 	GLuint				handle;
 	std::string			path;
 	GLuint				uniformHandle;
@@ -542,7 +544,7 @@ private:
 			glTexParameteri(texDesc.target, GL_TEXTURE_WRAP_S, texDesc.wrapSSetting);
 			glTexParameteri(texDesc.target, GL_TEXTURE_WRAP_T, texDesc.wrapTSetting);
 
-			glTexImage2D(texDesc.target, texDesc.currentMipmapLevel, texDesc.internalFormat, texDesc.width, texDesc.height, texDesc.border, texDesc.format, texDesc.dataType, data);
+			glTexImage2D(texDesc.target, texDesc.mipmapLevels, texDesc.internalFormat, texDesc.width, texDesc.height, texDesc.border, texDesc.format, texDesc.dataType, data);
 			
 			if (texDesc.mipmapLevels > 0)
 			{
@@ -628,7 +630,7 @@ private:
 		gli::gl::format const gliFormat = GL.translate(tex.format(), tex.swizzles());
 		texDesc.target = GL.translate(tex.target());
 		texDesc.mipmapLevels = tex.levels();
-		texDesc.currentMipmapLevel = tex.levels();
+		texDesc.currentMipmapLevel = 0;
 		texDesc.internalFormat = gliFormat.Internal;
 		texDesc.format = gliFormat.External;
 		texDesc.dataType = gliFormat.Type;

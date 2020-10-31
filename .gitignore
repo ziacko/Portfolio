@@ -26,3 +26,5 @@ vcxproj.filters
 *.exe
 *.log
 *.user
+.vs
+.idea

@@ -9,6 +9,7 @@ layout (location = 4) in vec2 uv;
 out defaultBlock
 {
 	vec4 		position;
+	vec4 		normal;
 	vec2		uv;
 } outBlock;
 
@@ -27,8 +28,10 @@ layout(std140, binding = 0) uniform defaultSettings
 
 void main()
 {
+	//move from world space to screen space
 	outBlock.position = projection * view * translation * position;
 	outBlock.uv = uv;
+	outBlock.normal = normal;
 	
 	gl_Position = outBlock.position;
 }

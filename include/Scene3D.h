@@ -41,7 +41,7 @@ public:
 		wireframe = false;
 	}
 
-	~scene3D() {};
+	virtual ~scene3D() {};
 
 	//override input code. use this to mess with camera
 	virtual void SetupCallbacks() override 
@@ -145,7 +145,8 @@ protected:
 	virtual void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		scene::BuildGUI(window, io);
-		ImGuiCameraSettings();
+		ImGui::Checkbox("wireframe", &wireframe);
+		DrawCameraStats();
 
 		//set up the view matrix
 		ImGui::Begin("camera transform", &testModel->isGUIActive);
@@ -185,23 +186,19 @@ protected:
 		//ImGui::End();
 	}
 
-	void ImGuiCameraSettings()
+	virtual void DrawCameraStats() override
 	{
-		if (ImGui::Button("toggle wireframe"))
-		{
-			wireframe = !wireframe;
-		}
-		/*ImGui::InputFloat("camera speed", &sceneCamera->speed, 0.f);
+		//set up the view matrix
+		ImGui::Begin("camera", &isGUIActive);
+
+		ImGui::DragFloat("near plane", &sceneCamera->nearPlane);
+		ImGui::DragFloat("far plane", &sceneCamera->farPlane);
+		ImGui::SliderFloat("Field of view", &sceneCamera->fieldOfView, 0, 90, "%.0f");
+
+		ImGui::InputFloat("camera speed", &sceneCamera->speed, 0.f);
 		ImGui::InputFloat("x sensitivity", &sceneCamera->xSensitivity, 0.f);
 		ImGui::InputFloat("y sensitivity", &sceneCamera->ySensitivity, 0.f);
-		ImGui::InputFloat("z sensitivity", &sceneCamera->zSensitivity, 0.f);
-
-		if (ImGui::SliderFloat("Field of view", &sceneCamera->fieldOfView, 0, 90, "%.10f"))
-		{
-			sceneCamera->UpdateProjection();
-			defaultUniform->projection = sceneCamera->projection;
-			UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
-		}*/
+		ImGui::End();
 	}
 
 	virtual void InitializeUniforms() override

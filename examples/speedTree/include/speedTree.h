@@ -7,7 +7,7 @@ class speedTree : public scene3D
 public:
 
 	speedTree(
-		const char* windowName = "Ziyad Barakat's portfolio (textured Model)",
+		const char* windowName = "Ziyad Barakat's portfolio (speed tree)",
 		camera* texModelCamera = new camera(glm::vec2(1280, 720), 5.0f, camera::projection_t::perspective),
 		const char* shaderConfigPath = "../../resources/shaders/SpeedTree.txt",
 		model_t* model = new model_t("../../resources/models/fbx_foliage/broadleaf_field/Broadleaf_Desktop_Field.fbx"))

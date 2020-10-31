@@ -1,6 +1,6 @@
 #version 420
 #define SMAA_DECODE_VELOCITY(sample) sample.rg
-#define SMAA_REPROJECTION_WEIGHT_SCALE 300.0
+#define SMAA_REPROJECTION_WEIGHT_SCALE 80.0
 
 in defaultBlock
 {

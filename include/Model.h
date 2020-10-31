@@ -1,5 +1,6 @@
 #pragma once
-
+#include "VertexAttribute.h"
+/*
 struct vertex_t
 {
 	//have to put these first for offsetof to work
@@ -25,8 +26,9 @@ struct vertex_t
 		this->weights = glm::vec4(0);
 		this->uv2 = glm::vec4(0);
 	}
-};
+};*/
 
+/*
 enum vertexAttribute_t
 {
 	positionOffset = offsetof(vertex_t, position),
@@ -38,13 +40,13 @@ enum vertexAttribute_t
 	weightsOffset = offsetof(vertex_t, weights),
 	uvOffset = offsetof(vertex_t, uv),
 	uv2Offset = offsetof(vertex_t, uv2)
-};
+};*/
 
 struct mesh_t
 {
 	std::string								name;
 
-	std::vector<vertex_t>					vertices;
+	std::vector<vertexAttribute_t>					vertices;
 	std::vector<unsigned int>				indices;
 	std::vector<texture>					textures;
 
@@ -67,7 +69,7 @@ struct mesh_t
 
 	mesh_t()
 	{
-		vertices = std::vector<vertex_t>();
+		vertices = std::vector<vertexAttribute_t>();
 		indices = std::vector<unsigned int>();
 		textures = std::vector<texture>();
 
@@ -88,7 +90,7 @@ struct mesh_t
 		isCollision = false;
 	}
 
-	mesh_t(std::vector<vertex_t> inVertices, std::vector<unsigned int> inIndices, std::vector<texture> inTextures) : 
+	mesh_t(std::vector<vertexAttribute_t> inVertices, std::vector<unsigned int> inIndices, std::vector<texture> inTextures) : 
 		vertices(inVertices), indices(inIndices), textures(inTextures)
 	{
 		diffuse = glm::vec4(0);
@@ -120,6 +122,7 @@ public:
 		scale = glm::vec3(1.0f);
 		rotation = glm::vec3(0.0f);
 		this->ignoreCollision = ignoreCollision;
+		isPicked = false;
 	}
 
 	glm::mat4 makeTransform()
@@ -167,7 +170,7 @@ public:
 	{
 		mesh_t newMesh;
 		newMesh.name = mesh->mName.C_Str();
-		std::vector<vertex_t> verts;
+		std::vector<vertexAttribute_t> verts;
 		std::vector<texture> textures;
 
 		//if ignore collision is on, skip the node with the prefix UCX_
@@ -215,7 +218,7 @@ public:
 			{
 				mat = assimpScene->mMaterials[mesh->mMaterialIndex];
 			}
-			verts.push_back(vertex_t(position, normal, tangent, biTangent, uv));
+			verts.push_back(vertexAttribute_t(position, normal, tangent, biTangent, uv));
 		}
 
 		for (unsigned int faceIter = 0; faceIter < mesh->mNumFaces; faceIter++)
@@ -276,7 +279,7 @@ public:
 
 		glBindVertexArray(newMesh.vertexArrayHandle);
 		glBindBuffer(gl_array_buffer, newMesh.vertexBufferHandle);
-		glBufferData(gl_array_buffer, sizeof(vertex_t) * verts.size(), verts.data(), gl_static_draw);
+		glBufferData(gl_array_buffer, sizeof(vertexAttribute_t) * verts.size(), verts.data(), gl_static_draw);
 
 		glBindBuffer(gl_element_array_buffer, newMesh.indexBufferHandle);
 		glBufferData(gl_element_array_buffer, sizeof(unsigned int) * newMesh.indices.size(), newMesh.indices.data(), gl_static_draw);
@@ -287,11 +290,11 @@ public:
 		glEnableVertexAttribArray(3);
 		glEnableVertexAttribArray(4);
 
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (char*)vertexAttribute_t::positionOffset);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (char*)vertexAttribute_t::normalOffset);
-		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (char*)vertexAttribute_t::tangentOffset);
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (char*)vertexAttribute_t::biNormalOffset);
-		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (char*)vertexAttribute_t::uvOffset);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::position);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::normal);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::tangent);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::biNormal);
+		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::uv);
 		
 		newMesh.vertices = std::move(verts);
 		newMesh.textures = std::move(textures);
@@ -358,4 +361,5 @@ public:
 	std::vector<texture>					loadedTextures;
 
 	bool									ignoreCollision;
+	bool									isPicked;
 };

@@ -440,10 +440,10 @@ DirectX_LIBRARY:FILEPATH=C:/Program Files (x86)/Windows Kits/10/Lib/10.0.17763.0
 EXECUTABLE_OUTPUT_PATH:PATH=
 
 //Value Computed by CMake
-EdgeDetection_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/erosion
+EdgeDetection_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/textureSampling
 
 //Value Computed by CMake
-EdgeDetection_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/erosion
+EdgeDetection_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/textureSampling
 
 //Value Computed by CMake
 Gamma_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/gamma
@@ -462,6 +462,12 @@ Gaussian_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/gaussianBlurring
 
 //Value Computed by CMake
 Gaussian_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/gaussianBlurring
+
+//Value Computed by CMake
+GodRay_scene_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/GodRay
+
+//Value Computed by CMake
+GodRay_scene_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/GodRay
 
 //Enable Hunter package manager support
 HUNTER_ENABLED:BOOL=OFF
@@ -521,6 +527,12 @@ Performance_Query_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/Performance_Q
 Performance_Query_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/Performance_Query
 
 //Value Computed by CMake
+Perlin3D_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/Perlin3D
+
+//Value Computed by CMake
+Perlin3D_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/Perlin3D
+
+//Value Computed by CMake
 Perlin_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/perlinNoise
 
 //Value Computed by CMake
@@ -554,10 +566,10 @@ RadialBlur_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/radialBlur
 SYSTEM_IRRXML:BOOL=OFF
 
 //Value Computed by CMake
-Scene_Example_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/Outline
+Scene_Example_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/profiler
 
 //Value Computed by CMake
-Scene_Example_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/Outline
+Scene_Example_SOURCE_DIR:STATIC=D:/projects/Portfolio/examples/profiler
 
 //Value Computed by CMake
 Scene_Gamepad_BINARY_DIR:STATIC=D:/projects/Portfolio/examples/gamepad
@@ -778,7 +790,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MT
 CMAKE_MT-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=60
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=67
 //Platform information initialized
 CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_RC_COMPILER

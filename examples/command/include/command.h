@@ -14,7 +14,7 @@ public:
 		scene3D(windowName, camera3D, shaderConfigPath, model)
 	{
 		testModel = model;
-		materialSettingsBuffer = new baseMaterialSettings_t();
+		//materialSettingsBuffer = new baseMaterialSettings_t();
 		wireframe = false;
 	}
 
