@@ -5,7 +5,9 @@
 #define MICROPROFILE_MAX_FRAME_HISTORY (2<<10)
 #define MICROPROFILE_CONTEXT_SWITCH_TRACE 1
 #define MICROPROFILE_GPU_TIMERS_GL 1
+#define MICROPROFILE_GPU_FRAMES 144
 #define GL_TIMESTAMP 1
+#define MICROPROFILE_WEBSERVER_FRAMES 144
 
 #include "../../examples/TemporalAA/include/TemporalAA.h"
 #include "microprofile.h"
@@ -17,7 +19,7 @@ class profiler : public temporalAA
 public:
 
 	profiler(
-		const char* windowName = "Ziyad Barakat's portfolio (temporal AA)",
+		const char* windowName = "Ziyad Barakat's portfolio (profiling temporal AA)",
 		camera* texModelCamera = new camera(glm::vec2(1280, 720), 5.0f, camera::projection_t::perspective, 0.1f, 2000.f),
 		const char* shaderConfigPath = "../../resources/shaders/TemporalAA.txt",
 		model_t* model = new model_t("../../resources/models/fbx_foliage/broadleaf_field/Broadleaf_Desktop_Field.FBX"))
@@ -37,6 +39,7 @@ public:
 		MicroProfileWebServerStart();
 		MicroProfileContextSwitchTraceStart();
 		MicroProfileGpuInitGL();
+		
 
 
 		//MICROPROFILE_COUNTER_SET("GPU memory//default framebuffer stats", 0);
@@ -97,8 +100,8 @@ protected:
 
 	virtual void UnJitteredPass() override
 	{
-		//MICROPROFILE_SCOPEGPUI("Unjittered pass", 0xff00ff);
-		//MICROPROFILE_SCOPEI("CPU", "Unjittered pass", 0xff00ff);
+		MICROPROFILE_SCOPEGPUI("Unjittered pass", 0xff00ff);
+		MICROPROFILE_SCOPEI("CPU", "Unjittered pass", 0xff00ff);
 		temporalAA::UnJitteredPass();
 	}
 
