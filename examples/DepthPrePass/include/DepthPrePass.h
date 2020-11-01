@@ -35,6 +35,7 @@ public:
 		FBODescriptor depthDesc;
 		depthDesc.dataType = GL_FLOAT;
 		depthDesc.format = GL_DEPTH_COMPONENT;
+		depthDesc.mipmapLevels = 8;
 		depthDesc.internalFormat = gl_depth_component24;
 		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
 
@@ -161,6 +162,10 @@ protected:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
+		geometryBuffer->attachments[1]->SetActive(0);
+		geometryBuffer->attachments[1]->BindTexture();
+		glGenerateMipmap(geometryBuffer->attachments[1]->FBODesc.target);
+		geometryBuffer->attachments[1]->UnbindTexture();
 		geometryBuffer->Unbind();
 	}
 

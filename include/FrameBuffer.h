@@ -105,6 +105,10 @@ public:
 			glTexParameteri(this->FBODesc.target, GL_TEXTURE_MAG_FILTER, this->FBODesc.magFilterSetting);
 			glTexParameteri(this->FBODesc.target, GL_TEXTURE_WRAP_S, this->FBODesc.wrapSSetting);
 			glTexParameteri(this->FBODesc.target, GL_TEXTURE_WRAP_T, this->FBODesc.wrapTSetting);
+			if(this->FBODesc.mipmapLevels > 0)
+			{
+				glGenerateMipmap(this->FBODesc.target);
+			}
 			UnbindTexture();
 		}
 

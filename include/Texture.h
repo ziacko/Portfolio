@@ -476,7 +476,6 @@ public:
 	void Initialize()
 	{
 		
-		
 	}
 
 //protected:
