@@ -182,7 +182,7 @@ protected:
 		//enable stencils, 
 
 		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[0]->FBODesc.format, //depth
+			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //depth
 		};
 
 		glDrawBuffers(1, drawbuffers);
@@ -210,7 +210,7 @@ protected:
 		pickBuffer->Bind();
 
 		GLenum drawbuffers[1] = {
-			pickBuffer->attachments[0]->FBODesc.format, //depth
+			pickBuffer->attachments[0]->FBODesc.attachmentFormat, //depth
 		};
 
 		glDrawBuffers(1, drawbuffers);
@@ -249,12 +249,13 @@ protected:
 
 		else
 		{
-			glStencilMask(0);
-			glStencilFunc(GL_ALWAYS, 5, 0);
+			//just to remove that error message for now
+			//glStencilMask(0);
+			//glStencilFunc(GL_ALWAYS, 5, 0);
 		}
 
 		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[1]->FBODesc.format, //stencil
+			geometryBuffer->attachments[1]->FBODesc.attachmentFormat, //stencil
 		};
 
 		glDrawBuffers(1, drawbuffers);
@@ -296,10 +297,13 @@ protected:
 		if (button == mouseButton_t::left && state == buttonState_t::down)
 		{
 			
-			/*transform identity = transform();
-			glm::vec2 mousePosition = glm::vec2(windows[0]->mousePosition.x, windows[0]->mousePosition.y);*/
-
-			readBuffer = true;
+			transform identity = transform();
+			glm::vec2 mousePosition = glm::vec2(windows[0]->mousePosition.x, windows[0]->mousePosition.y);
+			//fire off a ray from the mouse position (in world space),
+			//test if this ray intersects with any triangles in every mesh
+			raycast::result res = raycast::RayFromMouse(*sceneCamera, mousePosition, *testModel, identity);
+			printf("hit: %i\n", res);
+			readBuffer = res.hit;
 		}
 	}
 
@@ -312,12 +316,12 @@ protected:
 		geometryBuffer->Bind();
 		geometryBuffer->ClearTexture(geometryBuffer->attachments[0], clearColor1);
 		geometryBuffer->ClearTexture(geometryBuffer->attachments[1], clearColor1);
-		glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 		geometryBuffer->Unbind();
 
 		pickBuffer->Bind();
 		pickBuffer->ClearTexture(pickBuffer->attachments[0], clearColor2);
-		glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 		pickBuffer->Unbind();
 
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
