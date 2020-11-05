@@ -22,7 +22,7 @@ namespace raycast
 
     result CastRay(ray inRay, model_t& target, transform& inTrans)
     {
-        //uhh go through every triangle loaded to determine what is hit
+        //uhh go through every triangle loaded to determine what is hit. i don't have collision volumes...so triangles
 
         //in the future just go through all models loaded in the player view frustum
         bool hit = false;
@@ -38,9 +38,9 @@ namespace raycast
 
                 //transform the position via PRS transforms
                 glm::mat4 PRS = position * rotation * scale;
-                glm::vec3 P0 = PRS * meshIter.vertices[vertexIter - 2].position;
-                glm::vec3 P1 = PRS * meshIter.vertices[vertexIter - 1].position;
-                glm::vec3 P2 = PRS * meshIter.vertices[vertexIter].position;
+                glm::vec3 P0 = meshIter.vertices[vertexIter - 2].position;
+                glm::vec3 P1 = meshIter.vertices[vertexIter - 1].position;
+                glm::vec3 P2 = meshIter.vertices[vertexIter].position;
 
                 glm::vec3 N = glm::cross(P1 - P0, P2 - P0);
                 float d = glm::dot(-N, P0);
@@ -61,9 +61,6 @@ namespace raycast
                 if( t > 0 && t < 1) //how the fuck do i tell if there has been a collision?
                 {
                     hit = true;
-                    
-                    
-                   // return res;
                 }
 
                 
@@ -78,8 +75,13 @@ namespace raycast
 
 	result RayFromMouse(camera& inCamera, glm::vec2 mousePosition, model_t& target, transform& inTrans)
 	{
-		auto rayStart = glm::inverse(inCamera.view * inCamera.projection) * glm::vec4(mousePosition.x, mousePosition.y, 0.0f, 1.0f);
-		auto rayEnd = glm::inverse(inCamera.view * inCamera.projection) * glm::vec4(mousePosition.x, mousePosition.y, 1.0f - glm::epsilon<float>(), 1.0f);
+        //should ray start be camera position? camera pos, to infinity?
+        //from camera to model?
+        //auto rayStart = glm::vec4(inCamera.position, 1);
+        //auto rayEnd = glm::vec4(target.position, 1);
+
+		auto rayStart = glm::inverse(inCamera.view) * glm::vec4(mousePosition.x, mousePosition.y, 0.0f, 1.0f);
+		auto rayEnd = glm::inverse(inCamera.view) * glm::vec4(mousePosition.x, mousePosition.y, 1.0f - glm::epsilon<float>(), 1.0f);
 
 		//scaling?
 		rayStart /= rayStart.w;

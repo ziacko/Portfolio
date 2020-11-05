@@ -1,0 +1,14 @@
+#version 450 core
+
+layout(local_size_x = 10) in;
+
+layout (binding = 0) buffer testBuffer
+{
+    float data[];
+};
+
+void main(void)
+{
+    data[gl_LocalInvocationID.x] += 0.0001;
+    //do nothing right now
+}
