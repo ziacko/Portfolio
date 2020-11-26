@@ -89,7 +89,6 @@ public:
 	{
 
 		//this->bubble = bubbleSettings;
-		this->tweakBarName = "heat haze scene";
 		//enableWireframe = true;
 		perlinBuffer = new frameBuffer();
 		enableWireframe = false;
@@ -107,9 +106,9 @@ public:
 		perlinDesc.format = gl_rg;
 		perlinDesc.internalFormat = gl_rg16f;
 		perlinDesc.internalFormat = gl_rg16f;
+		perlinDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		perlinBuffer->AddAttachment(new frameBuffer::attachment_t("perlin",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), perlinDesc));
+		perlinBuffer->AddAttachment(new frameBuffer::attachment_t("perlin", perlinDesc));
 
 		frameBuffer::Unbind();
 
@@ -267,26 +266,26 @@ protected:
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 	}
 
-	virtual void ResizeBuffers(glm::vec2 resolution)
+	virtual void ResizeBuffers(glm::ivec2 resolution)
 	{
-		perlinBuffer->Resize(resolution);
+		perlinBuffer->Resize(glm::ivec3(resolution, 1));
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);
-		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
-		Resize(window, glm::vec2(dimensions.x, dimensions.y));
+		defaultPayload.data.resolution = glm::ivec2(dimensions.width, dimensions.height);
+		ResizeBuffers(glm::ivec2(dimensions.x, dimensions.y));
+		Resize(window, glm::ivec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(window->settings.resolution.width, window->settings.resolution.height);
 		ResizeBuffers(defaultPayload.data.resolution);
 		Resize(window, defaultPayload.data.resolution);
 	}
 
-	virtual void Resize(tWindow* window, glm::vec2 dimensions = glm::vec2(0)) override
+	virtual void Resize(tWindow* window, glm::ivec2 dimensions = glm::ivec2(0)) override
 	{
 		scene::Resize(window, dimensions);
 

@@ -61,7 +61,7 @@ public:
 		prewittProgramGLID = shaderPrograms[2]->handle;
 		freiChenProgramGLID = shaderPrograms[3]->handle;
 
-		integerUniforms.data.inScale = defaultTexture->GetSize();
+		integerUniforms.data.inScale = glm::vec2(defaultTexture->texDesc.dimensions.x, defaultTexture->texDesc.dimensions.y);
 	}
 
 	void BuildGUI(tWindow* window, ImGuiIO io) override

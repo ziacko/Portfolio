@@ -1,54 +1,21 @@
 #pragma once
 #include "VertexAttribute.h"
-/*
-struct vertex_t
-{
-	//have to put these first for offsetof to work
-	glm::vec4 position;
-	glm::vec4 color;
-	glm::vec4 normal;
-	glm::vec4 tangent;
-	glm::vec4 biNormal;
-	glm::vec4 indices;
-	glm::vec4 weights;
-	glm::vec2 uv;
-	glm::vec2 uv2;
 
-	vertex_t(glm::vec4 position, glm::vec4 normal, glm::vec4 tangent,
-		glm::vec4 biTangent, glm::vec2 uv)
-	{
-		this->position = position;
-		this->normal = normal;
-		this->tangent = tangent;
-		this->biNormal = biTangent;
-		this->uv = uv;
-		this->indices = glm::vec4(0);
-		this->weights = glm::vec4(0);
-		this->uv2 = glm::vec4(0);
-	}
-};*/
+#define NUM_BONES_PER_VEREX 4
 
-/*
-enum vertexAttribute_t
+struct boneTransforms_t
 {
-	positionOffset = offsetof(vertex_t, position),
-	colorOffset = offsetof(vertex_t, color),
-	normalOffset = offsetof(vertex_t, normal),
-	tangentOffset = offsetof(vertex_t, tangent),
-	biNormalOffset = offsetof(vertex_t, biNormal),
-	indicesOffset = offsetof(vertex_t, indices),
-	weightsOffset = offsetof(vertex_t, weights),
-	uvOffset = offsetof(vertex_t, uv),
-	uv2Offset = offsetof(vertex_t, uv2)
-};*/
+	std::vector<glm::mat4> transforms;
+};
 
 struct mesh_t
 {
 	std::string								name;
 
-	std::vector<vertexAttribute_t>					vertices;
+	std::vector<vertexAttribute_t>			vertices;
 	std::vector<unsigned int>				indices;
 	std::vector<texture>					textures;
+	bufferHandler_t<boneTransforms_t>		boneTransforms;
 
 	glm::vec4								diffuse;
 	glm::vec4								specular;
@@ -115,7 +82,7 @@ class model_t
 {
 public:
 
-	model_t(const char* resourcePath = "../../resources/models/SoulSpear.fbx", bool ignoreCollision = false)
+	model_t(const char* resourcePath = "../../resources/models/SoulSpear.fbx", bool ignoreCollision = false, bool keepData = false)
 	{
 		this->resourcePath = resourcePath;
 		position = glm::vec3(0.0f, -2.0f, -3.0f);
@@ -123,6 +90,7 @@ public:
 		rotation = glm::vec3(0.0f);
 		this->ignoreCollision = ignoreCollision;
 		isPicked = false;
+		this->keepData = keepData;
 	}
 
 	glm::mat4 makeTransform()
@@ -143,12 +111,25 @@ public:
 		directory = resourcePath.substr(0, resourcePath.find_last_of('/'));
 
 		//load the model into OpenGL
+		ExtractAnimations(assimpScene);
 		ExtractNode(assimpScene->mRootNode);
 	}
 
 	void BeginExtraction(aiNode* node, const aiScene* scene)
 	{
 		//so assuming the root node has children
+
+	}
+
+	void Evaluate(aiAnimation* animation, float time, bool loop, float framesPerSec)
+	{
+		if(animation != nullptr)
+		{
+			int animFrames = animation->mDuration;//?not num frames though
+
+
+
+		}
 
 	}
 
@@ -160,9 +141,24 @@ public:
 			ExtractMesh(assimpScene->mMeshes[node->mMeshes[iter]]);
 		}
 
+		//if the mesh has children, use recursion
 		for (size_t iter = 0; iter < node->mNumChildren; iter++)
 		{
 			ExtractNode(node->mChildren[iter]);
+		}
+	}
+
+	void ExtractAnimations(const aiScene* scene)
+	{
+		if (scene->HasAnimations())
+		{
+			for (size_t iter = 0; iter < scene->mNumAnimations; iter++)
+			{
+				printf("name %s | \t", scene->mAnimations[iter]->mName.C_Str());
+				printf("duration %f \t", scene->mAnimations[iter]->mDuration);
+				printf("ticks per sec %f", scene->mAnimations[iter]->mTicksPerSecond);
+				printf("\n");
+			}
 		}
 	}
 
@@ -177,19 +173,20 @@ public:
 		std::string ue4String = "UCX_";
 		std::string nodeName = mesh->mName.C_Str();
 		newMesh.isCollision = (nodeName.substr(0, 4).compare(ue4String) == 0);
-
+		std::vector<glm::vec4> positions;
 		for (unsigned int vertexIter = 0; vertexIter < mesh->mNumVertices; vertexIter++)
 		{
-			glm::vec4 position = glm::vec4(0, 0, 0, 0);
 			glm::vec4 normal = glm::vec4(0, 0, 0, 0);
 			glm::vec4 tangent = glm::vec4(0, 0, 0, 0);
 			glm::vec4 biTangent = glm::vec4(0, 0, 0, 0);
+			GLuint boneIndex = 0;
+			GLfloat weight = 0.0f;
 			glm::vec2 uv = glm::vec2(0, 0);
 
 			if (mesh->mVertices != nullptr)
 			{
-				position = glm::vec4(mesh->mVertices[vertexIter].x,
-					mesh->mVertices[vertexIter].y, mesh->mVertices[vertexIter].z, 1.0f);
+				positions.push_back(glm::vec4(mesh->mVertices[vertexIter].x,
+					mesh->mVertices[vertexIter].y, mesh->mVertices[vertexIter].z, 1.0f));
 			}
 
 			if (mesh->HasNormals())
@@ -218,7 +215,78 @@ public:
 			{
 				mat = assimpScene->mMaterials[mesh->mMaterialIndex];
 			}
-			verts.push_back(vertexAttribute_t(position, normal, tangent, biTangent, uv));
+
+			vertexAttribute_t vertAttrib;
+			vertAttrib.position = positions[vertexIter];
+			vertAttrib.normal = normal;
+			vertAttrib.tangent = tangent;
+			vertAttrib.biNormal = biTangent;
+			vertAttrib.uv = uv;
+
+			verts.push_back(vertAttrib);
+		}
+
+		//go through bones, assign weights and vertex indices to vertex attribute
+		if (mesh->HasBones())
+		{
+			for (size_t boneIter = 0; boneIter < mesh->mNumBones; boneIter++)
+			{
+				glm::vec4 weight = glm::vec4(0);
+				glm::vec4 indices = glm::vec4(0);
+				for (size_t weightsIter = 0; weightsIter < mesh->mBones[boneIter]->mNumWeights; weightsIter++)
+				{
+					size_t vertexID = mesh->mBones[boneIter]->mWeights[weightsIter].mVertexId;
+					verts[vertexID].boneIndex = (GLuint)boneIter; //is this the right index?
+					verts[vertexID].weight = mesh->mBones[boneIter]->mWeights[weightsIter].mWeight;
+
+
+					/*for (size_t iter = 0; iter < NUM_BONES_PER_VEREX; iter++)
+					{
+						if (verts[vertexID].weight[iter] == 0.0f)
+						{
+							//wait if all 4 members are the same, why use vec4's? memory alignment?
+							verts[vertexID].boneIndex[iter] = boneIter; //is this the right index?
+							verts[vertexID].weight[iter] = mesh->mBones[boneIter]->mWeights[weightsIter].mWeight;
+						}
+					}*/
+
+					glm::mat4 boneTransform;
+					boneTransform[0].x = mesh->mBones[boneIter]->mOffsetMatrix.a1;
+					boneTransform[0].y = mesh->mBones[boneIter]->mOffsetMatrix.b1;
+					boneTransform[0].z = mesh->mBones[boneIter]->mOffsetMatrix.c1;
+					boneTransform[0].w = mesh->mBones[boneIter]->mOffsetMatrix.d1;
+
+					boneTransform[1].x = mesh->mBones[boneIter]->mOffsetMatrix.a2;
+					boneTransform[1].y = mesh->mBones[boneIter]->mOffsetMatrix.b2;
+					boneTransform[1].z = mesh->mBones[boneIter]->mOffsetMatrix.c2;
+					boneTransform[1].w = mesh->mBones[boneIter]->mOffsetMatrix.d2;
+
+					boneTransform[2].x = mesh->mBones[boneIter]->mOffsetMatrix.a3;
+					boneTransform[2].y = mesh->mBones[boneIter]->mOffsetMatrix.b3; //why is some of this garbled?
+					boneTransform[2].z = mesh->mBones[boneIter]->mOffsetMatrix.c3;
+					boneTransform[2].w = mesh->mBones[boneIter]->mOffsetMatrix.d3;
+
+					boneTransform[3].x = mesh->mBones[boneIter]->mOffsetMatrix.a4;
+					boneTransform[3].y = mesh->mBones[boneIter]->mOffsetMatrix.b4;
+					boneTransform[3].z = mesh->mBones[boneIter]->mOffsetMatrix.c4;
+					boneTransform[3].w = mesh->mBones[boneIter]->mOffsetMatrix.d4;
+					newMesh.boneTransforms.data.transforms.push_back(boneTransform);
+
+					//ok how do we map this per vertex?
+					//needs 4 weights and 4 indices per vertex
+					//bones uniform needs to be a matrix
+					/*bone_t bone;
+					bone.indexes.push_back(vertexID);
+					bone.weights.push_back(mesh->mBones[boneIter]->mWeights[weightsIter].mWeight);
+					//ok. how does all this map to a vec4 for both indices and weights?
+					bones.push_back(bone);*/
+				}
+			}
+		}
+
+		if(keepData)
+		{
+			posData.push_back(positions);
 		}
 
 		for (unsigned int faceIter = 0; faceIter < mesh->mNumFaces; faceIter++)
@@ -284,17 +352,39 @@ public:
 		glBindBuffer(gl_element_array_buffer, newMesh.indexBufferHandle);
 		glBufferData(gl_element_array_buffer, sizeof(unsigned int) * newMesh.indices.size(), newMesh.indices.data(), gl_static_draw);
 
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-		glEnableVertexAttribArray(3);
-		glEnableVertexAttribArray(4);
+		//might cause more issues than prevent
+		unsigned int attribID = 0;
 
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::position);
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::normal);
-		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::tangent);
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::biNormal);
-		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::uv);
+		glEnableVertexAttribArray(attribID);
+		glVertexAttribPointer(attribID++, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::position);
+
+		if(mesh->HasNormals())
+		{
+			glEnableVertexAttribArray(attribID);
+			glVertexAttribPointer(attribID++, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::normal);
+		}
+
+		if(mesh->HasTangentsAndBitangents())
+		{
+			glEnableVertexAttribArray(attribID);
+			glVertexAttribPointer(attribID++, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::tangent);
+			
+			glEnableVertexAttribArray(attribID);
+			glVertexAttribPointer(attribID++, 4, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::biNormal);
+		}
+		
+		if(mesh->HasBones())
+		{
+			//if there are skeletal animations, load up the animation indices and weights
+			glEnableVertexAttribArray(attribID);			
+			glVertexAttribPointer(attribID++, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::boneIndex);
+			
+			glEnableVertexAttribArray(attribID);
+			glVertexAttribPointer(attribID++, 1, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::weight);
+		}
+
+		glEnableVertexAttribArray(attribID);
+		glVertexAttribPointer(attribID, 2, GL_FLOAT, GL_FALSE, sizeof(vertexAttribute_t), (char*)vertexOffset::uv);
 		
 		newMesh.vertices = std::move(verts);
 		newMesh.textures = std::move(textures);
@@ -347,6 +437,25 @@ public:
 		return textures;
 	}
 
+	/*std::vector<glm::vec4> GetMeshPosData(unsigned int meshID)
+	{
+		std::vector<glm::vec4> posData;
+		aiMesh* mesh = assimpScene->mMeshes[node->mMeshes[iter]];
+		//if ignore collision is on, skip the node with the prefix UCX_
+		std::string ue4String = "UCX_";
+		std::string nodeName = mesh->mName.C_Str();
+		bool isCollision = (nodeName.substr(0, 4).compare(ue4String) == 0);
+
+		for (unsigned int vertexIter = 0; vertexIter < mesh->mNumVertices; vertexIter++)
+		{
+			if (mesh->mVertices != nullptr)
+			{
+				posData.push_back(glm::vec4(mesh->mVertices[vertexIter].x,
+					mesh->mVertices[vertexIter].y, mesh->mVertices[vertexIter].z, 1.0f));
+			}
+		}
+	}*/
+
 	const aiScene*							assimpScene;
 	std::string								resourcePath;
 	std::vector<mesh_t>						meshes;
@@ -359,7 +468,9 @@ public:
 	glm::vec3								rotation;
 
 	std::vector<texture>					loadedTextures;
+	std::vector<std::vector<glm::vec4>>		posData;
 
 	bool									ignoreCollision;
 	bool									isPicked;
+	bool									keepData;
 };

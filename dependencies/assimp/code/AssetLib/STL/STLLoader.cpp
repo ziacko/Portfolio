@@ -5,8 +5,6 @@ Open Asset Import Library (assimp)
 
 Copyright (c) 2006-2020, assimp team
 
-
-
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -101,11 +99,13 @@ static bool IsAsciiSTL(const char *buffer, unsigned int fileSize) {
 
     const char *bufferEnd = buffer + fileSize;
 
-    if (!SkipSpaces(&buffer))
+    if (!SkipSpaces(&buffer)) {
         return false;
+    }
 
-    if (buffer + 5 >= bufferEnd)
+    if (buffer + 5 >= bufferEnd) {
         return false;
+    }
 
     bool isASCII(strncmp(buffer, "solid", 5) == 0);
     if (isASCII) {
@@ -181,7 +181,7 @@ void STLImporter::InternReadFile(const std::string &pFile, aiScene *pScene, IOSy
 
     // Check whether we can read from the file
     if (file.get() == nullptr) {
-        throw DeadlyImportError("Failed to open STL file " + pFile + ".");
+        throw DeadlyImportError("Failed to open STL file ", pFile, ".");
     }
 
     mFileSize = (unsigned int)file->FileSize();
@@ -207,7 +207,7 @@ void STLImporter::InternReadFile(const std::string &pFile, aiScene *pScene, IOSy
     } else if (IsAsciiSTL(mBuffer, mFileSize)) {
         LoadASCIIFile(mScene->mRootNode);
     } else {
-        throw DeadlyImportError("Failed to determine STL storage representation for " + pFile + ".");
+        throw DeadlyImportError("Failed to determine STL storage representation for ", pFile, ".");
     }
 
     // create a single default material, using a white diffuse color for consistency with
@@ -370,13 +370,21 @@ void STLImporter::LoadASCIIFile(aiNode *root) {
             pMesh->mNumFaces = static_cast<unsigned int>(positionBuffer.size() / 3);
             pMesh->mNumVertices = static_cast<unsigned int>(positionBuffer.size());
             pMesh->mVertices = new aiVector3D[pMesh->mNumVertices];
-            memcpy(pMesh->mVertices, &positionBuffer[0].x, pMesh->mNumVertices * sizeof(aiVector3D));
+            for (size_t i=0; i<pMesh->mNumVertices; ++i ) {
+                pMesh->mVertices[i].x = positionBuffer[i].x;
+                pMesh->mVertices[i].y = positionBuffer[i].y;                
+                pMesh->mVertices[i].z = positionBuffer[i].z;
+            }
             positionBuffer.clear();
         }
         // also only process normalBuffer when filled, else exception when accessing with index operator
         if (!normalBuffer.empty()) {
             pMesh->mNormals = new aiVector3D[pMesh->mNumVertices];
-            memcpy(pMesh->mNormals, &normalBuffer[0].x, pMesh->mNumVertices * sizeof(aiVector3D));
+            for (size_t i=0; i<pMesh->mNumVertices; ++i ) {
+                pMesh->mNormals[i].x = normalBuffer[i].x;
+                pMesh->mNormals[i].y = normalBuffer[i].y;                
+                pMesh->mNormals[i].z = normalBuffer[i].z;
+            }
             normalBuffer.clear();
         }
 

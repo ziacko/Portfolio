@@ -130,6 +130,7 @@ void FBXImporter::SetupProperties(const Importer *pImp) {
 	settings.readCameras = pImp->GetPropertyBool(AI_CONFIG_IMPORT_FBX_READ_CAMERAS, true);
 	settings.readLights = pImp->GetPropertyBool(AI_CONFIG_IMPORT_FBX_READ_LIGHTS, true);
 	settings.readAnimations = pImp->GetPropertyBool(AI_CONFIG_IMPORT_FBX_READ_ANIMATIONS, true);
+	settings.readWeights = pImp->GetPropertyBool(AI_CONFIG_IMPORT_FBX_READ_WEIGHTS, true);
 	settings.strictMode = pImp->GetPropertyBool(AI_CONFIG_IMPORT_FBX_STRICT_MODE, false);
 	settings.preservePivots = pImp->GetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, true);
 	settings.optimizeEmptyAnimationCurves = pImp->GetPropertyBool(AI_CONFIG_IMPORT_FBX_OPTIMIZE_EMPTY_ANIMATION_CURVES, true);
@@ -141,10 +142,15 @@ void FBXImporter::SetupProperties(const Importer *pImp) {
 // ------------------------------------------------------------------------------------------------
 // Imports the given file into the given scene structure.
 void FBXImporter::InternReadFile(const std::string &pFile, aiScene *pScene, IOSystem *pIOHandler) {
-	std::unique_ptr<IOStream> stream(pIOHandler->Open(pFile, "rb"));
+	auto streamCloser = [&](IOStream *pStream) {
+		pIOHandler->Close(pStream);
+	};
+	std::unique_ptr<IOStream, decltype(streamCloser)> stream(pIOHandler->Open(pFile, "rb"), streamCloser);
 	if (!stream) {
 		ThrowException("Could not open file for reading");
 	}
+
+    ASSIMP_LOG_DEBUG("Reading FBX file");
 
 	// read entire file into memory - no streaming for this, fbx
 	// files can grow large, but the assimp output data structure
@@ -182,6 +188,11 @@ void FBXImporter::InternReadFile(const std::string &pFile, aiScene *pScene, IOSy
 
 		// size relative to cm
 		float size_relative_to_cm = doc.GlobalSettings().UnitScaleFactor();
+        if (size_relative_to_cm == 0.0)
+        {
+			// BaseImporter later asserts that fileScale is non-zero.
+			ThrowException("The UnitScaleFactor must be non-zero");
+        }
 
 		// Set FBX file scale is relative to CM must be converted to M for
 		// assimp universal format (M)

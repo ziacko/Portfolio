@@ -1,0 +1,207 @@
+#version 440
+
+#define EMPTY 0
+#define ALIVE 1
+#define DEAD 2
+
+layout(local_size_x = 32, local_size_y = 32) in;
+
+//ok use a shader storage buffer to store all tihs cell data
+layout(std140, binding = 0) uniform GOLSettings 
+{
+	vec4 AliveColor;
+	vec4 DeadColor;
+	vec4 EmptyColor;
+	float Dimensions;
+};
+
+layout(binding = 0) buffer GOLStatus 
+{
+	int Status[];
+};
+
+void CheckNode(int cellState, inout uint neighborCount, inout uint deadNeighborCount)
+{
+    switch(cellState)
+    {
+        case EMPTY:
+        {
+            break;
+        }
+
+        case ALIVE:
+        {
+            neighborCount++;
+            break;
+        }
+
+        case DEAD:
+        {
+            deadNeighborCount++;
+            break;
+        }
+    }
+}
+
+void main(void)
+{
+    float dim = 32;
+    uint totalSize = uint(pow(dim, 2));
+
+    //current row + column
+    
+
+    //ok first let's get the current row and column
+    uint column = gl_LocalInvocationID.x;
+    uint row = gl_LocalInvocationID.y;
+
+    uint currentRow = uint(dim) * row;
+
+    //the current cell
+    uint cellIndex = (currentRow + column);
+
+    //Status[cellIndex] = DEAD;
+    //Status[row] = DEAD;
+    bool endEarly = false;
+    if(Status[cellIndex] == EMPTY)
+    {
+        //if empty, leave
+        endEarly = true;
+    }
+
+    if(!endEarly)
+    {
+        uint neighborCount = 0;
+        uint deadNeighborCount = 0;
+
+        uint arrayDim = uint(dim - 1);
+
+        if(cellIndex < dim)
+        {
+            //check if cell is not in last column
+            if(cellIndex % totalSize == EMPTY)
+            {
+                //next row, next column
+                CheckNode(Status[cellIndex + arrayDim + 1], neighborCount, deadNeighborCount);
+                //next row, this column
+                CheckNode(Status[cellIndex + arrayDim], neighborCount, deadNeighborCount);
+                //this row, next column
+                CheckNode(Status[cellIndex + 1], neighborCount, deadNeighborCount);
+            }
+
+            //check if its the last column in the row
+            else if (cellIndex % arrayDim == EMPTY)
+            {
+                //next row, last column
+                CheckNode(Status[(cellIndex + arrayDim) - 1], neighborCount, deadNeighborCount);
+                //next row, this column
+                CheckNode(Status[cellIndex + arrayDim], neighborCount, deadNeighborCount);
+                //this row, last column
+                CheckNode(Status[cellIndex - 1], neighborCount, deadNeighborCount);
+            }
+
+            else
+            {
+                //5 neighbors to consider
+                //this row, last column
+                CheckNode(Status[cellIndex - 1], neighborCount, deadNeighborCount);
+                //this row, next column
+                CheckNode(Status[cellIndex + 1], neighborCount, deadNeighborCount);
+                //next row, last column
+                CheckNode(Status[(cellIndex + arrayDim) - 1], neighborCount, deadNeighborCount);
+                //next row, this column
+                CheckNode(Status[(cellIndex + arrayDim)], neighborCount, deadNeighborCount);
+                //next row, next column
+                CheckNode(Status[(cellIndex + arrayDim) + 1], neighborCount, deadNeighborCount);
+            }
+        }
+
+        //check if node is in the last row
+			else if (cellIndex > ((totalSize - dim) - 1)
+				&& cellIndex < (totalSize - 1))
+			{
+				//check if the column is a multiple of the dimension (the first column)
+				if ((cellIndex % totalSize) == EMPTY)
+				{
+					//last row, next column
+					CheckNode(Status[(cellIndex - arrayDim) + 1], neighborCount, deadNeighborCount); //lower middle node
+																									//last row, this column
+					CheckNode(Status[cellIndex - arrayDim], neighborCount, deadNeighborCount); //lower middle node
+																							  //this row, next column
+					CheckNode(Status[cellIndex + 1], neighborCount, deadNeighborCount); //lower middle node
+				}
+
+				else if ((cellIndex % arrayDim == EMPTY))
+				{
+					//last row, this column
+					CheckNode(Status[(cellIndex - arrayDim)], neighborCount, deadNeighborCount); //lower middle node
+																								//last row, last column
+					CheckNode(Status[(cellIndex - arrayDim) - 1], neighborCount, deadNeighborCount); //lower middle node
+																									//this row, last column
+					CheckNode(Status[cellIndex - 1], neighborCount, deadNeighborCount); //lower middle node
+				}
+
+				else
+				{
+					//5 neighbors to consider
+					//this row, last column
+					CheckNode(Status[cellIndex - 1], neighborCount, deadNeighborCount);
+					//this row, next column
+					CheckNode(Status[cellIndex + 1], neighborCount, deadNeighborCount);
+					//last row, last column
+					CheckNode(Status[(cellIndex - arrayDim) - 1], neighborCount, deadNeighborCount);
+					//last row, this column
+					CheckNode(Status[(cellIndex - arrayDim)], neighborCount, deadNeighborCount);
+					//last row, next column
+					CheckNode(Status[(cellIndex - arrayDim) + 1], neighborCount, deadNeighborCount);
+				}
+			}
+
+            else
+			{
+				if (cellIndex < (totalSize) - 1)
+				{
+					//8 neighbors to check
+					//last row, last column
+					CheckNode(Status[(cellIndex - arrayDim) - 1], neighborCount, deadNeighborCount);
+					//last row, this column
+					CheckNode(Status[(cellIndex - arrayDim)], neighborCount, deadNeighborCount);
+					//last row, next column
+					CheckNode(Status[(cellIndex - arrayDim) + 1], neighborCount, deadNeighborCount);
+					//this row, last column
+					CheckNode(Status[cellIndex - 1], neighborCount, deadNeighborCount);
+					//this row, next column
+					CheckNode(Status[cellIndex + 1], neighborCount, deadNeighborCount);
+					//next row, last column
+					CheckNode(Status[(cellIndex + arrayDim) - 1], neighborCount, deadNeighborCount);
+					//next row, this column
+					CheckNode(Status[(cellIndex + arrayDim)], neighborCount, deadNeighborCount);
+					//next row, next column
+					CheckNode(Status[(cellIndex + arrayDim) + 1], neighborCount, deadNeighborCount);
+				}
+			}
+
+			if (neighborCount < 2 && Status[cellIndex] == ALIVE)
+			{
+				Status[cellIndex] = DEAD;
+			}
+
+			else if (neighborCount >= 2 && Status[cellIndex] == ALIVE)
+			{
+				if (neighborCount > 3)
+				{
+					Status[cellIndex] = DEAD;
+				}
+
+				else
+				{
+					Status[cellIndex] = ALIVE;
+				}
+			}
+
+			else if (neighborCount == 3 && Status[cellIndex] == DEAD)
+			{
+				Status[cellIndex] = ALIVE;
+			}
+    }
+}

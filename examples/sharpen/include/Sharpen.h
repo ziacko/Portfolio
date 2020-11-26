@@ -62,20 +62,12 @@ protected:
 
 		ImGui::SliderFloat("kernel 1", &sharpen.data.kernel1, -10.0f, 10.0f);
 		ImGui::SliderFloat("kernel 2", &sharpen.data.kernel2, -10.0f, 10.0f);
-/*
-		ImGui::SliderFloat("kernel 3", &sharpenSettings->kernel3, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 4", &sharpenSettings->kernel4, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 5", &sharpenSettings->kernel5, -100.0f, 100.0f);
-		ImGui::SliderFloat("kernel 6", &sharpenSettings->kernel6, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 7", &sharpenSettings->kernel7, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 8", &sharpenSettings->kernel8, -1.0f, 1.0f);
-		ImGui::SliderFloat("kernel 9", &sharpenSettings->kernel9, -1.0f, 1.0f);*/
 	}
 
 	void InitializeUniforms() override
 	{
 		scene::InitializeUniforms();
-		sharpen.Initialize(3);
+		sharpen.Initialize(1);
 	}
 
 	void Update() override

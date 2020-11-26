@@ -8,7 +8,6 @@ namespace raycast
 
         glm::vec3 start;
         glm::vec3 end;
-
         glm::vec3 direction;
         float distance;
     };
@@ -17,7 +16,6 @@ namespace raycast
     {
         public:
         bool hit;
-
     };
 
     result CastRay(ray inRay, model_t& target, transform& inTrans)
@@ -28,7 +26,7 @@ namespace raycast
         bool hit = false;
         for (auto meshIter : target.meshes)
         {
-            for (unsigned int vertexIter = 2; vertexIter < meshIter.vertices.size(); vertexIter += 3)
+            for (unsigned int vertexIter = 2; vertexIter < meshIter.vertices.size(); vertexIter++)
             {
                 //ok make the triangle  and apply the raycast math
                 
@@ -54,18 +52,42 @@ namespace raycast
 
                 glm::vec3 point = inRay.start + (t * inRay.direction);
 
-                printf("%f | %f | %f | %f | %f \n", intersectPoint2, t, point.x, point.y, point.z);
-                //why does it give constant false positives?
-                //t should be -1 if there is no intersection?
+                //printf("%f | %f | %f | %f | %f \n", intersectPoint2, t, point.x, point.y, point.z);
                 
-                if( t > 0 && t < 1) //how the fuck do i tell if there has been a collision?
+
+                //ok now what to look for?
+                
+                if(t > 0) //how the fuck do i tell if there has been a collision?
                 {
                     hit = true;
                 }
 
+				//ray VS sphere test 1
+				/*float radius = pow(inRay.start.x + (t * inRay.direction.x), 2) + pow(inRay.start.y + (t * inRay.direction.y), 2) + pow(inRay.start.z + (t * inRay.direction.z), 2);
+				float a = glm::length(glm::vec3(inRay.direction * inRay.direction));
+				float b = dot(inRay.start, inRay.direction) * 2;
+				float c = pow(glm::length(inRay.start), 2.0f) - pow(radius, 2.0f);
+				float D = pow(b, 2) - (4 * (a * c));
+                printf("%f \n", D);*/
                 
 
-                //i could going from here to figure out WHERE the ray intersects but i'm tired
+                //ray vs sphere test 2
+                glm::vec3 p = glm::vec3(meshIter.vertices[vertexIter].position);
+                float t2 = -1.0f * glm::dot(inRay.start - p, inRay.direction);
+                if(t2 < 0.0f)
+                {
+                    t2 = 0.0f;
+                }
+
+                auto closest = inRay.start + t * inRay.direction;
+                float dist2 = glm::dot(p - closest, p - closest);
+                float radius = 1;
+                
+                if (dist2 < radius)
+                {
+                    printf("%f \n", dist2);
+                    printf("hit! \n");
+                }
             }
         }
 		result res;
@@ -80,12 +102,14 @@ namespace raycast
         //auto rayStart = glm::vec4(inCamera.position, 1);
         //auto rayEnd = glm::vec4(target.position, 1);
 
-		auto rayStart = glm::inverse(inCamera.view) * glm::vec4(mousePosition.x, mousePosition.y, 0.0f, 1.0f);
-		auto rayEnd = glm::inverse(inCamera.view) * glm::vec4(mousePosition.x, mousePosition.y, 1.0f - glm::epsilon<float>(), 1.0f);
+        auto invMat = glm::inverse(inCamera.projection * inCamera.view);
 
+        auto rayStart = inCamera.view[3];// //invMat * glm::vec4(mousePosition.x, mousePosition.y, 0.0f, 1.0f);
+        auto rayEnd = inCamera.view[2];// *glm::vec4(mousePosition.x, mousePosition.y, 1.0f - glm::epsilon<float>(), 1.0f);
+        //i think ray end is mean to be a discrete value
 		//scaling?
-		rayStart /= rayStart.w;
-		rayEnd /= rayEnd.w;
+		//rayStart /= rayStart.w;
+		//rayEnd /= rayEnd.w;
 
 		auto rayVel = glm::normalize(rayEnd - rayStart);
 

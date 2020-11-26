@@ -15,9 +15,6 @@ public:
 	{
 		testModel = model;
 		geometryBuffer = new frameBuffer();
-
-
-
 	}
 
 	~stencil() {};
@@ -26,28 +23,37 @@ public:
 	{
 		scene3D::Initialize();
 
+		FBODescriptor colorDesc;
+		colorDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
+
 		FBODescriptor depthDesc;
 		depthDesc.dataType = gl_unsigned_int_24_8;
 		depthDesc.format = gl_depth_stencil;
 		depthDesc.internalFormat = gl_depth24_stencil8;
 		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depthAndStencil;
-		depthDesc.sampleCount = 1;
 		depthDesc.wrapRSetting = GL_CLAMP;
 		depthDesc.wrapSSetting = GL_CLAMP;
 		depthDesc.wrapTSetting = GL_CLAMP;
+		depthDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
 		FBODescriptor stencilDesc;
 		stencilDesc.dataType = GL_UNSIGNED_INT;
 		stencilDesc.format = GL_STENCIL_INDEX;
 		stencilDesc.internalFormat = gl_stencil_index8;
 		stencilDesc.attachmentType = FBODescriptor::attachmentType_t::stencil;
-		stencilDesc.sampleCount = 1;
+		stencilDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		geometryBuffer->Initialize();
+		geometryBuffer->Bind();
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), depthDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", colorDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", depthDesc));
+	
+		frameBuffer::Unbind();
+
+		DepthStencilProgram = shaderPrograms[1]->handle;
+		compareProgram = shaderPrograms[2]->handle;
+		finalProgram = shaderPrograms[3]->handle;
 	}
 
 protected:
@@ -136,14 +142,7 @@ protected:
 		glStencilFunc(GL_ALWAYS, 5, 0xFF);
 		//glStencilFuncSeparate(GL_FRONT, GL_ALWAYS, 1, 0xff);
 		
-		
-
-		GLenum drawbuffers[1] = {
-			gl_depth_attachment
-			//geometryBuffer->attachments[1]->FBODesc.format, //depth
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		geometryBuffer->attachments[1]->Draw();
 
 		//we just need the first LOd so only do the first 3 meshes
 		for (size_t iter = 0; iter < 3; iter++)
@@ -154,7 +153,6 @@ protected:
 			}
 
 			testModel->meshes[iter].textures[0].SetActive(0);
-			//add the previous depth?
 
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
 			glUseProgram(DepthStencilProgram);
@@ -174,12 +172,7 @@ protected:
 	virtual void GeometryPass()
 	{
 		geometryBuffer->Bind();
-
-		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //color
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		geometryBuffer->attachments[0]->Draw();
 
 		//we just need the first LOd so only do the first 3 meshes
 		for (size_t iter = 0; iter < 3; iter++)
@@ -219,7 +212,6 @@ protected:
 		if (enableCompare)
 		{
 			tex2->SetActive(1);
-			tex2->SetReadMode(FBODescriptor::attachmentType_t::stencil);
 			glUseProgram(compareProgram);
 		}
 
@@ -281,20 +273,20 @@ protected:
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 	}
 
-	virtual void ResizeBuffers(glm::vec2 resolution)
+	virtual void ResizeBuffers(glm::ivec2 resolution)
 	{
-		geometryBuffer->Resize(resolution);
+		geometryBuffer->Resize(glm::ivec3(resolution, 1));
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
 		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);
-		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
+		ResizeBuffers(glm::ivec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(window->settings.resolution.width, window->settings.resolution.height);
 		ResizeBuffers(defaultPayload.data.resolution);
 	}
 
@@ -302,7 +294,7 @@ protected:
 	{
 		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
-		defaultPayload.data.resolution = glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		defaultPayload.data.projection = sceneCamera->projection;
 		defaultPayload.data.translation = sceneCamera->translation;
 		defaultPayload.data.view = sceneCamera->view;

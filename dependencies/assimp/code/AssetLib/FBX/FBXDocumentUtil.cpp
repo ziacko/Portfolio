@@ -61,16 +61,16 @@ namespace Util {
 // signal DOM construction error, this is always unrecoverable. Throws DeadlyImportError.
 void DOMError(const std::string& message, const Token& token)
 {
-    throw DeadlyImportError(Util::AddTokenText("FBX-DOM",message,&token));
+    throw DeadlyImportError("FBX-DOM", Util::GetTokenText(&token), message);
 }
 
 // ------------------------------------------------------------------------------------------------
-void DOMError(const std::string& message, const Element* element /*= NULL*/)
+void DOMError(const std::string& message, const Element* element /*= nullptr*/)
 {
     if(element) {
         DOMError(message,element->KeyToken());
     }
-    throw DeadlyImportError("FBX-DOM " + message);
+    throw DeadlyImportError("FBX-DOM ", message);
 }
 
 
@@ -79,12 +79,12 @@ void DOMError(const std::string& message, const Element* element /*= NULL*/)
 void DOMWarning(const std::string& message, const Token& token)
 {
     if(DefaultLogger::get()) {
-        ASSIMP_LOG_WARN(Util::AddTokenText("FBX-DOM",message,&token));
+        ASSIMP_LOG_WARN_F("FBX-DOM", Util::GetTokenText(&token), message);
     }
 }
 
 // ------------------------------------------------------------------------------------------------
-void DOMWarning(const std::string& message, const Element* element /*= NULL*/)
+void DOMWarning(const std::string& message, const Element* element /*= nullptr*/)
 {
     if(element) {
         DOMWarning(message,element->KeyToken());
@@ -106,7 +106,7 @@ std::shared_ptr<const PropertyTable> GetPropertyTable(const Document& doc,
 {
     const Element* const Properties70 = sc["Properties70"];
     std::shared_ptr<const PropertyTable> templateProps = std::shared_ptr<const PropertyTable>(
-        static_cast<const PropertyTable*>(NULL));
+            static_cast<const PropertyTable *>(nullptr));
 
     if(templateName.length()) {
         PropertyTemplateMap::const_iterator it = doc.Templates().find(templateName);

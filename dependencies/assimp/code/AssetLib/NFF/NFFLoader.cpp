@@ -96,7 +96,7 @@ const aiImporterDesc *NFFImporter::GetInfo() const {
 // ------------------------------------------------------------------------------------------------
 #define AI_NFF_PARSE_FLOAT(f) \
     SkipSpaces(&sz);          \
-    if (!::IsLineEnd(*sz)) sz = fast_atoreal_move<float>(sz, (float &)f);
+    if (!::IsLineEnd(*sz)) sz = fast_atoreal_move<ai_real>(sz, (ai_real &)f);
 
 // ------------------------------------------------------------------------------------------------
 #define AI_NFF_PARSE_TRIPLE(v) \
@@ -154,7 +154,7 @@ void NFFImporter::LoadNFF2MaterialTable(std::vector<ShadingInfo> &output,
         return;
     }
 
-    ShadingInfo *curShader = NULL;
+    ShadingInfo *curShader = nullptr;
 
     // No read the file line per line
     char line[4096];
@@ -214,7 +214,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
 
     // Check whether we can read from the file
     if (!file.get())
-        throw DeadlyImportError("Failed to open NFF file " + pFile + ".");
+        throw DeadlyImportError("Failed to open NFF file ", pFile, ".");
 
     // allocate storage and copy the contents of the file to a memory buffer
     // (terminate it with zero)
@@ -233,14 +233,14 @@ void NFFImporter::InternReadFile(const std::string &pFile,
 
     // camera parameters
     aiVector3D camPos, camUp(0.f, 1.f, 0.f), camLookAt(0.f, 0.f, 1.f);
-    float angle = 45.f;
+    ai_real angle = 45.f;
     aiVector2D resolution;
 
     bool hasCam = false;
 
-    MeshInfo *currentMeshWithNormals = NULL;
-    MeshInfo *currentMesh = NULL;
-    MeshInfo *currentMeshWithUVCoords = NULL;
+    MeshInfo *currentMeshWithNormals = nullptr;
+    MeshInfo *currentMesh = nullptr;
+    MeshInfo *currentMeshWithUVCoords = nullptr;
 
     ShadingInfo s; // current material info
 
@@ -262,7 +262,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
 
     // check whether this is the NFF2 file format
     if (TokenMatch(buffer, "nff", 3)) {
-        const float qnan = get_qnan();
+        const ai_real qnan = get_qnan();
         const aiColor4D cQNAN = aiColor4D(qnan, 0.f, 0.f, 1.f);
         const aiVector3D vQNAN = aiVector3D(qnan, 0.f, 0.f);
 
@@ -542,7 +542,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
                     // search the list of all shaders we have for this object whether
                     // there is an identical one. In this case, we append our mesh
                     // data to it.
-                    MeshInfo *mesh = NULL;
+                    MeshInfo *mesh = nullptr;
                     for (std::vector<MeshInfo>::iterator it = meshes.begin() + objStart, end = meshes.end();
                             it != end; ++it) {
                         if ((*it).shader == shader && (*it).matIndex == matIdx) {
@@ -603,11 +603,11 @@ void NFFImporter::InternReadFile(const std::string &pFile,
         while (GetNextLine(buffer, line)) {
             sz = line;
             if ('p' == line[0] || TokenMatch(sz, "tpp", 3)) {
-                MeshInfo *out = NULL;
+                MeshInfo *out = nullptr;
 
                 // 'tpp' - texture polygon patch primitive
                 if ('t' == line[0]) {
-                    currentMeshWithUVCoords = NULL;
+                    currentMeshWithUVCoords = nullptr;
                     for (auto &mesh : meshesWithUVCoords) {
                         if (mesh.shader == s) {
                             currentMeshWithUVCoords = &mesh;
@@ -624,7 +624,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
                 }
                 // 'pp' - polygon patch primitive
                 else if ('p' == line[1]) {
-                    currentMeshWithNormals = NULL;
+                    currentMeshWithNormals = nullptr;
                     for (auto &mesh : meshesWithNormals) {
                         if (mesh.shader == s) {
                             currentMeshWithNormals = &mesh;
@@ -642,7 +642,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
                 }
                 // 'p' - polygon primitive
                 else {
-                    currentMesh = NULL;
+                    currentMesh = nullptr;
                     for (auto &mesh : meshes) {
                         if (mesh.shader == s) {
                             currentMesh = &mesh;
@@ -706,7 +706,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
             }
             // 'f' - shading information block
             else if (TokenMatch(sz, "f", 1)) {
-                float d;
+                ai_real d;
 
                 // read the RGB colors
                 AI_NFF_PARSE_TRIPLE(s.color);
@@ -856,7 +856,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
 
                 // read the two center points and the respective radii
                 aiVector3D center1, center2;
-                float radius1 = 0.f, radius2 = 0.f;
+                ai_real radius1 = 0.f, radius2 = 0.f;
                 AI_NFF_PARSE_TRIPLE(center1);
                 AI_NFF_PARSE_FLOAT(radius1);
 
@@ -874,7 +874,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
                 curMesh.dir = center2 - center1;
                 curMesh.center = center1 + curMesh.dir / (ai_real)2.0;
 
-                float f;
+                ai_real f;
                 if ((f = curMesh.dir.Length()) < 10e-3f) {
                     ASSIMP_LOG_ERROR("NFF: Cone height is close to zero");
                     continue;
@@ -969,8 +969,8 @@ void NFFImporter::InternReadFile(const std::string &pFile,
     root->mNumChildren = numNamed + (hasCam ? 1 : 0) + (unsigned int)lights.size();
     root->mNumMeshes = pScene->mNumMeshes - numNamed;
 
-    aiNode **ppcChildren = NULL;
-    unsigned int *pMeshes = NULL;
+    aiNode **ppcChildren = nullptr;
+    unsigned int *pMeshes = nullptr;
     if (root->mNumMeshes)
         pMeshes = root->mMeshes = new unsigned int[root->mNumMeshes];
     if (root->mNumChildren)
@@ -1037,7 +1037,7 @@ void NFFImporter::InternReadFile(const std::string &pFile,
         mesh->mNumFaces = (unsigned int)src.faces.size();
 
         // Generate sub nodes for named meshes
-        if (src.name[0] && NULL != ppcChildren) {
+        if (src.name[0] && nullptr != ppcChildren) {
             aiNode *const node = *ppcChildren = new aiNode();
             node->mParent = root;
             node->mNumMeshes = 1;

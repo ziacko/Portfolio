@@ -62,20 +62,17 @@ public:
 		depthDesc.format = GL_DEPTH_COMPONENT;
 		depthDesc.internalFormat = gl_depth_component24;
 		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
+		depthDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-			depthDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color"));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", depthDesc));
 
 		FXAABuffer->Initialize();
 		FXAABuffer->Bind();
-		FXAABuffer->AddAttachment(new frameBuffer::attachment_t("FXAA", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		FXAABuffer->AddAttachment(new frameBuffer::attachment_t("FXAA"));
 
 		frameBuffer::Unbind();
 
@@ -194,7 +191,7 @@ protected:
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
-			glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
@@ -316,25 +313,25 @@ protected:
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 	}
 
-	virtual void ResizeBuffers(glm::vec2 resolution)
+	virtual void ResizeBuffers(glm::ivec2 resolution)
 	{
 		for (auto iter : geometryBuffer->attachments)
 		{
-			iter->Resize(resolution);
+			iter->Resize(glm::ivec3(resolution, 1));
 		}
 
-		FXAABuffer->attachments[0]->Resize(resolution);
+		FXAABuffer->attachments[0]->Resize(glm::ivec3(resolution, 1));
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);	
-		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
+		defaultPayload.data.resolution = glm::ivec2(dimensions.width, dimensions.height);	
+		ResizeBuffers(glm::ivec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(window->settings.resolution.width, window->settings.resolution.height);
 		ResizeBuffers(defaultPayload.data.resolution);
 	}
 
@@ -343,7 +340,7 @@ protected:
 		defaultPayload = bufferHandler_t<defaultUniformBuffer>(sceneCamera);
 		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
-		defaultPayload.data.resolution = glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		defaultPayload.data.projection = sceneCamera->projection;
 		defaultPayload.data.translation = sceneCamera->translation;
 		defaultPayload.data.view = sceneCamera->view;

@@ -321,9 +321,10 @@ public:
 struct Face : public FaceWithSmoothingGroup {
 };
 
-#ifdef _WIN32
+#ifdef _MSC_VER
+#pragma warning(push)
 #pragma warning(disable : 4315)
-#endif
+#endif // _MSC_VER
 
 // ---------------------------------------------------------------------------
 /** Helper structure representing a texture */
@@ -412,6 +413,10 @@ struct Texture {
 
 #include <assimp/Compiler/poppack1.h>
 
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
+
 // ---------------------------------------------------------------------------
 /** Helper structure representing a 3ds material */
 struct Material {
@@ -462,30 +467,28 @@ struct Material {
             sTexAmbient(other.sTexAmbient),
             mTwoSided(other.mTwoSided) {
         // empty
-
     }
 
     //! Move constructor. This is explicitly written because MSVC doesn't support defaulting it
-    Material(Material &&other) AI_NO_EXCEPT :
-            mName(std::move(other.mName)),
-            mDiffuse(std::move(other.mDiffuse)),
-            mSpecularExponent(std::move(other.mSpecularExponent)),
-            mShininessStrength(std::move(other.mShininessStrength)),
-            mSpecular(std::move(other.mSpecular)),
-            mAmbient(std::move(other.mAmbient)),
-            mShading(std::move(other.mShading)),
-            mTransparency(std::move(other.mTransparency)),
-            sTexDiffuse(std::move(other.sTexDiffuse)),
-            sTexOpacity(std::move(other.sTexOpacity)),
-            sTexSpecular(std::move(other.sTexSpecular)),
-            sTexReflective(std::move(other.sTexReflective)),
-            sTexBump(std::move(other.sTexBump)),
-            sTexEmissive(std::move(other.sTexEmissive)),
-            sTexShininess(std::move(other.sTexShininess)),
-            mBumpHeight(std::move(other.mBumpHeight)),
-            mEmissive(std::move(other.mEmissive)),
-            sTexAmbient(std::move(other.sTexAmbient)),
-            mTwoSided(std::move(other.mTwoSided)) {
+    Material(Material &&other) AI_NO_EXCEPT : mName(std::move(other.mName)),
+                                              mDiffuse(std::move(other.mDiffuse)),
+                                              mSpecularExponent(std::move(other.mSpecularExponent)),
+                                              mShininessStrength(std::move(other.mShininessStrength)),
+                                              mSpecular(std::move(other.mSpecular)),
+                                              mAmbient(std::move(other.mAmbient)),
+                                              mShading(std::move(other.mShading)),
+                                              mTransparency(std::move(other.mTransparency)),
+                                              sTexDiffuse(std::move(other.sTexDiffuse)),
+                                              sTexOpacity(std::move(other.sTexOpacity)),
+                                              sTexSpecular(std::move(other.sTexSpecular)),
+                                              sTexReflective(std::move(other.sTexReflective)),
+                                              sTexBump(std::move(other.sTexBump)),
+                                              sTexEmissive(std::move(other.sTexEmissive)),
+                                              sTexShininess(std::move(other.sTexShininess)),
+                                              mBumpHeight(std::move(other.mBumpHeight)),
+                                              mEmissive(std::move(other.mEmissive)),
+                                              sTexAmbient(std::move(other.sTexAmbient)),
+                                              mTwoSided(std::move(other.mTwoSided)) {
         // empty
     }
 
@@ -615,7 +618,12 @@ struct Node {
     Node() = delete;
 
     explicit Node(const std::string &name) :
-            mParent(NULL), mName(name), mInstanceNumber(0), mHierarchyPos(0), mHierarchyIndex(0), mInstanceCount(1) {
+            mParent(nullptr),
+            mName(name),
+            mInstanceNumber(0),
+            mHierarchyPos(0),
+            mHierarchyIndex(0),
+            mInstanceCount(1) {
         aRotationKeys.reserve(20);
         aPositionKeys.reserve(20);
         aScalingKeys.reserve(20);

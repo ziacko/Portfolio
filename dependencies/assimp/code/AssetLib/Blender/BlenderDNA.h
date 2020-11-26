@@ -83,9 +83,9 @@ class ObjectCache;
  *  ancestry. */
 // -------------------------------------------------------------------------------
 struct Error : DeadlyImportError {
-    Error(const std::string &s) :
-            DeadlyImportError(s) {
-        // empty
+    template <typename... T>
+    explicit Error(T &&...args) :
+            DeadlyImportError(args...) {
     }
 };
 
@@ -186,7 +186,7 @@ struct Field {
 };
 
 // -------------------------------------------------------------------------------
-/** Range of possible behaviours for fields absend in the input file. Some are
+/** Range of possible behaviors for fields absence in the input file. Some are
  *  mission critical so we need them, while others can silently be default
  *  initialized and no animations are harmed. */
 // -------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ public:
 
     // --------------------------------------------------------
     /** Access a field of the structure by its canonical name. The pointer version
-     *  returns NULL on failure while the reference version raises an import error. */
+     *  returns nullptr on failure while the reference version raises an import error. */
     inline const Field &operator[](const std::string &ss) const;
     inline const Field *Get(const std::string &ss) const;
 
@@ -359,7 +359,7 @@ private:
     template <typename T>
     T *_allocate(vector<T> &out, size_t &s) const {
         out.resize(s);
-        return s ? &out.front() : NULL;
+        return s ? &out.front() : nullptr;
     }
 
     // --------------------------------------------------------
@@ -367,14 +367,14 @@ private:
     struct _defaultInitializer {
 
         template <typename T, unsigned int N>
-        void operator()(T (&out)[N], const char * = NULL) {
+        void operator()(T (&out)[N], const char * = nullptr) {
             for (unsigned int i = 0; i < N; ++i) {
                 out[i] = T();
             }
         }
 
         template <typename T, unsigned int N, unsigned int M>
-        void operator()(T (&out)[N][M], const char * = NULL) {
+        void operator()(T (&out)[N][M], const char * = nullptr) {
             for (unsigned int i = 0; i < N; ++i) {
                 for (unsigned int j = 0; j < M; ++j) {
                     out[i][j] = T();
@@ -383,7 +383,7 @@ private:
         }
 
         template <typename T>
-        void operator()(T &out, const char * = NULL) {
+        void operator()(T &out, const char * = nullptr) {
             out = T();
         }
     };
@@ -394,7 +394,7 @@ private:
 
 // --------------------------------------------------------
 template <>
-struct Structure ::_defaultInitializer<ErrorPolicy_Warn> {
+struct Structure::_defaultInitializer<ErrorPolicy_Warn> {
 
     template <typename T>
     void operator()(T &out, const char *reason = "<add reason>") {
@@ -406,7 +406,7 @@ struct Structure ::_defaultInitializer<ErrorPolicy_Warn> {
 };
 
 template <>
-struct Structure ::_defaultInitializer<ErrorPolicy_Fail> {
+struct Structure::_defaultInitializer<ErrorPolicy_Fail> {
 
     template <typename T>
     void operator()(T & /*out*/, const char * = "") {
@@ -448,7 +448,7 @@ public:
 
 public:
     // --------------------------------------------------------
-    /** Access a structure by its canonical name, the pointer version returns NULL on failure
+    /** Access a structure by its canonical name, the pointer version returns nullptr on failure
       * while the reference version raises an error. */
     inline const Structure &operator[](const std::string &ss) const;
     inline const Structure *Get(const std::string &ss) const;

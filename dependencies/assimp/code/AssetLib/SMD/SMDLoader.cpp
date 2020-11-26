@@ -577,7 +577,7 @@ void SMDImporter::GetAnimationFileList(const std::string &pFile, IOSystem* pIOHa
     char *context1, *context2;
 
     tok1 = strtok_s(&buf[0], "\r\n", &context1);
-    while (tok1 != NULL) {
+    while (tok1 != nullptr) {
         tok2 = strtok_s(tok1, " \t", &context2);
         if (tok2) {
             char *p = tok2;
@@ -695,7 +695,7 @@ void SMDImporter::ReadSmd(const std::string &pFile, IOSystem* pIOHandler) {
 
     // Check whether we can read from the file
     if (file.get() == nullptr) {
-        throw DeadlyImportError("Failed to open SMD/VTA file " + pFile + ".");
+        throw DeadlyImportError("Failed to open SMD/VTA file ", pFile, ".");
     }
 
     iFileSize = (unsigned int)file->FileSize();

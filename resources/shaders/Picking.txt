@@ -1,4 +1,4 @@
-5
+6
 geometryProgram
 5
 positon
@@ -77,3 +77,11 @@ Vertex
 PickingFragment
 Fragment
 ../../resources/shaders/ColorPick.frag
+
+ComputeProgram
+0
+0
+1
+RayCastCompute
+Compute
+../../resources/shaders/RayCast.comp

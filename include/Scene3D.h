@@ -33,8 +33,8 @@ public:
 
 	scene3D(const char* windowName = "Ziyad Barakat's Portfolio(3D scene)",
 		camera* camera3D = new camera(glm::vec2(1280, 720), 200.0f, camera::projection_t::perspective, 0.1f, 1000000.f),
-		const char* shaderConfigPath = "../../resources/shaders/Model.txt",
-		model_t* model = new model_t("../../resources/models/SoulSpear/SoulSpear.fbx")) :
+		const char* shaderConfigPath = "../../resources/shaders/AnimTest.txt",
+		model_t* model = new model_t("../../resources/models/Marv/MarvIdle.fbx")) :
 		scene(windowName, camera3D, shaderConfigPath)
 	{
 		testModel = model;
@@ -59,6 +59,8 @@ public:
 	{
 		scene::Initialize();
 		testModel->loadModel();
+		testModel->meshes[0].boneTransforms.Initialize(0, gl_shader_storage_buffer, gl_static_draw);
+		testModel->meshes[0].boneTransforms.Update(gl_shader_storage_buffer, gl_static_draw, sizeof(glm::mat4) * testModel->meshes[0].boneTransforms.data.transforms.size(), testModel->meshes[0].boneTransforms.data.transforms.data());
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
@@ -102,7 +104,7 @@ protected:
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
-			glDrawElements(GL_TRIANGLES, iter.indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, (GLsizei)iter.indices.size(), GL_UNSIGNED_INT, 0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 		

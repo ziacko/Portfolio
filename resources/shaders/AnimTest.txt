@@ -1,0 +1,17 @@
+1
+ModelProgram
+5
+position
+normal
+tangent
+biTangent
+uv
+1
+outColor
+2
+ModelVertex
+Vertex
+../../resources/shaders/AnimTest.vert
+ModelFragment
+Fragment
+../../resources/shaders/Model.frag

@@ -53,7 +53,7 @@ public:
 		this->windowName = windowName;
 		this->sceneCamera = bufferCamera;
 		this->shaderConfigPath = shaderConfigPath;
-		this->tweakBarName = windowName;
+		this->windowName = windowName;
 		defaultVertexBuffer = nullptr;
 		//defaultUniform = nullptr;
 		imGUIFontTexture = 0;
@@ -77,8 +77,6 @@ public:
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		
 		sceneClock = new tinyClock_t();
-
-		
 	}
 
 	virtual ~scene(){};
@@ -158,7 +156,6 @@ protected:
 	camera*						sceneCamera;
 	const char*					windowName;
 	GLuint						programGLID;
-	const char*					tweakBarName;
 	const char*					shaderConfigPath;
 
 	ImGuiContext*				imGUIContext;
@@ -454,15 +451,15 @@ protected:
 		glUniformBlockBinding(this->programGLID, defaultUniform->uniformHandle, 0);*/
 	}
 
-	virtual void Resize(tWindow* window, glm::vec2 dimensions = glm::vec2(0))
+	virtual void Resize(tWindow* window, glm::ivec2 dimensions = glm::ivec2(0))
 	{
-		if (dimensions == glm::vec2(0))
+		if (dimensions == glm::ivec2(0))
 		{
-			dimensions = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+			dimensions = glm::ivec2(window->settings.resolution.width, window->settings.resolution.height);
 		}
 		glViewport(0, 0, dimensions.x, dimensions.y);
 		
-		defaultPayload.data.resolution = glm::vec2(dimensions.x, dimensions.y);
+		defaultPayload.data.resolution = glm::ivec2(dimensions.x, dimensions.y);
 		defaultPayload.data.projection = glm::ortho(0.0f, (GLfloat)dimensions.x, (GLfloat)dimensions.y, 0.0f, 0.01f, 10.0f);
 
 		UpdateBuffer(gl_uniform_buffer, gl_dynamic_draw);

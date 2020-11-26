@@ -1,0 +1,84 @@
+#version 450
+
+layout(local_size_x = 32) in;
+
+layout(std140, binding = 0) uniform defaultSettings
+{
+	mat4		projection;
+	mat4		view;
+	mat4		translation;
+	vec2		resolution;
+	vec2		mousePosition;
+	float		deltaTime;
+	float		totalTime;
+	float 		framesPerSecond;
+	uint 		totalFrames;
+};
+
+layout(binding = 0) buffer meshPositions
+{
+    vec4        vertices[];
+};
+
+layout(binding = 1) buffer resultBuffer
+{
+    float   result;
+    vec4    point;
+};
+
+float epsilon = 0.00000001;
+
+void main()
+{
+    vec4 rayStart = view * vec4(mousePosition, 0, 1);
+    vec4 rayEnd = view * vec4(mousePosition, 1.0 - epsilon, 1);
+
+    rayStart /= rayStart.w;
+    rayEnd /= rayEnd.w;
+
+    vec4 rayDirection = normalize(rayEnd - rayStart);
+    
+    //work size per work group
+    uint workSize = (vertices.length() / gl_NumWorkGroups.x);
+
+    //where to start
+    uint iter = (gl_LocalInvocationID.x * workSize) + 2;
+
+    //where current cluster will end 
+    uint workOffset = (workSize * (gl_LocalInvocationID.x + 1));
+
+    //
+    uint stride = 3;
+
+    for (iter; iter < workOffset; iter += stride)
+    {
+        vec3 N = cross(vec3(vertices[iter - 1] - vertices[iter - 2]), vec3(vertices[iter] - vertices[iter - 2]));
+        float d = dot(-N, vec3(vertices[iter - 2]));
+        vec4 L  = vec4(N.x, N.y, N.z, d);
+
+        float intersectPoint1 = dot(L, vec4(rayStart.xyz, 1));
+        float intersectPoint2 = dot(L, vec4(rayDirection.xyz, 1));
+
+        float t = -(intersectPoint1 / intersectPoint2);
+        
+        if(intersectPoint2 != 0)
+        {
+            point = rayStart + (t * rayDirection);
+            result = t;
+        }
+
+        //ray VS sphere test
+        /*float radius = pow(rayStart.x + (t * rayDirection.x), 2) + pow(rayStart.y + (t * rayDirection.y), 2) + pow(rayStart.z + (t * rayDirection.z), 2);
+        vec3 a = rayDirection.xyz * rayDirection.xyz;
+        float b = dot(rayStart, rayDirection) * 2;
+        vec3 c = (rayStart.xyz * rayStart.xyz) - pow(radius, 2);
+        float D = pow(b, 2) - (4 * length(a * c));*/
+
+        //if(D < 0) then no intersection
+        //if(D == 0) then ray is tangent to sphere
+        //if (D > 0) then instersection
+    }
+
+   //result = 1;
+   // point = vec4(1);
+}

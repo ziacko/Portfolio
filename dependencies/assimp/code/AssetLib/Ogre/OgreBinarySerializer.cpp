@@ -168,7 +168,7 @@ void OgreBinarySerializer::RollbackHeader() {
 
 void OgreBinarySerializer::SkipBytes(size_t numBytes) {
 #if (OGRE_BINARY_SERIALIZER_DEBUG == 1)
-    ASSIMP_LOG_DEBUG_F("Skipping ", numBytes, " bytes");
+    ASSIMP_LOG_VERBOSE_DEBUG_F("Skipping ", numBytes, " bytes");
 #endif
 
     m_reader->IncPtr(numBytes);
@@ -187,8 +187,8 @@ Mesh *OgreBinarySerializer::ImportMesh(MemoryStreamReader *stream) {
     /// @todo Check what we can actually support.
     std::string version = serializer.ReadLine();
     if (version != MESH_VERSION_1_8) {
-        throw DeadlyExportError(Formatter::format() << "Mesh version " << version << " not supported by this importer. Run OgreMeshUpgrader tool on the file and try again."
-                                                    << " Supported versions: " << MESH_VERSION_1_8);
+        throw DeadlyExportError("Mesh version ", version, " not supported by this importer. Run OgreMeshUpgrader tool on the file and try again.",
+                                                    " Supported versions: ", MESH_VERSION_1_8);
     }
 
     Mesh *mesh = new Mesh();
@@ -207,8 +207,8 @@ Mesh *OgreBinarySerializer::ImportMesh(MemoryStreamReader *stream) {
 void OgreBinarySerializer::ReadMesh(Mesh *mesh) {
     mesh->hasSkeletalAnimations = Read<bool>();
 
-    ASSIMP_LOG_DEBUG("Reading Mesh");
-    ASSIMP_LOG_DEBUG_F("  - Skeletal animations: ", mesh->hasSkeletalAnimations ? "true" : "false");
+    ASSIMP_LOG_VERBOSE_DEBUG("Reading Mesh");
+    ASSIMP_LOG_VERBOSE_DEBUG_F("  - Skeletal animations: ", mesh->hasSkeletalAnimations ? "true" : "false");
 
     if (!AtEnd()) {
         uint16_t id = ReadHeader();
@@ -364,9 +364,9 @@ void OgreBinarySerializer::ReadSubMesh(Mesh *mesh) {
     submesh->indexData->faceCount = static_cast<uint32_t>(submesh->indexData->count / 3);
     submesh->indexData->is32bit = Read<bool>();
 
-    ASSIMP_LOG_DEBUG_F("Reading SubMesh ", mesh->subMeshes.size());
-    ASSIMP_LOG_DEBUG_F("  - Material: '", submesh->materialRef, "'");
-    ASSIMP_LOG_DEBUG_F("  - Uses shared geometry: ", submesh->usesSharedVertexData ? "true" : "false");
+    ASSIMP_LOG_VERBOSE_DEBUG_F("Reading SubMesh ", mesh->subMeshes.size());
+    ASSIMP_LOG_VERBOSE_DEBUG_F("  - Material: '", submesh->materialRef, "'");
+    ASSIMP_LOG_VERBOSE_DEBUG_F("  - Uses shared geometry: ", submesh->usesSharedVertexData ? "true" : "false");
 
     // Index buffer
     if (submesh->indexData->count > 0) {
@@ -374,7 +374,7 @@ void OgreBinarySerializer::ReadSubMesh(Mesh *mesh) {
         uint8_t *indexBuffer = ReadBytes(numBytes);
         submesh->indexData->buffer = MemoryStreamPtr(new Assimp::MemoryIOStream(indexBuffer, numBytes, true));
 
-        ASSIMP_LOG_DEBUG_F("  - ", submesh->indexData->faceCount,
+        ASSIMP_LOG_VERBOSE_DEBUG_F("  - ", submesh->indexData->faceCount,
                 " faces from ", submesh->indexData->count, (submesh->indexData->is32bit ? " 32bit" : " 16bit"),
                 " indexes of ", numBytes, " bytes");
     }
@@ -471,11 +471,11 @@ void OgreBinarySerializer::ReadSubMeshNames(Mesh *mesh) {
             uint16_t submeshIndex = Read<uint16_t>();
             SubMesh *submesh = mesh->GetSubMesh(submeshIndex);
             if (!submesh) {
-                throw DeadlyImportError(Formatter::format() << "Ogre Mesh does not include submesh " << submeshIndex << " referenced in M_SUBMESH_NAME_TABLE_ELEMENT. Invalid mesh file.");
+                throw DeadlyImportError("Ogre Mesh does not include submesh ", submeshIndex, " referenced in M_SUBMESH_NAME_TABLE_ELEMENT. Invalid mesh file.");
             }
 
             submesh->name = ReadLine();
-            ASSIMP_LOG_DEBUG_F("  - SubMesh ", submesh->index, " name '", submesh->name, "'");
+            ASSIMP_LOG_VERBOSE_DEBUG_F("  - SubMesh ", submesh->index, " name '", submesh->name, "'");
 
             if (!AtEnd())
                 id = ReadHeader();
@@ -488,7 +488,7 @@ void OgreBinarySerializer::ReadSubMeshNames(Mesh *mesh) {
 void OgreBinarySerializer::ReadGeometry(VertexData *dest) {
     dest->count = Read<uint32_t>();
 
-    ASSIMP_LOG_DEBUG_F("  - Reading geometry of ", dest->count, " vertices");
+    ASSIMP_LOG_VERBOSE_DEBUG_F("  - Reading geometry of ", dest->count, " vertices");
 
     if (!AtEnd()) {
         uint16_t id = ReadHeader();
@@ -536,7 +536,7 @@ void OgreBinarySerializer::ReadGeometryVertexElement(VertexData *dest) {
     element.offset = Read<uint16_t>();
     element.index = Read<uint16_t>();
 
-    ASSIMP_LOG_DEBUG_F("    - Vertex element ", element.SemanticToString(), " of type ",
+    ASSIMP_LOG_VERBOSE_DEBUG_F("    - Vertex element ", element.SemanticToString(), " of type ",
             element.TypeToString(), " index=", element.index, " source=", element.source);
 
     dest->vertexElements.push_back(element);
@@ -557,7 +557,7 @@ void OgreBinarySerializer::ReadGeometryVertexBuffer(VertexData *dest) {
     uint8_t *vertexBuffer = ReadBytes(numBytes);
     dest->vertexBindings[bindIndex] = MemoryStreamPtr(new Assimp::MemoryIOStream(vertexBuffer, numBytes, true));
 
-    ASSIMP_LOG_DEBUG_F("    - Read vertex buffer for source ", bindIndex, " of ", numBytes, " bytes");
+    ASSIMP_LOG_VERBOSE_DEBUG_F("    - Read vertex buffer for source ", bindIndex, " of ", numBytes, " bytes");
 }
 
 void OgreBinarySerializer::ReadEdgeList(Mesh * /*mesh*/) {
@@ -788,7 +788,7 @@ MemoryStreamReaderPtr OgreBinarySerializer::OpenReader(Assimp::IOSystem *pIOHand
 
     IOStream *f = pIOHandler->Open(filename, "rb");
     if (!f) {
-        throw DeadlyImportError("Failed to open skeleton file " + filename);
+        throw DeadlyImportError("Failed to open skeleton file ", filename);
     }
 
     return MemoryStreamReaderPtr(new MemoryStreamReader(f));
@@ -803,11 +803,11 @@ void OgreBinarySerializer::ReadSkeleton(Skeleton *skeleton) {
     // This deserialization supports both versions of the skeleton spec
     std::string version = ReadLine();
     if (version != SKELETON_VERSION_1_8 && version != SKELETON_VERSION_1_1) {
-        throw DeadlyExportError(Formatter::format() << "Skeleton version " << version << " not supported by this importer."
-                                                    << " Supported versions: " << SKELETON_VERSION_1_8 << " and " << SKELETON_VERSION_1_1);
+        throw DeadlyExportError("Skeleton version ", version, " not supported by this importer.",
+                                                    " Supported versions: ", SKELETON_VERSION_1_8, " and ", SKELETON_VERSION_1_1);
     }
 
-    ASSIMP_LOG_DEBUG("Reading Skeleton");
+    ASSIMP_LOG_VERBOSE_DEBUG("Reading Skeleton");
 
     bool firstBone = true;
     bool firstAnim = true;
@@ -821,7 +821,7 @@ void OgreBinarySerializer::ReadSkeleton(Skeleton *skeleton) {
             }
             case SKELETON_BONE: {
                 if (firstBone) {
-                    ASSIMP_LOG_DEBUG("  - Bones");
+                    ASSIMP_LOG_VERBOSE_DEBUG("  - Bones");
                     firstBone = false;
                 }
 
@@ -834,7 +834,7 @@ void OgreBinarySerializer::ReadSkeleton(Skeleton *skeleton) {
             }
             case SKELETON_ANIMATION: {
                 if (firstAnim) {
-                    ASSIMP_LOG_DEBUG("  - Animations");
+                    ASSIMP_LOG_VERBOSE_DEBUG("  - Animations");
                     firstAnim = false;
                 }
 
@@ -871,10 +871,10 @@ void OgreBinarySerializer::ReadBone(Skeleton *skeleton) {
 
     // Bone indexes need to start from 0 and be contiguous
     if (bone->id != skeleton->bones.size()) {
-        throw DeadlyImportError(Formatter::format() << "Ogre Skeleton bone indexes not contiguous. Error at bone index " << bone->id);
+        throw DeadlyImportError("Ogre Skeleton bone indexes not contiguous. Error at bone index ", bone->id);
     }
 
-    ASSIMP_LOG_DEBUG_F("    ", bone->id, " ", bone->name);
+    ASSIMP_LOG_VERBOSE_DEBUG_F("    ", bone->id, " ", bone->name);
 
     skeleton->bones.push_back(bone);
 }
@@ -889,7 +889,7 @@ void OgreBinarySerializer::ReadBoneParent(Skeleton *skeleton) {
     if (child && parent)
         parent->AddChild(child);
     else
-        throw DeadlyImportError(Formatter::format() << "Failed to find bones for parenting: Child id " << childId << " for parent id " << parentId);
+        throw DeadlyImportError("Failed to find bones for parenting: Child id ", childId, " for parent id ", parentId);
 }
 
 void OgreBinarySerializer::ReadSkeletonAnimation(Skeleton *skeleton) {
@@ -919,14 +919,14 @@ void OgreBinarySerializer::ReadSkeletonAnimation(Skeleton *skeleton) {
 
     skeleton->animations.push_back(anim);
 
-    ASSIMP_LOG_DEBUG_F("    ", anim->name, " (", anim->length, " sec, ", anim->tracks.size(), " tracks)");
+    ASSIMP_LOG_VERBOSE_DEBUG_F("    ", anim->name, " (", anim->length, " sec, ", anim->tracks.size(), " tracks)");
 }
 
 void OgreBinarySerializer::ReadSkeletonAnimationTrack(Skeleton * /*skeleton*/, Animation *dest) {
     uint16_t boneId = Read<uint16_t>();
     Bone *bone = dest->parentSkeleton->BoneById(boneId);
     if (!bone) {
-        throw DeadlyImportError(Formatter::format() << "Cannot read animation track, target bone " << boneId << " not in target Skeleton");
+        throw DeadlyImportError("Cannot read animation track, target bone ", boneId, " not in target Skeleton");
     }
 
     VertexAnimationTrack track;

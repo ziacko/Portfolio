@@ -3,6 +3,7 @@
 
 #include "Scene3D.h"
 #include "FrameBuffer.h"
+#include "HaltonSequence.h"
 
 using downsampleType_t = enum { none = 0, lanczos };
 
@@ -93,34 +94,36 @@ public:
 	{
 		scene3D::Initialize();
 
+		FBODescriptor ssDesc;
+		ssDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width * 2, windows[0]->settings.resolution.height * 2, 1);
+
+		FBODescriptor colorDesc;
+		colorDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
+
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", ssDesc));
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", 
-			glm::vec2(windows[0]->settings.resolution.width * 2, windows[0]->settings.resolution.height * 2)));
+		FBODescriptor ssDepthDesc;
+		ssDepthDesc.dataType = GL_FLOAT;
+		ssDepthDesc.format = GL_DEPTH_COMPONENT;
+		ssDepthDesc.internalFormat = gl_depth_component24;
+		ssDepthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
+		ssDepthDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width * 2, windows[0]->settings.resolution.height * 2, 1);
 
-		FBODescriptor depthDesc;
-		depthDesc.dataType = GL_FLOAT;
-		depthDesc.format = GL_DEPTH_COMPONENT;
-		depthDesc.internalFormat = gl_depth_component24;
-		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
-
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", 
-			glm::vec2(windows[0]->settings.resolution.width * 2, windows[0]->settings.resolution.height * 2),
-			depthDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", ssDepthDesc));
 
 		downscaledBuffer->Initialize();
 		downscaledBuffer->Bind();
-		downscaledBuffer->AddAttachment(new frameBuffer::attachment_t(("downscaled"),
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		downscaledBuffer->AddAttachment(new frameBuffer::attachment_t("downscaled", colorDesc));
+
+		//change back to regular dimensions here
+		ssDepthDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
 		unJitteredBuffer->Initialize();
 		unJitteredBuffer->Bind();
-		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("unJittered",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
-		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("depth", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-			depthDesc));
+		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("unJittered", colorDesc));
+		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("depth", ssDepthDesc));
 
 		//geometry automatically gets assigned to 0
 		downscaleProgram = shaderPrograms[1]->handle;
@@ -228,12 +231,7 @@ protected:
 	virtual void JitterPass()
 	{
 		geometryBuffer->Bind();
-
-		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //color
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		geometryBuffer->attachments[0]->Draw();
 
 		//we just need the first LOD so only do the first 3 meshes
 		for (size_t iter = 0; iter < 3; iter++)
@@ -254,7 +252,7 @@ protected:
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
-			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
@@ -264,12 +262,7 @@ protected:
 	virtual void UnJitteredPass()
 	{
 		unJitteredBuffer->Bind();
-
-		GLenum drawbuffers[1] = {
-			unJitteredBuffer->attachments[0]->FBODesc.attachmentFormat, //color
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		unJitteredBuffer->attachments[0]->Draw();
 
 		//we just need the first LOd so only do the first 3 meshes
 		for (size_t iter = 0; iter < 3; iter++)
@@ -291,7 +284,7 @@ protected:
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
-			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
@@ -301,10 +294,7 @@ protected:
 	virtual void DownscalePass()
 	{
 		downscaledBuffer->Bind();
-		GLenum drawBuffers[1] = {
-			downscaledBuffer->attachments[0]->FBODesc.attachmentFormat
-		};
-		glDrawBuffers(1, drawBuffers);
+		downscaledBuffer->attachments[0]->Draw();
 
 		//current frame
 		geometryBuffer->attachments[0]->SetActive(0); //current color
@@ -462,27 +452,27 @@ protected:
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 	}
 
-	virtual void ResizeBuffers(glm::vec2 resolution)
+	virtual void ResizeBuffers(glm::ivec2 resolution)
 	{
 		for (auto iter : geometryBuffer->attachments)
 		{
-			iter->Resize(glm::vec2(resolution.x * 2, resolution.y * 2));
+			iter->Resize(glm::ivec3(resolution.x * 2, resolution.y * 2, 1));
 		}
 
-		downscaledBuffer->attachments[0]->Resize(resolution);
-		unJitteredBuffer->attachments[0]->Resize(resolution);
-		unJitteredBuffer->attachments[1]->Resize(resolution);
+		downscaledBuffer->attachments[0]->Resize(glm::ivec3(resolution.x, resolution.y, 1));
+		unJitteredBuffer->attachments[0]->Resize(glm::ivec3(resolution.x, resolution.y, 1));
+		unJitteredBuffer->attachments[1]->Resize(glm::ivec3(resolution.x, resolution.y, 1));
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);	
-		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
+		defaultPayload.data.resolution = glm::ivec2(dimensions.width, dimensions.height);	
+		ResizeBuffers(glm::ivec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(window->settings.resolution.width, window->settings.resolution.height);
 		ResizeBuffers(defaultPayload.data.resolution);
 	}
 
@@ -504,20 +494,6 @@ protected:
 		SetupVertexBuffer();
 	}
 
-	float CreateHaltonSequence(unsigned int index, int base)
-	{
-		float f = 1;
-		float r = 0;
-		int current = index;
-		do 
-		{
-			f = f / base;
-			r = r + f * (current % base);
-			current = glm::floor(current / base);
-		} while (current > 0);
-
-		return r;
-	}
 };
 
 #endif

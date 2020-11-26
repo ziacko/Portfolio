@@ -19,7 +19,7 @@ layout(std140, binding = 0) uniform defaultSettings
 	uint		totalFrames;
 };
 
-layout(std140, binding = 3) uniform sharpenSettings
+layout(std140, binding = 1) uniform sharpenSettings
 {
 	float			kernel1;
 	float			kernel2;

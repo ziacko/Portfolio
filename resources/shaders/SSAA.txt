@@ -11,7 +11,7 @@ outColor
 2
 jitterVertex
 Vertex
-../../resources/shaders/Jitter2.vert
+../../resources/shaders/Model.vert
 TreeFragment
 Fragment
 ../../resources/shaders/SpeedTree.frag

@@ -125,7 +125,7 @@ void COBImporter::SetupProperties(const Importer * /*pImp*/) {
 
 // ------------------------------------------------------------------------------------------------
 /*static*/ AI_WONT_RETURN void COBImporter::ThrowException(const std::string &msg) {
-    throw DeadlyImportError("COB: " + msg);
+    throw DeadlyImportError("COB: ", msg);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -290,7 +290,7 @@ aiNode *COBImporter::BuildNodes(const Node &root, const Scene &scin, aiScene *fi
                     }
                     std::unique_ptr<const Material> defmat;
                     if (!min) {
-                        ASSIMP_LOG_DEBUG(format() << "Could not resolve material index "
+                        ASSIMP_LOG_VERBOSE_DEBUG(format() << "Could not resolve material index "
                                                   << reflist.first << " - creating default material for this slot");
 
                         defmat.reset(min = new Material());
@@ -322,7 +322,9 @@ aiNode *COBImporter::BuildNodes(const Node &root, const Scene &scin, aiScene *fi
                             break;
 
                         default:
+                            ASSIMP_LOG_ERROR("Unknown option.");
                             ai_assert(false); // shouldn't be here
+                            break;
                         }
                         mat->AddProperty(&shader, 1, AI_MATKEY_SHADING_MODEL);
                         if (shader != aiShadingMode_Gouraud) {

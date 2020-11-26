@@ -30,7 +30,6 @@ public:
 		camera* chromaticCamera = new camera(),
 		const char* shaderConfigPath = "../../resources/shaders/Chromatic.txt") : texturedScene(defaultTexture, windowName, chromaticCamera, shaderConfigPath)
 	{
-		this->tweakBarName = windowName;
 		this->chromaticSettings = chromaticSettings;
 	}
 

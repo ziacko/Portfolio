@@ -61,11 +61,7 @@ protected:
 		glStencilFunc(GL_ALWAYS, 5, 0x01);
 		//glStencilFuncSeparate(GL_FRONT, GL_ALWAYS, 1, 0xff);		
 
-		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[1]->FBODesc.attachmentFormat, //depth
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		geometryBuffer->attachments[1]->Draw();
 
 		//we just need the first LOd so only do the first 3 meshes
 		for (size_t iter = 0; iter < 3; iter++)
@@ -86,10 +82,9 @@ protected:
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
-			glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-
 		geometryBuffer->Unbind();
 	}
 

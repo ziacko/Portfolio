@@ -64,7 +64,8 @@ void main()
 
 	vec4 R = reflect(-L, N);
 
+
 	float dotprod = max(dot(N, L), 0.0);
 	
-	outColor = texture2D(diffuse, inBlock.uv) + ((defaultLight.color * defaultLight.intensity) * dotprod);
+	outColor = texture(diffuse, inBlock.uv) + ((defaultLight.color * defaultLight.intensity) * dotprod);
 }

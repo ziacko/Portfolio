@@ -111,7 +111,7 @@ void MMDImporter::InternReadFile(const std::string &file, aiScene *pScene,
     // Read file by istream
     std::filebuf fb;
     if (!fb.open(file, std::ios::in | std::ios::binary)) {
-        throw DeadlyImportError("Failed to open file " + file + ".");
+        throw DeadlyImportError("Failed to open file ", file, ".");
     }
 
     std::istream fileStream(&fb);
@@ -122,7 +122,7 @@ void MMDImporter::InternReadFile(const std::string &file, aiScene *pScene,
     fileStream.seekg(0, fileStream.beg);
 
     if (fileSize < sizeof(pmx::PmxModel)) {
-        throw DeadlyImportError(file + " is too small.");
+        throw DeadlyImportError(file, " is too small.");
     }
 
     pmx::PmxModel model;
@@ -134,7 +134,7 @@ void MMDImporter::InternReadFile(const std::string &file, aiScene *pScene,
 // ------------------------------------------------------------------------------------------------
 void MMDImporter::CreateDataFromImport(const pmx::PmxModel *pModel,
         aiScene *pScene) {
-    if (pModel == NULL) {
+    if (pModel == nullptr) {
         return;
     }
 

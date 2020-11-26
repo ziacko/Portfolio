@@ -1,11 +1,8 @@
-/** Helper structures for the Collada loader */
-
 /*
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
 Copyright (c) 2006-2020, assimp team
-
 
 All rights reserved.
 
@@ -42,34 +39,34 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------
 */
 
+/** Helper structures for the Collada loader */
+
 #ifndef AI_COLLADAHELPER_H_INC
 #define AI_COLLADAHELPER_H_INC
 
-#include <map>
-#include <vector>
-#include <set>
-#include <stdint.h>
 #include <assimp/light.h>
-#include <assimp/mesh.h>
 #include <assimp/material.h>
+#include <assimp/mesh.h>
+
+#include <stdint.h>
+#include <map>
+#include <set>
+#include <vector>
 
 struct aiMaterial;
 
-namespace Assimp    {
-namespace Collada       {
+namespace Assimp {
+namespace Collada {
 
-/** Collada file versions which evolved during the years ... */
-enum FormatVersion
-{
+/// Collada file versions which evolved during the years ...
+enum FormatVersion {
     FV_1_5_n,
     FV_1_4_n,
     FV_1_3_n
 };
 
-
-/** Transformation types that can be applied to a node */
-enum TransformType
-{
+/// Transformation types that can be applied to a node
+enum TransformType {
     TF_LOOKAT,
     TF_ROTATE,
     TF_TRANSLATE,
@@ -78,11 +75,10 @@ enum TransformType
     TF_MATRIX
 };
 
-/** Different types of input data to a vertex or face */
-enum InputType
-{
+/// Different types of input data to a vertex or face
+enum InputType {
     IT_Invalid,
-    IT_Vertex,  // special type for per-index data referring to the <vertices> element carrying the per-vertex data.
+    IT_Vertex, // special type for per-index data referring to the <vertices> element carrying the per-vertex data.
     IT_Position,
     IT_Normal,
     IT_Texcoord,
@@ -91,147 +87,136 @@ enum InputType
     IT_Bitangent
 };
 
-/** Supported controller types */
-enum ControllerType
-{
+/// Supported controller types
+enum ControllerType {
     Skin,
     Morph
 };
 
-/** Supported morph methods */
-enum MorphMethod
-{
+/// Supported morph methods
+enum MorphMethod {
     Normalized,
     Relative
 };
 
-/** Common metadata keys as <Collada, Assimp> */
-typedef std::pair<std::string, std::string> MetaKeyPair;
-typedef std::vector<MetaKeyPair> MetaKeyPairVector;
+/// Common metadata keys as <Collada, Assimp>
+using MetaKeyPair = std::pair<std::string, std::string>;
+using MetaKeyPairVector = std::vector<MetaKeyPair>;
 
-// Collada as lower_case (native)
+/// Collada as lower_case (native)
 const MetaKeyPairVector &GetColladaAssimpMetaKeys();
+
 // Collada as CamelCase (used by Assimp for consistency)
 const MetaKeyPairVector &GetColladaAssimpMetaKeysCamelCase();
 
-/** Convert underscore_separated to CamelCase "authoring_tool" becomes "AuthoringTool" */
+/// Convert underscore_separated to CamelCase "authoring_tool" becomes "AuthoringTool"
 void ToCamelCase(std::string &text);
 
-/** Contains all data for one of the different transformation types */
-struct Transform
-{
-    std::string mID;  ///< SID of the transform step, by which anim channels address their target node
+/// Contains all data for one of the different transformation types
+struct Transform {
+    std::string mID; ///< SID of the transform step, by which anim channels address their target node
     TransformType mType;
     ai_real f[16]; ///< Interpretation of data depends on the type of the transformation
 };
 
-/** A collada camera. */
-struct Camera
-{
-    Camera()
-        :   mOrtho  (false)
-        ,   mHorFov (10e10f)
-        ,   mVerFov (10e10f)
-        ,   mAspect (10e10f)
-        ,   mZNear  (0.1f)
-        ,   mZFar   (1000.f)
-    {}
+/// A collada camera.
+struct Camera {
+    Camera() :
+            mOrtho(false),
+            mHorFov(10e10f),
+            mVerFov(10e10f),
+            mAspect(10e10f),
+            mZNear(0.1f),
+            mZFar(1000.f) {}
 
-    // Name of camera
+    /// Name of camera
     std::string mName;
 
-    // True if it is an orthografic camera
+    /// True if it is an orthographic camera
     bool mOrtho;
 
-    //! Horizontal field of view in degrees
+    /// Horizontal field of view in degrees
     ai_real mHorFov;
 
-    //! Vertical field of view in degrees
+    /// Vertical field of view in degrees
     ai_real mVerFov;
 
-    //! Screen aspect
+    /// Screen aspect
     ai_real mAspect;
 
-    //! Near& far z
+    /// Near& far z
     ai_real mZNear, mZFar;
 };
 
 #define ASSIMP_COLLADA_LIGHT_ANGLE_NOT_SET 1e9f
 
 /** A collada light source. */
-struct Light
-{
-    Light()
-        :   mType            (aiLightSource_UNDEFINED)
-        ,   mAttConstant     (1.f)
-        ,   mAttLinear       (0.f)
-        ,   mAttQuadratic    (0.f)
-        ,   mFalloffAngle    (180.f)
-        ,   mFalloffExponent (0.f)
-        ,   mPenumbraAngle   (ASSIMP_COLLADA_LIGHT_ANGLE_NOT_SET)
-        ,   mOuterAngle      (ASSIMP_COLLADA_LIGHT_ANGLE_NOT_SET)
-        ,   mIntensity       (1.f)
-    {}
+struct Light {
+    Light() :
+            mType(aiLightSource_UNDEFINED),
+            mAttConstant(1.f),
+            mAttLinear(0.f),
+            mAttQuadratic(0.f),
+            mFalloffAngle(180.f),
+            mFalloffExponent(0.f),
+            mPenumbraAngle(ASSIMP_COLLADA_LIGHT_ANGLE_NOT_SET),
+            mOuterAngle(ASSIMP_COLLADA_LIGHT_ANGLE_NOT_SET),
+            mIntensity(1.f) {}
 
-    //! Type of the light source aiLightSourceType + ambient
+    /// Type of the light source aiLightSourceType + ambient
     unsigned int mType;
 
-    //! Color of the light
+    /// Color of the light
     aiColor3D mColor;
 
-    //! Light attenuation
-    ai_real mAttConstant,mAttLinear,mAttQuadratic;
+    /// Light attenuation
+    ai_real mAttConstant, mAttLinear, mAttQuadratic;
 
-    //! Spot light falloff
+    /// Spot light falloff
     ai_real mFalloffAngle;
     ai_real mFalloffExponent;
 
     // -----------------------------------------------------
     // FCOLLADA extension from here
 
-    //! ... related stuff from maja and max extensions
+    /// ... related stuff from maja and max extensions
     ai_real mPenumbraAngle;
     ai_real mOuterAngle;
 
-    //! Common light intensity
+    /// Common light intensity
     ai_real mIntensity;
 };
 
 /** Short vertex index description */
-struct InputSemanticMapEntry
-{
-    InputSemanticMapEntry()
-        :   mSet(0)
-        ,   mType(IT_Invalid)
-    {}
+struct InputSemanticMapEntry {
+    InputSemanticMapEntry() :
+            mSet(0),
+            mType(IT_Invalid) {}
 
-    //! Index of set, optional
+    /// Index of set, optional
     unsigned int mSet;
 
-    //! Type of referenced vertex input
+    /// Type of referenced vertex input
     InputType mType;
 };
 
-/** Table to map from effect to vertex input semantics */
-struct SemanticMappingTable
-{
-    //! Name of material
+/// Table to map from effect to vertex input semantics
+struct SemanticMappingTable {
+    /// Name of material
     std::string mMatName;
 
-    //! List of semantic map commands, grouped by effect semantic name
+    /// List of semantic map commands, grouped by effect semantic name
     std::map<std::string, InputSemanticMapEntry> mMap;
 
-    //! For std::find
-    bool operator == (const std::string& s) const {
+    /// For std::find
+    bool operator==(const std::string &s) const {
         return s == mMatName;
     }
 };
 
-/** A reference to a mesh inside a node, including materials assigned to the various subgroups.
- * The ID refers to either a mesh or a controller which specifies the mesh
- */
-struct MeshInstance
-{
+/// A reference to a mesh inside a node, including materials assigned to the various subgroups.
+/// The ID refers to either a mesh or a controller which specifies the mesh
+struct MeshInstance {
     ///< ID of the mesh or controller to be instanced
     std::string mMeshOrController;
 
@@ -239,129 +224,130 @@ struct MeshInstance
     std::map<std::string, SemanticMappingTable> mMaterials;
 };
 
-/** A reference to a camera inside a node*/
-struct CameraInstance
-{
-     ///< ID of the camera
+/// A reference to a camera inside a node
+struct CameraInstance {
+    ///< ID of the camera
     std::string mCamera;
 };
 
-/** A reference to a light inside a node*/
-struct LightInstance
-{
-     ///< ID of the camera
+/// A reference to a light inside a node
+struct LightInstance {
+    ///< ID of the camera
     std::string mLight;
 };
 
-/** A reference to a node inside a node*/
-struct NodeInstance
-{
-     ///< ID of the node
+/// A reference to a node inside a node
+struct NodeInstance {
+    ///< ID of the node
     std::string mNode;
 };
 
-/** A node in a scene hierarchy */
-struct Node
-{
+/// A node in a scene hierarchy
+struct Node {
     std::string mName;
     std::string mID;
     std::string mSID;
-    Node* mParent;
-    std::vector<Node*> mChildren;
+    Node *mParent;
+    std::vector<Node *> mChildren;
 
-    /** Operations in order to calculate the resulting transformation to parent. */
+    /// Operations in order to calculate the resulting transformation to parent.
     std::vector<Transform> mTransforms;
 
-    /** Meshes at this node */
+    /// Meshes at this node
     std::vector<MeshInstance> mMeshes;
 
-    /** Lights at this node */
+    /// Lights at this node
     std::vector<LightInstance> mLights;
 
-    /** Cameras at this node */
+    /// Cameras at this node
     std::vector<CameraInstance> mCameras;
 
-    /** Node instances at this node */
+    /// Node instances at this node
     std::vector<NodeInstance> mNodeInstances;
 
-    /** Root-nodes: Name of primary camera, if any */
+    /// Root-nodes: Name of primary camera, if any
     std::string mPrimaryCamera;
 
-    //! Constructor. Begin with a zero parent
-    Node()
-    : mParent( nullptr ){
+    /// Constructor. Begin with a zero parent
+    Node() :
+            mParent(nullptr) {
         // empty
     }
 
-    //! Destructor: delete all children subsequently
+    /// Destructor: delete all children subsequently
     ~Node() {
-        for( std::vector<Node*>::iterator it = mChildren.begin(); it != mChildren.end(); ++it)
+        for (std::vector<Node *>::iterator it = mChildren.begin(); it != mChildren.end(); ++it) {
             delete *it;
+        }
     }
 };
 
-/** Data source array: either floats or strings */
-struct Data
-{
+/// Data source array: either floats or strings
+struct Data {
     bool mIsStringArray;
     std::vector<ai_real> mValues;
     std::vector<std::string> mStrings;
 };
 
-/** Accessor to a data array */
-struct Accessor
-{
-    size_t mCount;   // in number of objects
-    size_t mSize;    // size of an object, in elements (floats or strings, mostly 1)
-    size_t mOffset;  // in number of values
-    size_t mStride;  // Stride in number of values
+/// Accessor to a data array
+struct Accessor {
+    size_t mCount; // in number of objects
+    size_t mSize; // size of an object, in elements (floats or strings, mostly 1)
+    size_t mOffset; // in number of values
+    size_t mStride; // Stride in number of values
     std::vector<std::string> mParams; // names of the data streams in the accessors. Empty string tells to ignore.
-    size_t mSubOffset[4]; // Suboffset inside the object for the common 4 elements. For a vector, that's XYZ, for a color RGBA and so on.
-                          // For example, SubOffset[0] denotes which of the values inside the object is the vector X component.
-    std::string mSource;   // URL of the source array
-    mutable const Data* mData; // Pointer to the source array, if resolved. NULL else
+    size_t mSubOffset[4]; // Sub-offset inside the object for the common 4 elements. For a vector, that's XYZ, for a color RGBA and so on.
+            // For example, SubOffset[0] denotes which of the values inside the object is the vector X component.
+    std::string mSource; // URL of the source array
+    mutable const Data *mData; // Pointer to the source array, if resolved. nullptr else
 
-    Accessor()
-    {
-        mCount = 0; mSize = 0; mOffset = 0; mStride = 0; mData = NULL;
+    Accessor() {
+        mCount = 0;
+        mSize = 0;
+        mOffset = 0;
+        mStride = 0;
+        mData = nullptr;
         mSubOffset[0] = mSubOffset[1] = mSubOffset[2] = mSubOffset[3] = 0;
     }
 };
 
-/** A single face in a mesh */
-struct Face
-{
+/// A single face in a mesh
+struct Face {
     std::vector<size_t> mIndices;
 };
 
-/** An input channel for mesh data, referring to a single accessor */
-struct InputChannel
-{
-    InputType mType;      // Type of the data
-    size_t mIndex;        // Optional index, if multiple sets of the same data type are given
-    size_t mOffset;       // Index offset in the indices array of per-face indices. Don't ask, can't explain that any better.
+/// An input channel for mesh data, referring to a single accessor
+struct InputChannel {
+    InputType mType; // Type of the data
+    size_t mIndex; // Optional index, if multiple sets of the same data type are given
+    size_t mOffset; // Index offset in the indices array of per-face indices. Don't ask, can't explain that any better.
     std::string mAccessor; // ID of the accessor where to read the actual values from.
-    mutable const Accessor* mResolved; // Pointer to the accessor, if resolved. NULL else
+    mutable const Accessor *mResolved; // Pointer to the accessor, if resolved. nullptr else
 
-    InputChannel() { mType = IT_Invalid; mIndex = 0; mOffset = 0; mResolved = NULL; }
+    InputChannel() {
+        mType = IT_Invalid;
+        mIndex = 0;
+        mOffset = 0;
+        mResolved = nullptr;
+    }
 };
 
-/** Subset of a mesh with a certain material */
-struct SubMesh
-{
+/// Subset of a mesh with a certain material
+struct SubMesh {
     std::string mMaterial; ///< subgroup identifier
-    size_t mNumFaces; ///< number of faces in this submesh
+    size_t mNumFaces; ///< number of faces in this sub-mesh
 };
 
-/** Contains data for a single mesh */
-struct Mesh
-{
-    Mesh()
-    {
-        for (unsigned int i = 0; i < AI_MAX_NUMBER_OF_TEXTURECOORDS;++i)
+/// Contains data for a single mesh
+struct Mesh {
+    Mesh(const std::string &id) :
+            mId(id) {
+        for (unsigned int i = 0; i < AI_MAX_NUMBER_OF_TEXTURECOORDS; ++i) {
             mNumUVComponents[i] = 2;
+        }
     }
 
+    const std::string mId;
     std::string mName;
 
     // just to check if there's some sophisticated addressing involved...
@@ -377,7 +363,7 @@ struct Mesh
     std::vector<aiVector3D> mTangents;
     std::vector<aiVector3D> mBitangents;
     std::vector<aiVector3D> mTexCoords[AI_MAX_NUMBER_OF_TEXTURECOORDS];
-    std::vector<aiColor4D>  mColors[AI_MAX_NUMBER_OF_COLOR_SETS];
+    std::vector<aiColor4D> mColors[AI_MAX_NUMBER_OF_COLOR_SETS];
 
     unsigned int mNumUVComponents[AI_MAX_NUMBER_OF_TEXTURECOORDS];
 
@@ -389,13 +375,12 @@ struct Mesh
     // necessary for bone weight assignment
     std::vector<size_t> mFacePosIndices;
 
-    // Submeshes in this mesh, each with a given material
+    // Sub-meshes in this mesh, each with a given material
     std::vector<SubMesh> mSubMeshes;
 };
 
-/** Which type of primitives the ReadPrimitives() function is going to read */
-enum PrimitiveType
-{
+/// Which type of primitives the ReadPrimitives() function is going to read
+enum PrimitiveType {
     Prim_Invalid,
     Prim_Lines,
     Prim_LineStrip,
@@ -406,9 +391,8 @@ enum PrimitiveType
     Prim_Polygon
 };
 
-/** A skeleton controller to deform a mesh with the use of joints */
-struct Controller
-{
+/// A skeleton controller to deform a mesh with the use of joints
+struct Controller {
     // controller type
     ControllerType mType;
 
@@ -436,36 +420,32 @@ struct Controller
     std::vector<size_t> mWeightCounts;
 
     // JointIndex-WeightIndex pairs for all vertices
-    std::vector< std::pair<size_t, size_t> > mWeights;
+    std::vector<std::pair<size_t, size_t>> mWeights;
 
     std::string mMorphTarget;
     std::string mMorphWeight;
 };
 
-/** A collada material. Pretty much the only member is a reference to an effect. */
-struct Material
-{
+/// A collada material. Pretty much the only member is a reference to an effect.
+struct Material {
     std::string mName;
     std::string mEffect;
 };
 
-/** Type of the effect param */
-enum ParamType
-{
+/// Type of the effect param
+enum ParamType {
     Param_Sampler,
     Param_Surface
 };
 
-/** A param for an effect. Might be of several types, but they all just refer to each other, so I summarize them */
-struct EffectParam
-{
+/// A param for an effect. Might be of several types, but they all just refer to each other, so I summarize them
+struct EffectParam {
     ParamType mType;
     std::string mReference; // to which other thing the param is referring to.
 };
 
-/** Shading type supported by the standard effect spec of Collada */
-enum ShadeType
-{
+/// Shading type supported by the standard effect spec of Collada
+enum ShadeType {
     Shade_Invalid,
     Shade_Constant,
     Shade_Lambert,
@@ -473,92 +453,78 @@ enum ShadeType
     Shade_Blinn
 };
 
-/** Represents a texture sampler in collada */
-struct Sampler
-{
-    Sampler()
-        :   mWrapU      (true)
-        ,   mWrapV      (true)
-        ,   mMirrorU    ()
-        ,   mMirrorV    ()
-        ,   mOp         (aiTextureOp_Multiply)
-        ,   mUVId       (UINT_MAX)
-        ,   mWeighting  (1.f)
-        ,   mMixWithPrevious (1.f)
-    {}
+/// Represents a texture sampler in collada
+struct Sampler {
+    Sampler() :
+            mWrapU(true),
+            mWrapV(true),
+            mMirrorU(),
+            mMirrorV(),
+            mOp(aiTextureOp_Multiply),
+            mUVId(UINT_MAX),
+            mWeighting(1.f),
+            mMixWithPrevious(1.f) {}
 
-    /** Name of image reference
-     */
+    /// Name of image reference
     std::string mName;
 
-    /** Wrap U?
-     */
+    /// Wrap U?
     bool mWrapU;
 
-    /** Wrap V?
-     */
+    /// Wrap V?
     bool mWrapV;
 
-    /** Mirror U?
-     */
+    /// Mirror U?
     bool mMirrorU;
 
-    /** Mirror V?
-     */
+    /// Mirror V?
     bool mMirrorV;
 
-    /** Blend mode
-     */
+    /// Blend mode
     aiTextureOp mOp;
 
-    /** UV transformation
-     */
+    /// UV transformation
     aiUVTransform mTransform;
 
-    /** Name of source UV channel
-     */
+    /// Name of source UV channel
     std::string mUVChannel;
 
-    /** Resolved UV channel index or UINT_MAX if not known
-     */
+    /// Resolved UV channel index or UINT_MAX if not known
     unsigned int mUVId;
 
     // OKINO/MAX3D extensions from here
     // -------------------------------------------------------
 
-    /** Weighting factor
-     */
+    /// Weighting factor
     ai_real mWeighting;
 
-    /** Mixing factor from OKINO
-     */
+    /// Mixing factor from OKINO
     ai_real mMixWithPrevious;
 };
 
-/** A collada effect. Can contain about anything according to the Collada spec,
-    but we limit our version to a reasonable subset. */
-struct Effect
-{
-    // Shading mode
+/// A collada effect. Can contain about anything according to the Collada spec,
+/// but we limit our version to a reasonable subset.
+struct Effect {
+    /// Shading mode
     ShadeType mShadeType;
 
-    // Colors
+    /// Colors
     aiColor4D mEmissive, mAmbient, mDiffuse, mSpecular,
-        mTransparent, mReflective;
+            mTransparent, mReflective;
 
-    // Textures
+    /// Textures
     Sampler mTexEmissive, mTexAmbient, mTexDiffuse, mTexSpecular,
-        mTexTransparent, mTexBump, mTexReflective;
+            mTexTransparent, mTexBump, mTexReflective;
 
-    // Scalar factory
+    /// Scalar factory
     ai_real mShininess, mRefractIndex, mReflectivity;
     ai_real mTransparency;
     bool mHasTransparency;
     bool mRGBTransparency;
     bool mInvertTransparency;
 
-    // local params referring to each other by their SID
-    typedef std::map<std::string, Collada::EffectParam> ParamLibrary;
+    /// local params referring to each other by their SID
+    using ParamLibrary = std::map<std::string, Collada::EffectParam>;
     ParamLibrary mParams;
 
     // MAX3D extensions
@@ -566,159 +532,144 @@ struct Effect
     // Double-sided?
     bool mDoubleSided, mWireframe, mFaceted;
 
-    Effect()
-        : mShadeType    (Shade_Phong)
-        , mEmissive     ( 0, 0, 0, 1)
-        , mAmbient      ( 0.1f, 0.1f, 0.1f, 1)
-        , mDiffuse      ( 0.6f, 0.6f, 0.6f, 1)
-        , mSpecular     ( 0.4f, 0.4f, 0.4f, 1)
-        , mTransparent  ( 0, 0, 0, 1)
-        , mShininess    (10.0f)
-        , mRefractIndex (1.f)
-        , mReflectivity (0.f)
-        , mTransparency (1.f)
-        , mHasTransparency (false)
-        , mRGBTransparency(false)
-        , mInvertTransparency(false)
-        , mDoubleSided  (false)
-        , mWireframe    (false)
-        , mFaceted      (false)
-    {
+    Effect() :
+            mShadeType(Shade_Phong),
+            mEmissive(0, 0, 0, 1),
+            mAmbient(0.1f, 0.1f, 0.1f, 1),
+            mDiffuse(0.6f, 0.6f, 0.6f, 1),
+            mSpecular(0.4f, 0.4f, 0.4f, 1),
+            mTransparent(0, 0, 0, 1),
+            mShininess(10.0f),
+            mRefractIndex(1.f),
+            mReflectivity(0.f),
+            mTransparency(1.f),
+            mHasTransparency(false),
+            mRGBTransparency(false),
+            mInvertTransparency(false),
+            mDoubleSided(false),
+            mWireframe(false),
+            mFaceted(false) {
     }
 };
 
-/** An image, meaning texture */
-struct Image
-{
+/// An image, meaning texture
+struct Image {
     std::string mFileName;
 
-    /** Embedded image data */
+    /// Embedded image data
     std::vector<uint8_t> mImageData;
 
-    /** File format hint of embedded image data */
+    /// File format hint of embedded image data
     std::string mEmbeddedFormat;
 };
 
-/** An animation channel. */
-struct AnimationChannel
-{
-    /** URL of the data to animate. Could be about anything, but we support only the
-     * "NodeID/TransformID.SubElement" notation
-     */
+/// An animation channel.
+struct AnimationChannel {
+    /// URL of the data to animate. Could be about anything, but we support only the
+    /// "NodeID/TransformID.SubElement" notation
     std::string mTarget;
 
-    /** Source URL of the time values. Collada calls them "input". Meh. */
+    /// Source URL of the time values. Collada calls them "input". Meh.
     std::string mSourceTimes;
-    /** Source URL of the value values. Collada calls them "output". */
+    /// Source URL of the value values. Collada calls them "output".
     std::string mSourceValues;
-    /** Source URL of the IN_TANGENT semantic values. */
+    /// Source URL of the IN_TANGENT semantic values.
     std::string mInTanValues;
-    /** Source URL of the OUT_TANGENT semantic values. */
+    /// Source URL of the OUT_TANGENT semantic values.
     std::string mOutTanValues;
-    /** Source URL of the INTERPOLATION semantic values. */
+    /// Source URL of the INTERPOLATION semantic values.
     std::string mInterpolationValues;
 };
 
-/** An animation. Container for 0-x animation channels or 0-x animations */
-struct Animation
-{
-    /** Anim name */
+/// An animation. Container for 0-x animation channels or 0-x animations
+struct Animation {
+    /// Anim name
     std::string mName;
 
-    /** the animation channels, if any */
+    /// the animation channels, if any
     std::vector<AnimationChannel> mChannels;
 
-    /** the sub-animations, if any */
-    std::vector<Animation*> mSubAnims;
+    /// the sub-animations, if any
+    std::vector<Animation *> mSubAnims;
 
-    /** Destructor */
-    ~Animation()
-    {
-        for( std::vector<Animation*>::iterator it = mSubAnims.begin(); it != mSubAnims.end(); ++it)
+    /// Destructor
+    ~Animation() {
+        for (std::vector<Animation *>::iterator it = mSubAnims.begin(); it != mSubAnims.end(); ++it) {
             delete *it;
+        }
     }
 
-	/** Collect all channels in the animation hierarchy into a single channel list. */
-	void CollectChannelsRecursively(std::vector<AnimationChannel> &channels)
-	{
-		channels.insert(channels.end(), mChannels.begin(), mChannels.end());
+    /// Collect all channels in the animation hierarchy into a single channel list.
+    void CollectChannelsRecursively(std::vector<AnimationChannel> &channels) {
+        channels.insert(channels.end(), mChannels.begin(), mChannels.end());
 
-		for (std::vector<Animation*>::iterator it = mSubAnims.begin(); it != mSubAnims.end(); ++it)
-		{
-			Animation *pAnim = (*it);
+        for (std::vector<Animation *>::iterator it = mSubAnims.begin(); it != mSubAnims.end(); ++it) {
+            Animation *pAnim = (*it);
+            pAnim->CollectChannelsRecursively(channels);
+        }
+    }
 
-			pAnim->CollectChannelsRecursively(channels);
-		}
-	}
+    /// Combine all single-channel animations' channel into the same (parent) animation channel list.
+    void CombineSingleChannelAnimations() {
+        CombineSingleChannelAnimationsRecursively(this);
+    }
 
-	/** Combine all single-channel animations' channel into the same (parent) animation channel list. */
-	void CombineSingleChannelAnimations()
-	{
-		CombineSingleChannelAnimationsRecursively(this);
-	}
+    void CombineSingleChannelAnimationsRecursively(Animation *pParent) {
+        std::set<std::string> childrenTargets;
+        bool childrenAnimationsHaveDifferentChannels = true;
 
-	void CombineSingleChannelAnimationsRecursively(Animation *pParent)
-	{
-		std::set<std::string> childrenTargets;
-		bool childrenAnimationsHaveDifferentChannels = true;
+        for (std::vector<Animation *>::iterator it = pParent->mSubAnims.begin(); it != pParent->mSubAnims.end();) {
+            Animation *anim = *it;
+            CombineSingleChannelAnimationsRecursively(anim);
 
-		for (std::vector<Animation*>::iterator it = pParent->mSubAnims.begin(); it != pParent->mSubAnims.end();)
-		{
-			Animation *anim = *it;
-			CombineSingleChannelAnimationsRecursively(anim);
+            if (childrenAnimationsHaveDifferentChannels && anim->mChannels.size() == 1 &&
+                    childrenTargets.find(anim->mChannels[0].mTarget) == childrenTargets.end()) {
+                childrenTargets.insert(anim->mChannels[0].mTarget);
+            } else {
+                childrenAnimationsHaveDifferentChannels = false;
+            }
 
-			if (childrenAnimationsHaveDifferentChannels && anim->mChannels.size() == 1 &&
-				childrenTargets.find(anim->mChannels[0].mTarget) == childrenTargets.end()) {
-				childrenTargets.insert(anim->mChannels[0].mTarget);
-			} else {
-				childrenAnimationsHaveDifferentChannels = false;
-			}
+            ++it;
+        }
 
-			++it;
-		}
+        // We only want to combine animations if they have different channels
+        if (childrenAnimationsHaveDifferentChannels) {
+            for (std::vector<Animation *>::iterator it = pParent->mSubAnims.begin(); it != pParent->mSubAnims.end();) {
+                Animation *anim = *it;
 
-		// We only want to combine animations if they have different channels
-		if (childrenAnimationsHaveDifferentChannels)
-		{
-			for (std::vector<Animation*>::iterator it = pParent->mSubAnims.begin(); it != pParent->mSubAnims.end();)
-			{
-				Animation *anim = *it;
+                pParent->mChannels.push_back(anim->mChannels[0]);
 
-				pParent->mChannels.push_back(anim->mChannels[0]);
+                it = pParent->mSubAnims.erase(it);
 
-				it = pParent->mSubAnims.erase(it);
-
-				delete anim;
-				continue;
-			}
-		}
-	}
+                delete anim;
+                continue;
+            }
+        }
+    }
 };
 
-/** Description of a collada animation channel which has been determined to affect the current node */
-struct ChannelEntry
-{
-    const Collada::AnimationChannel* mChannel; ///> the source channel
+/// Description of a collada animation channel which has been determined to affect the current node
+struct ChannelEntry {
+    const Collada::AnimationChannel *mChannel; ///< the source channel
     std::string mTargetId;
-    std::string mTransformId;   // the ID of the transformation step of the node which is influenced
+    std::string mTransformId; // the ID of the transformation step of the node which is influenced
     size_t mTransformIndex; // Index into the node's transform chain to apply the channel to
     size_t mSubElement; // starting index inside the transform data
 
     // resolved data references
-    const Collada::Accessor* mTimeAccessor; ///> Collada accessor to the time values
-    const Collada::Data* mTimeData; ///> Source data array for the time values
-    const Collada::Accessor* mValueAccessor; ///> Collada accessor to the key value values
-    const Collada::Data* mValueData; ///> Source datat array for the key value values
+    const Collada::Accessor *mTimeAccessor; ///> Collada accessor to the time values
+    const Collada::Data *mTimeData; ///> Source data array for the time values
+    const Collada::Accessor *mValueAccessor; ///> Collada accessor to the key value values
+    const Collada::Data *mValueData; ///> Source datat array for the key value values
 
-    ChannelEntry()
-      : mChannel()
-      , mTransformIndex()
-      , mSubElement()
-      , mTimeAccessor()
-      , mTimeData()
-      , mValueAccessor()
-      , mValueData()
-   {}
+    ChannelEntry() :
+            mChannel(),
+            mTransformIndex(),
+            mSubElement(),
+            mTimeAccessor(),
+            mTimeData(),
+            mValueAccessor(),
+            mValueData() {}
 };
 
 } // end of namespace Collada

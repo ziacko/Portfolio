@@ -44,7 +44,7 @@ public:
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(this->programGLID);
 	
-		defaultTexture->SetActive();
+		defaultTexture->SetActive(0);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		DrawGUI(windows[0]);
 		windows[0]->SwapDrawBuffers();

@@ -3,6 +3,7 @@
 
 #include "Scene3D.h"
 #include "FrameBuffer.h"
+#include "HaltonSequence.h"
 
 typedef enum { SMAA = 0, INSIDE, INSIDE2, CUSTOM, EXPERIMENTAL } TAAResolves_t;
 
@@ -136,32 +137,32 @@ public:
 	{
 		scene3D::Initialize();
 
+		FBODescriptor colorDesc;
+		colorDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
+
 		glGenQueries(1, &jitterQuery);
 
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", colorDesc));
 
 		FBODescriptor velDesc;
 		velDesc.format = gl_rg;
 		velDesc.internalFormat = gl_rg16_snorm;
 		velDesc.dataType = GL_FLOAT;
+		velDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("velocity", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-			velDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("velocity", velDesc));
 
 		FBODescriptor depthDesc;
 		depthDesc.dataType = GL_FLOAT;
 		depthDesc.format = GL_DEPTH_COMPONENT;
 		depthDesc.internalFormat = gl_depth_component24;
 		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
+		depthDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-			depthDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", depthDesc));
 
 		for (unsigned int iter = 0; iter < numPrevFrames; iter++)
 		{
@@ -169,11 +170,8 @@ public:
 
 			newBuffer->Initialize();
 			newBuffer->Bind();
-			newBuffer->AddAttachment(new frameBuffer::attachment_t(("color" + std::to_string(iter)), 
-				glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
-
-			newBuffer->AddAttachment(new frameBuffer::attachment_t(("depth" + std::to_string(iter)), glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-				depthDesc));
+			newBuffer->AddAttachment(new frameBuffer::attachment_t("color" + std::to_string(iter), colorDesc));
+			newBuffer->AddAttachment(new frameBuffer::attachment_t("depth" + std::to_string(iter), depthDesc));
 
 			historyFrames.push_back(newBuffer);
 		}
@@ -184,11 +182,8 @@ public:
 
 		unJitteredBuffer->Initialize();
 		unJitteredBuffer->Bind();
-		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("unJittered",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
-		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("depth", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-			depthDesc));
+		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("unJittered", colorDesc));
+		unJitteredBuffer->AddAttachment(new frameBuffer::attachment_t("depth", depthDesc));
 
 		//geometry automatically gets assigned to 0
 		smoothProgram = shaderPrograms[1]->handle;
@@ -350,13 +345,7 @@ protected:
 	virtual void JitterPass()
 	{
 		geometryBuffer->Bind();
-
-		GLenum drawbuffers[2] = {
-			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //color
-			geometryBuffer->attachments[1]->FBODesc.attachmentFormat //velocity
-		};
-
-		glDrawBuffers(2, drawbuffers);
+		geometryBuffer->DrawAll();
 
 		//we just need the first LOd so only do the first 3 meshes
 		for (size_t iter = 0; iter < 3; iter++)
@@ -388,12 +377,7 @@ protected:
 	virtual void UnJitteredPass()
 	{
 		unJitteredBuffer->Bind();
-
-		GLenum drawbuffers[1] = {
-			unJitteredBuffer->attachments[0]->FBODesc.attachmentFormat, //color
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		unJitteredBuffer->DrawAll();
 
 		//we just need the first LOd so only do the first 3 meshes
 		for (size_t iter = 0; iter < 3; iter++)
@@ -425,10 +409,7 @@ protected:
 	virtual void TAAPass()
 	{
 		historyFrames[currentFrame]->Bind();
-		GLenum drawBuffers[1] = {
-			historyFrames[currentFrame]->attachments[0]->FBODesc.attachmentFormat
-		};
-		glDrawBuffers(1, drawBuffers);
+		historyFrames[currentFrame]->attachments[0]->Draw();
 
 		//current frame
 		geometryBuffer->attachments[0]->SetActive(0); //current color
@@ -562,7 +543,7 @@ protected:
 
 		historyFrames[!currentFrame]->Bind(); //clear the previous, the next frame current becomes previous
 		historyFrames[!currentFrame]->ClearTexture(historyFrames[!currentFrame]->attachments[0], clearColor1);
-		historyFrames[!currentFrame]->ClearTexture(historyFrames[!currentFrame]->attachments[1], clearColor2);
+		historyFrames[!currentFrame]->ClearTexture(historyFrames[!currentFrame]->attachments[1], clearColor1);
 		//copy current depth to previous or vice versa?
 		historyFrames[currentFrame]->attachments[1]->Copy(geometryBuffer->attachments[2]); //copy depth over
 
@@ -588,35 +569,35 @@ protected:
 		velocityUniforms.Update();
 	}
 
-	virtual void ResizeBuffers(glm::vec2 resolution)
+	virtual void ResizeBuffers(glm::ivec2 resolution)
 	{
 		for (auto frame : historyFrames)
 		{
 			for (auto iter : frame->attachments)
 			{
-				iter->Resize(resolution);
+				iter->Resize(glm::ivec3(resolution, 1));
 			}
 		}
 
 		for (auto iter : geometryBuffer->attachments)
 		{
-			iter->Resize(resolution);
+			iter->Resize(glm::ivec3(resolution, 1));
 		}
 
 		//sharpenBuffer->attachments[0]->Resize(resolution);
-		unJitteredBuffer->attachments[0]->Resize(resolution);
-		unJitteredBuffer->attachments[1]->Resize(resolution);
+		unJitteredBuffer->attachments[0]->Resize(glm::ivec3(resolution, 1));
+		unJitteredBuffer->attachments[1]->Resize(glm::ivec3(resolution, 1));
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);	
-		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
+		defaultPayload.data.resolution = glm::ivec2(dimensions.width, dimensions.height);	
+		ResizeBuffers(glm::ivec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(window->settings.resolution.width, window->settings.resolution.height);
 		ResizeBuffers(defaultPayload.data.resolution);
 	}
 
@@ -637,21 +618,6 @@ protected:
 		jitterUniforms.Initialize(4);
 
 		SetupVertexBuffer();
-	}
-
-	float CreateHaltonSequence(unsigned int index, int base)
-	{
-		float f = 1;
-		float r = 0;
-		int current = index;
-		do 
-		{
-			f = f / base;
-			r = r + f * (current % base);
-			current = glm::floor(current / base);
-		} while (current > 0);
-
-		return r;
 	}
 };
 

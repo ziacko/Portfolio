@@ -31,7 +31,6 @@ public:
 	{
 
 		this->bubble = bubbleSettings;
-		this->tweakBarName = "bubble scene";
 		enableWireframe = true;
 		Initialize();
 	}
@@ -49,26 +48,6 @@ protected:
 		ImGui::SliderFloat("grid dimensions", &bubble.data.gridDimensions, 0.0f, 1000.0f, "%.0f");
 		ImGui::SliderFloat("offset", &bubble.data.offset, 0.0f, 1.0f);
 	}
-
-	/*void CreateGrid()
-	{
-		GLfloat vertStepSize = defaultUniformBuffer->width / bubbleSettingsBuffer->gridDimensions;
-		GLfloat horzStepSize = defaultUniformBuffer->height / bubbleSettingsBuffer->gridDimensions;
-
-		for (GLuint rowIter = 0; rowIter < bubbleSettingsBuffer->gridDimensions; rowIter++)
-		{
-			for (GLuint columnIter = 0; columnIter < bubbleSettingsBuffer->gridDimensions; columnIter++)
-			{
-				gridVerts.push_back(glm::vec4((vertStepSize * columnIter), (horzStepSize * rowIter), 1, 1));
-				gridVerts.push_back(glm::vec4((vertStepSize * columnIter) + vertStepSize, (horzStepSize * rowIter), 1, 1));
-				gridVerts.push_back(glm::vec4((vertStepSize * columnIter), (horzStepSize * rowIter) + horzStepSize, 1, 1));
-
-				gridVerts.push_back(glm::vec4((vertStepSize * columnIter), (horzStepSize * rowIter) + horzStepSize, 1, 1));
-				gridVerts.push_back(glm::vec4((vertStepSize * columnIter) + vertStepSize, (horzStepSize * rowIter), 1, 1));
-				gridVerts.push_back(glm::vec4((vertStepSize * columnIter) + vertStepSize, (horzStepSize * rowIter) + horzStepSize, 1, 1));
-			}
-		}
-	}*/
 
 	bufferHandler_t<bubbleSettings_t>			bubble;
 	std::vector<glm::vec4>						gridVerts = {};

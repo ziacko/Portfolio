@@ -181,7 +181,7 @@ M3D_INDEX addMaterial(const Assimp::M3DWrapper &m3d, const aiMaterial *mat) {
             }
             m3d->material[mi].name = SafeStr(name, true);
             m3d->material[mi].numprop = 0;
-            m3d->material[mi].prop = NULL;
+            m3d->material[mi].prop = nullptr;
             // iterate through the material property table and see what we got
             for (k = 0; k < 15; k++) {
                 unsigned int j;
@@ -197,12 +197,15 @@ M3D_INDEX addMaterial(const Assimp::M3DWrapper &m3d, const aiMaterial *mat) {
                         break;
                     case m3dpf_float:
                         if (mat->Get(aiProps[k].pKey, aiProps[k].type,
-                                    aiProps[k].index, f) == AI_SUCCESS)
+                                    aiProps[k].index, f) == AI_SUCCESS) {
+                            uint32_t f_uint32;
+                            memcpy(&f_uint32, &f, sizeof(uint32_t));
                             addProp(&m3d->material[mi],
                                     m3d_propertytypes[k].id,
                                     /* not (uint32_t)f, because we don't want to convert
                                          * it, we want to see it as 32 bits of memory */
-                                    *((uint32_t *)&f));
+                                    f_uint32);
+                        }
                         break;
                     case m3dpf_uint8:
                         if (mat->Get(aiProps[k].pKey, aiProps[k].type,
@@ -229,8 +232,8 @@ M3D_INDEX addMaterial(const Assimp::M3DWrapper &m3d, const aiMaterial *mat) {
                 }
                 if (aiTxProps[k].pKey &&
                         mat->GetTexture((aiTextureType)aiTxProps[k].type,
-                                aiTxProps[k].index, &name, NULL, NULL, NULL,
-                                NULL, NULL) == AI_SUCCESS) {
+                                aiTxProps[k].index, &name, nullptr, nullptr, nullptr,
+                                nullptr, nullptr) == AI_SUCCESS) {
                     unsigned int i;
                     for (j = name.length - 1; j > 0 && name.data[j] != '.'; j++)
                         ;
@@ -259,7 +262,7 @@ M3D_INDEX addMaterial(const Assimp::M3DWrapper &m3d, const aiMaterial *mat) {
                         m3d->texture[i].name = fn;
                         m3d->texture[i].w = 0;
                         m3d->texture[i].h = 0;
-                        m3d->texture[i].d = NULL;
+                        m3d->texture[i].d = nullptr;
                     }
                     addProp(&m3d->material[mi],
                             m3d_propertytypes[k].id + 128, i);

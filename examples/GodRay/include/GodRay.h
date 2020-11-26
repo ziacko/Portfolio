@@ -16,7 +16,7 @@ struct godRaySettings_t
 	godRaySettings_t()
 	{
 		exposure = 1.0f;
-		density = 0.001f;
+		density = 0.0001f;
 		weight = 0.05f;
 		decay = 0.75f;
 		lightPosition = glm::vec4(0);
@@ -36,7 +36,7 @@ public:
 		const char* windowName = "Ziyad Barakat's portfolio (god ray test)",
 		camera* texModelCamera = new camera(glm::vec2(1280, 720), 5.0f, camera::projection_t::perspective, 0.1f, 2000.f),
 		const char* shaderConfigPath = "../../resources/shaders/GodRay.txt",
-		model_t* model = new model_t("../../resources/models/SoulSpear/SoulSpear.fbx"))
+		model_t* model = new model_t("../../resources/models/fbx_foliage/broadleaf_field/Broadleaf_Desktop_Field.FBX"))
 		: scene3D(windowName, texModelCamera, shaderConfigPath, model)
 	{
 		geometryBuffer = new frameBuffer();
@@ -44,6 +44,11 @@ public:
 
 		//orthoCamera = new camera(glm::vec2(1280, 720), 5.0f, camera::projection_t::orthographic, 0.1f);
 		godRay = bufferHandler_t<godRaySettings_t>();
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glHint(gl_generate_mipmap_hint, GL_NICEST);
 	}
 
 	virtual ~GodRayScene() {};
@@ -55,6 +60,9 @@ public:
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
 
+		FBODescriptor geomDesc;
+		geomDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
+
 		FBODescriptor depthDesc;
 		depthDesc.dataType = GL_FLOAT;
 		depthDesc.format = GL_DEPTH_COMPONENT;
@@ -63,12 +71,10 @@ public:
 		depthDesc.wrapRSetting = GL_CLAMP;
 		depthDesc.wrapSSetting = GL_CLAMP;
 		depthDesc.wrapTSetting = GL_CLAMP;
+		depthDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", 
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
-
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), depthDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", geomDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", depthDesc));
 
 		occlusionBuffer->Initialize();
 		occlusionBuffer->Bind();
@@ -80,9 +86,9 @@ public:
 		occlusionDesc.wrapRSetting = GL_CLAMP;
 		occlusionDesc.wrapSSetting = GL_CLAMP;
 		occlusionDesc.wrapTSetting = GL_CLAMP;
+		occlusionDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		occlusionBuffer->AddAttachment(new frameBuffer::attachment_t("occlusion",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), occlusionDesc));
+		occlusionBuffer->AddAttachment(new frameBuffer::attachment_t("occlusion", occlusionDesc));
 
 		frameBuffer::Unbind();
 
@@ -195,19 +201,28 @@ protected:
 
 		glDrawBuffers(1, drawbuffers);
 
-		testModel->meshes[0].textures[0].SetActive(0);
-
-		glBindVertexArray(testModel->meshes[0].vertexArrayHandle);
-		glUseProgram(programGLID);
-		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
-
-		if (wireframe)
+		//we just need the first LOd so only do the first 3 meshes
+		for (size_t iter = 0; iter < 3; iter++)
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-		glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[0].indices.size(), GL_UNSIGNED_INT, 0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			if (testModel->meshes[iter].isCollision)
+			{
+				continue;
+			}
 
+			testModel->meshes[iter].textures[0].SetActive(0);
+
+			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
+			glUseProgram(this->programGLID);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+			glCullFace(GL_BACK);
+
+			if (wireframe)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, nullptr);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 		geometryBuffer->Unbind();
 	}
 
@@ -223,20 +238,27 @@ protected:
 		glDrawBuffers(1, drawbuffers);
 
 		//we just need the first LOd so only do the first 3 meshes
-
-		testModel->meshes[0].textures[0].SetActive(0);
-		//add the previous depth?
-
-		glBindVertexArray(testModel->meshes[0].vertexArrayHandle);
-		glUseProgram(occlusionProgram);
-		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
-
-		if (wireframe)
+		for (size_t iter = 0; iter < 3; iter++)
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			if (testModel->meshes[iter].isCollision)
+			{
+				continue;
+			}
+
+			testModel->meshes[iter].textures[0].SetActive(0);
+
+			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
+			glUseProgram(occlusionProgram);
+			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+			glCullFace(GL_BACK);
+
+			if (wireframe)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, nullptr);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-		glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[0].indices.size(), GL_UNSIGNED_INT, 0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		occlusionBuffer->Unbind();
 	}
@@ -341,21 +363,21 @@ protected:
 		frameBuffer::Unbind();
 	}
 
-	virtual void ResizeBuffers(glm::vec2 resolution)
+	virtual void ResizeBuffers(glm::ivec2 resolution)
 	{
-		geometryBuffer->Resize(resolution);
-		occlusionBuffer->Resize(resolution);
+		geometryBuffer->Resize(glm::ivec3(resolution, 1));
+		occlusionBuffer->Resize(glm::ivec3(resolution, 1));
 	}
 
 	virtual void HandleWindowResize(tWindow* window, TinyWindow::vec2_t<unsigned int> dimensions) override
 	{
-		defaultPayload.data.resolution = glm::vec2(dimensions.width, dimensions.height);
-		ResizeBuffers(glm::vec2(dimensions.x, dimensions.y));
+		defaultPayload.data.resolution = glm::ivec2(dimensions.width, dimensions.height);
+		ResizeBuffers(glm::ivec2(dimensions.x, dimensions.y));
 	}
 
 	virtual void HandleMaximize(tWindow* window) override
 	{
-		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.width, window->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(window->settings.resolution.width, window->settings.resolution.height);
 		ResizeBuffers(defaultPayload.data.resolution);
 	}
 
@@ -363,7 +385,7 @@ protected:
 	{
 		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
-		defaultPayload.data.resolution = glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+		defaultPayload.data.resolution = glm::ivec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		defaultPayload.data.projection = sceneCamera->projection;
 		defaultPayload.data.translation = sceneCamera->translation;
 		defaultPayload.data.view = sceneCamera->view;

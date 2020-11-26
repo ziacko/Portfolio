@@ -264,7 +264,7 @@ public:
 		default:
 			break;
 		}
-		defaultTexture->GetUniformLocation(this->programGLID);
+		defaultTexture->SetActive(0);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 

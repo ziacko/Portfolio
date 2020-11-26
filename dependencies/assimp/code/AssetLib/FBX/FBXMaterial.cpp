@@ -86,7 +86,7 @@ Material::Material(uint64_t id, const Element& element, const Document& doc, con
     std::string templateName;
 
     // lower-case shading because Blender (for example) writes "Phong"
-    std::transform(shading.begin(), shading.end(), shading.begin(), Assimp::ToLower<char>);
+    std::transform(shading.data(), shading.data() + shading.size(), std::addressof(shading[0]), Assimp::ToLower<char>);
     if(shading == "phong") {
         templateName = "Material.FbxSurfacePhong";
     }
@@ -383,7 +383,7 @@ Video::Video(uint64_t id, const Element& element, const Document& doc, const std
         } catch (const runtime_error& runtimeError)
         {
             //we don't need the content data for contents that has already been loaded
-            ASSIMP_LOG_DEBUG_F("Caught exception in FBXMaterial (likely because content was already loaded): ",
+            ASSIMP_LOG_VERBOSE_DEBUG_F("Caught exception in FBXMaterial (likely because content was already loaded): ",
                     runtimeError.what());
         }
     }

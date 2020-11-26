@@ -1,7 +1,9 @@
 #ifndef SMAA1XT_H
 #define SMAA1XT_H
 
+
 #include "SMAA.h"
+#include "HaltonSequence.h"
 
 struct jitterSettings_t
 {
@@ -114,27 +116,22 @@ public:
 
 		geometryBuffer->Initialize();
 		geometryBuffer->Bind();
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color"));
 
 		FBODescriptor velDesc;
 		velDesc.format = gl_rg;
 		velDesc.internalFormat = gl_rg16_snorm;
 		velDesc.dataType = GL_FLOAT;
-
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("velocity",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-			velDesc));
+		velDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("velocity", velDesc));
 
 		FBODescriptor depthDesc;
 		depthDesc.dataType = GL_FLOAT;
 		depthDesc.format = GL_DEPTH_COMPONENT;
 		depthDesc.internalFormat = gl_depth_component24;
 		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
-
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-			depthDesc));
+		depthDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", depthDesc));
 
 		edgesBuffer->Initialize();
 		edgesBuffer->Bind();
@@ -142,20 +139,17 @@ public:
 		FBODescriptor edgeDesc;
 		edgeDesc.format = gl_rg;
 		edgeDesc.internalFormat = gl_rg8;
-
-		edgesBuffer->AddAttachment(new frameBuffer::attachment_t("edge",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), edgeDesc));
+		edgeDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
+		edgesBuffer->AddAttachment(new frameBuffer::attachment_t("edge", edgeDesc));
 
 		weightsBuffer->Initialize();
 		weightsBuffer->Bind();
 
-		weightsBuffer->AddAttachment(new frameBuffer::attachment_t("blend",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		weightsBuffer->AddAttachment(new frameBuffer::attachment_t("blend"));
 
 		SMAABuffer->Initialize();
 		SMAABuffer->Bind();
-		SMAABuffer->AddAttachment(new frameBuffer::attachment_t("SMAA",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		SMAABuffer->AddAttachment(new frameBuffer::attachment_t("SMAA"));
 
 		for(unsigned int iter = 0; iter < numPreviousFrames; iter++)
 		{
@@ -163,12 +157,9 @@ public:
 
 			newBuffer->Initialize();
 			newBuffer->Bind();
-			newBuffer->AddAttachment(new frameBuffer::attachment_t(("color" + std::to_string(iter)),
-				glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+			newBuffer->AddAttachment(new frameBuffer::attachment_t(("color" + std::to_string(iter))));
 
-			newBuffer->AddAttachment(new frameBuffer::attachment_t(("depth" + std::to_string(iter)),
-				glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height),
-				depthDesc));
+			newBuffer->AddAttachment(new frameBuffer::attachment_t(("depth" + std::to_string(iter)), depthDesc));
 
 			historyFrames.push_back(newBuffer);
 		}
@@ -504,21 +495,22 @@ protected:
 		weightsBuffer->ClearTexture(weightsBuffer->attachments[0], clearColor2);
 		weightsBuffer->Unbind();
 
+		//could be jittering the camera instead of the geometry?
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 		velocityUniforms.data.previousProjection = sceneCamera->projection;
 		velocityUniforms.data.previousView = sceneCamera->view;
-		velocityUniforms.data.prevTranslation = testModel->makeTransform(); //could be jittering the camera instead of the geometry?
+		velocityUniforms.data.prevTranslation = testModel->makeTransform();
 		velocityUniforms.Update();
 	}
 
-	virtual void ResizeBuffers(glm::vec2 resolution) override
+	virtual void ResizeBuffers(glm::ivec2 resolution) override
 	{
 		SMAA::ResizeBuffers(resolution);
 		for (auto frame : historyFrames)
 		{
 			for (auto iter : frame->attachments)
 			{
-				iter->Resize(resolution);
+				iter->Resize(glm::ivec3(resolution, 1));
 			}
 		}
 	}
@@ -542,7 +534,7 @@ protected:
 		{
 			f = f / base;
 			r = r + f * (current % base);
-			current = glm::floor(current / base);
+			current = (int)glm::floor(current / base);
 		} while (current > 0);
 
 		return r;

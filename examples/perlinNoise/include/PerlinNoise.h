@@ -115,7 +115,6 @@ public:
 		: scene(windowName, perlinCamera, shaderConfigPath)
 	{
 		this->perlin.data = perlinSettings_t();
-		tweakBarName = windowName;
 		perlinBuffer = new frameBuffer();
 	}
 
@@ -130,9 +129,9 @@ public:
 		perlinDesc.dataType = GL_FLOAT;
 		perlinDesc.format = GL_RGBA;
 		perlinDesc.internalFormat = gl_rgba16_snorm;
+		perlinDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		perlinBuffer->AddAttachment(new frameBuffer::attachment_t("perlin",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), perlinDesc));
+		perlinBuffer->AddAttachment(new frameBuffer::attachment_t("perlin", perlinDesc));
 
 		finalProgram = shaderPrograms[1]->handle;
 
@@ -210,29 +209,28 @@ protected:
 	{
 		scene::Update();
 		perlin.Update();
-
 	}
 
 	void PerlinPass()
 	{
 		perlinBuffer->Bind();
+		perlinBuffer->attachments[0]->Draw();
 
-		GLenum drawBuffers[1] =
-		{
-			gl_color_attachment0
-		};
-
-		glDrawBuffers(1, drawBuffers);
+		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
 		glUseProgram(this->programGLID);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		perlinBuffer->Unbind();
 	}
 
 	void FinalPass()
 	{
-		perlinBuffer->attachments[0]->SetActive(1);
+		frameBuffer::Unbind();
+
+		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
+		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
+
+		perlinBuffer->attachments[0]->SetActive(0);
 		glUseProgram(finalProgram);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

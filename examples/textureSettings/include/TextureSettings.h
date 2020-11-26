@@ -2,9 +2,9 @@
 #define TEXTURE_SETTINGS_H
 #include <TexturedScene.h>
 
-typedef enum { LINEAR = 0, NEAREST } magFilterSettings_t;
-typedef enum { NEAREST_MIPMAP_NEAREST = 2, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR } minFilterSettings_t;
-typedef enum { CLAMP_TO_EDGE = 0, MIRROR_CLAMP_TO_EDGE, CLAMP_TO_BORDER, REPEAT, MIRRORED_REPEAT } wrapSettings_t;
+using magFilterSettings_t = enum { LINEAR = 0, NEAREST };
+using minFilterSettings_t = enum { NEAREST_MIPMAP_NEAREST = 2, NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_NEAREST, LINEAR_MIPMAP_LINEAR };
+using wrapSettings_t = enum { CLAMP_TO_EDGE = 0, MIRROR_CLAMP_TO_EDGE, CLAMP_TO_BORDER, REPEAT, MIRRORED_REPEAT };
 
 class textureSettings : public texturedScene
 {
@@ -18,7 +18,7 @@ public:
 
 	}
 
-	void BuildGUI(tWindow* window, ImGuiIO io) override //it's not virtual because i don't really want anything to inherit from it at this point. 
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		//texturedScene::BuildGUI(io);
 		DrawTextureSettings();

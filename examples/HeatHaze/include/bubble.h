@@ -31,7 +31,6 @@ public:
 	{
 
 		this->bubble = bubbleSettings;
-		this->tweakBarName = "bubble scene";
 		enableWireframe = true;
 		Initialize();
 	}
@@ -104,7 +103,7 @@ protected:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(bubble.data.gridDimensions * bubble.data.gridDimensions));
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, bubble.data.gridDimensions * bubble.data.gridDimensions);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		texturedScene::DrawGUI(windows[0]);
 		windows[0]->SwapDrawBuffers();

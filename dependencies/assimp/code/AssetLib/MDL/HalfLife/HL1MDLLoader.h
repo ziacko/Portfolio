@@ -218,16 +218,18 @@ private:
 template <typename MDLFileHeader>
 void HL1MDLLoader::load_file_into_buffer(const std::string &file_path, unsigned char *&buffer) {
     if (!io_->Exists(file_path))
-        throw DeadlyImportError("Missing file " + DefaultIOSystem::fileName(file_path) + ".");
+        throw DeadlyImportError("Missing file ", DefaultIOSystem::fileName(file_path), ".");
 
     std::unique_ptr<IOStream> file(io_->Open(file_path));
 
-    if (file.get() == NULL)
-        throw DeadlyImportError("Failed to open MDL file " + DefaultIOSystem::fileName(file_path) + ".");
+    if (file.get() == nullptr) {
+        throw DeadlyImportError("Failed to open MDL file ", DefaultIOSystem::fileName(file_path), ".");
+    }
 
     const size_t file_size = file->FileSize();
-    if (file_size < sizeof(MDLFileHeader))
+    if (file_size < sizeof(MDLFileHeader)) {
         throw DeadlyImportError("MDL file is too small.");
+    }
 
     buffer = new unsigned char[1 + file_size];
     file->Read((void *)buffer, 1, file_size);

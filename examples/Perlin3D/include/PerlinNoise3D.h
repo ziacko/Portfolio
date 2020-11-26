@@ -5,11 +5,13 @@
 
 struct perlinSettings3D_t
 {
-	glm::vec4		input;
+	glm::vec3	uvwScale;
+	int			layer;
 
-	perlinSettings3D_t(glm::vec4 input = glm::vec4(1))
+	perlinSettings3D_t(glm::vec3 uvwScale = glm::vec3(1, 1, 0.01))
 	{
-		this->input = input;
+		this->uvwScale = uvwScale;
+		layer = 0;
 	}
 
 	~perlinSettings3D_t() {};
@@ -24,10 +26,8 @@ public:
 		const GLchar* shaderConfigPath = "../../resources/shaders/Perlin3D.txt")
 		: perlinScene(windowName, perlinCamera, shaderConfigPath)
 	{
-		perlinBuffer = new frameBuffer();
 		perlin.data = perlinSettings_t();
 		perlin3D.data = perlinSettings3D_t();
-		tweakBarName = windowName;
 		
 	}
 
@@ -35,37 +35,34 @@ public:
 	{
 		scene::Initialize();
 
-		perlinBuffer->Initialize();
-		perlinBuffer->Bind();
-
 		FBODescriptor perlinDesc;
-		perlinDesc.target = gl_texture_2d_array;
-		perlinDesc.layers = 8;
+		perlinDesc.target = gl_texture_3d;
 		perlinDesc.dataType = GL_FLOAT;
 		perlinDesc.format = GL_RED;
 		perlinDesc.internalFormat = gl_r16;
+		perlinDesc.dimensions = glm::ivec3(50);
 
-		perlinBuffer->AddAttachment(new frameBuffer::attachment_t("perlin",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), perlinDesc));
+		//don't make this a rendertarget. just regular texture
+		perlinTex = new frameBuffer::attachment_t("perlin", perlinDesc);
 
-		frameBuffer::Unbind();
-
-		finalProgram = shaderPrograms[1]->handle;
+		perlinProgram = shaderPrograms[1]->handle;
 
 		scene::InitializeUniforms();
 		perlin3D.Initialize(1);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
 protected:
 
-	unsigned int							finalProgram;
-	frameBuffer*							perlinBuffer;
+	unsigned int							perlinProgram;
+	frameBuffer::attachment_t*				perlinTex;
 	bufferHandler_t<perlinSettings3D_t>		perlin3D;
 
 	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		perlinScene::BuildGUI(window, io); 
-		ImGui::SliderFloat4("vars", &perlin3D.data.input[0], 0, 10);
+		ImGui::SliderFloat3("uvw Scale", &perlin3D.data.uvwScale[0], 0.01f, 100);
+		ImGui::SliderInt("layer", &perlin3D.data.layer, 0, 50);
 	}
 
 	void AddGUISpacer()
@@ -97,40 +94,23 @@ protected:
 		perlin.Update();
 	}
 
-	void PerlinPass()
+	void PerlinCalc()
 	{
-		perlinBuffer->Bind();
-
-		GLenum drawBuffers[8] =
-		{
-			perlinBuffer->attachments[0]->FBODesc.format, perlinBuffer->attachments[0]->FBODesc.format,
-			perlinBuffer->attachments[0]->FBODesc.format, perlinBuffer->attachments[0]->FBODesc.format,
-			perlinBuffer->attachments[0]->FBODesc.format, perlinBuffer->attachments[0]->FBODesc.format,
-			perlinBuffer->attachments[0]->FBODesc.format, perlinBuffer->attachments[0]->FBODesc.format
-		};
-
-		glDrawBuffers(8, &drawBuffers[0]);
-
-		glUseProgram(this->programGLID);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		perlinBuffer->Unbind();
+		perlinTex->BindAsImage(0);
+		glUseProgram(perlinProgram);
+		glDispatchCompute(2, 2, 2);
 	}
 
 	void FinalPass()
 	{
-		perlinBuffer->attachments[0]->SetActive(0);
-		glUseProgram(this->finalProgram);
-
+		perlinTex->SetActive(0);
+		glUseProgram(this->programGLID);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		//glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(bubble.data.gridDimensions * bubble.data.gridDimensions));
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 	}
 
 	void Draw()	override
 	{
-		PerlinPass();
+		PerlinCalc();
 		FinalPass();
 
 		DrawGUI(windows[0]);

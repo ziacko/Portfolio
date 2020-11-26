@@ -64,7 +64,7 @@ public:
 		}
 	};
 
-	golScene(float dimensions = 100.0f, GLdouble tickDelay = 0.3f, GLuint randomSeed = 666,
+	golScene(float dimensions = 25.0f, GLdouble tickDelay = 0.3f, GLuint randomSeed = 666,
 		GLuint cellProbability = 90, const char* windowName = "Ziyad Barakat's portfolio (game of life)",
 		camera* golCamera = new camera(), const char* shaderConfigPath = "../../resources/shaders/GOL.txt")
 		: scene(windowName, golCamera, shaderConfigPath)
@@ -72,7 +72,6 @@ public:
 		this->tickDelay = tickDelay;
 		this->randomSeed = randomSeed;
 		this->cellProbability = cellProbability;
-		this->tweakBarName = windowName;
 
 		//gol = bufferHandler_t<golSettings_t>(dimensions);
 		gol.data.dimensions = dimensions;
@@ -124,7 +123,7 @@ protected:
 	void Draw() override
 	{	
 		glUseProgram(this->programGLID);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (GLsizei)(gol.data.dimensions * gol.data.dimensions));
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, gol.data.dimensions * gol.data.dimensions);
 		
 		DrawGUI(windows[0]);
 		windows[0]->SwapDrawBuffers();
@@ -314,16 +313,16 @@ protected:
 		//SetupBuffer(cellBuffer, cellBuffer->bufferHandle, GLuint(sizeof(int) * cellBuffer->cells.size()), 0, gl_shader_storage_buffer, gl_dynamic_draw);
 	}
 
-	virtual void Resize(tWindow* window, glm::vec2 dimensions = glm::vec2(0)) override
+	virtual void Resize(tWindow* window, glm::ivec2 dimensions = glm::ivec2(0)) override
 	{
 		glViewport(0, 0, window->settings.resolution.x, window->settings.resolution.y);
-		defaultPayload.data.resolution = glm::vec2(window->settings.resolution.x, window->settings.resolution.y);
+		defaultPayload.data.resolution = glm::ivec2(window->settings.resolution.x, window->settings.resolution.y);
 		defaultPayload.data.projection = glm::ortho(0.0f, (GLfloat)window->settings.resolution.x, (GLfloat)window->settings.resolution.y, 0.0f, 0.01f, 10.0f);
-		cellDimensions = glm::vec2(defaultPayload.data.resolution.x / gol.data.dimensions, defaultPayload.data.resolution.y / gol.data.dimensions);
+		cellDimensions = glm::ivec2(defaultPayload.data.resolution.x / gol.data.dimensions, defaultPayload.data.resolution.y / gol.data.dimensions);
 
 		defaultPayload.Update(gl_uniform_buffer, gl_dynamic_draw);
 		//UpdateBuffer(defaultUniform, defaultUniform->bufferHandle, sizeof(*defaultUniform), gl_uniform_buffer, gl_dynamic_draw);
-		if (dimensions == glm::vec2(0))
+		if (dimensions == glm::ivec2(0))
 		{
 			defaultVertexBuffer->UpdateBuffer(defaultPayload.data.resolution);
 		}

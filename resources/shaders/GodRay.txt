@@ -14,7 +14,7 @@ Vertex
 ../../resources/shaders/Model.vert
 TreeFragment
 Fragment
-../../resources/shaders/texturedModel.frag
+../../resources/shaders/SpeedTree.frag
 
 occlusionProgram
 5

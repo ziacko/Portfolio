@@ -10,63 +10,77 @@ struct pick_t
 	glm::vec4 color;
 };
 
+struct pickMesh_t
+{
+	std::vector<glm::vec4>	positions;
+};
+
+struct result_t
+{
+	float		isHit;
+	glm::vec4	point;
+};
+
 class picking : public outline
 {
 public:
 
-	picking(const char* windowName = "Ziyad Barakat's Portfolio(outline)",
+	picking(const char* windowName = "Ziyad Barakat's Portfolio(picking)",
 		camera* camera3D = new camera(glm::vec2(1280, 720), 0.1f, camera::projection_t::perspective),
-		model_t* model = new model_t("../../resources/models/SoulSpear/SoulSpear.FBX"),
+		model_t* model = new model_t("../../resources/models/SoulSpear/SoulSpear.FBX", false, true),
 		const char* shaderConfigPath = "../../resources/shaders/Picking.txt") : 
 		outline(windowName, camera3D, model, shaderConfigPath)
 	{
 		pickBuffer = new frameBuffer();
+		pickProgram = 0;
 	}
 
 	~picking() {};
 
-	//bufferHandler_t<outlineSettings_t> outlineBuffer;
-	virtual void Initialize() override
+	void Initialize() override
 	{
 		scene3D::Initialize();
 
-		geometryBuffer->Initialize();
-		geometryBuffer->Bind();
-
 		FBODescriptor depthDesc;
-		depthDesc.dataType = gl_unsigned_int_24_8;
-		depthDesc.format = gl_depth_stencil;
-		depthDesc.internalFormat = gl_depth24_stencil8;
-		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depthAndStencil;
-		depthDesc.sampleCount = 1;
+		depthDesc.dataType = GL_FLOAT;
+		depthDesc.format = GL_DEPTH_COMPONENT;
+		depthDesc.internalFormat = gl_depth_component24;
+		depthDesc.attachmentType = FBODescriptor::attachmentType_t::depth;
 		depthDesc.wrapRSetting = GL_CLAMP;
 		depthDesc.wrapSSetting = GL_CLAMP;
 		depthDesc.wrapTSetting = GL_CLAMP;
+		depthDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
 		FBODescriptor stencilDesc;
-		stencilDesc.dataType = GL_UNSIGNED_INT;
-		stencilDesc.format = GL_STENCIL_INDEX;
-		stencilDesc.internalFormat = gl_stencil_index8;
-		stencilDesc.attachmentType = FBODescriptor::attachmentType_t::stencil;
-		stencilDesc.sampleCount = 1;
+		stencilDesc.dataType = gl_unsigned_int_24_8;
+		stencilDesc.format = gl_depth_stencil;
+		stencilDesc.internalFormat = gl_depth24_stencil8;
+		stencilDesc.attachmentType = FBODescriptor::attachmentType_t::depthAndStencil;
+		stencilDesc.wrapRSetting = GL_CLAMP;
+		stencilDesc.wrapSSetting = GL_CLAMP;
+		stencilDesc.wrapTSetting = GL_CLAMP;
+		stencilDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
 		FBODescriptor pickDesc;
 		pickDesc.dataType = GL_UNSIGNED_BYTE;
 		pickDesc.format = GL_RED;
 		pickDesc.internalFormat = gl_r8;
 		pickDesc.attachmentType = FBODescriptor::attachmentType_t::color;
+		pickDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height)));
+		FBODescriptor colorDesc;
+		colorDesc.dimensions = glm::ivec3(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height, 1);
 
-		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), depthDesc));
+		geometryBuffer->Initialize();
+		geometryBuffer->Bind();
+
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("color", colorDesc));
+		geometryBuffer->AddAttachment(new frameBuffer::attachment_t("depth", stencilDesc));
 
 		pickBuffer->Initialize();
 		pickBuffer->Bind();
 
-		pickBuffer->AddAttachment(new frameBuffer::attachment_t("color",
-			glm::vec2(windows[0]->settings.resolution.width, windows[0]->settings.resolution.height), pickDesc));
+		pickBuffer->AddAttachment(new frameBuffer::attachment_t("color", pickDesc));
 
 		frameBuffer::Unbind();
 
@@ -74,29 +88,28 @@ public:
 		compareProgram = shaderPrograms[2]->handle;
 		finalProgram = shaderPrograms[3]->handle;
 		pickProgram = shaderPrograms[4]->handle;
+		pickCompProgram = shaderPrograms[5]->handle;
 
 		pick.data.color = glm::vec4(1, 0, 0, 1);
-
-		//PBO
-		/*glGenBuffers(1, &PBOHandle);
-		glBindBuffer(gl_pixel_pack_buffer, PBOHandle);
-		glBufferData(gl_pixel_pack_buffer, totalSize, 0, gl_stream_read);
-
-		glGenBuffers(1, &PBOHandle2);
-		glBindBuffer(gl_pixel_pack_buffer, PBOHandle);
-		glBufferData(gl_pixel_pack_buffer, totalSize, 0, gl_stream_read);
-
-		glBindBuffer(gl_pixel_pack_buffer, 0);*/
+		
+		hitResult.data.isHit = false;
+		hitResult.data.point = glm::vec4(0);
+		pickMesh.data.positions = testModel->posData[0];
+		pickMesh.Initialize(0, gl_shader_storage_buffer, gl_dynamic_draw);
+		pickMesh.Update(gl_shader_storage_buffer, gl_dynamic_draw, sizeof(glm::vec4) * pickMesh.data.positions.size() + sizeof(float), pickMesh.data.positions.data());
 	}
 
 protected:
 
-	frameBuffer*				pickBuffer;
-	bufferHandler_t<pick_t>		pick;
-	unsigned int				pickProgram;
-	bool						readBuffer = false;
+	frameBuffer*					pickBuffer;
+	bufferHandler_t<pick_t>			pick;
+	bufferHandler_t<pickMesh_t>		pickMesh;
+	bufferHandler_t<result_t>		hitResult;
+	unsigned int					pickProgram;
+	unsigned int					pickCompProgram;
+	bool							readBuffer = false;
 
-	virtual void BuildGUI(tWindow* window, ImGuiIO io) override
+	void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
 		scene3D::BuildGUI(windows[0], io);
 		for (auto iter : geometryBuffer->attachments)
@@ -108,20 +121,20 @@ protected:
 		}
 		ImGui::Image((ImTextureID*)pickBuffer->attachments[0]->GetHandle(), ImVec2(512, 288),
 			ImVec2(0, 1), ImVec2(1, 0));
-
-
 	}
 
-	virtual void InitializeUniforms() override
+	void InitializeUniforms() override
 	{
 		stencil::InitializeUniforms();
 		pick.Initialize(2);
+		hitResult.Initialize(1, gl_shader_storage_buffer, gl_dynamic_draw);
 	}
 
-	virtual void Update() override
+	void Update() override
 	{
 		stencil::Update();
-		pick.Update();
+		pick.Update();		
+		//hitResult.Update(gl_shader_storage_buffer);
 	}
 
 	void Draw() override
@@ -131,8 +144,12 @@ protected:
 
 		UpdateDefaultBuffer();
 
-		StencilPass();
+		//RayCast(); //camera must be in perspective mode
 		
+		glEnable(GL_STENCIL_TEST);
+		StencilPass();
+		glDisable(GL_STENCIL_TEST);
+
 		GeometryPass(); //render current scene with jitter
 		
 		glEnable(GL_SCISSOR_TEST);
@@ -161,19 +178,18 @@ protected:
 				if(iter > 0)
 				{
 					hitAnything = true;
-					
+					break;					
 				}
 			}
 			testModel->isPicked = hitAnything;
 			readBuffer = false;
 		}
 
-
 		DrawGUI(windows[0]);
-
 		windows[0]->SwapDrawBuffers();
 		ClearBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 	}
 
 	virtual void GeometryPass()
@@ -181,15 +197,10 @@ protected:
 		geometryBuffer->Bind();
 		//enable stencils, 
 
-		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //depth
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		geometryBuffer->DrawAll();
 
 		testModel->meshes[0].textures[0].SetActive(0);
-		//add the previous depth?
-
+		
 		glBindVertexArray(testModel->meshes[0].vertexArrayHandle);
 		glUseProgram(programGLID);
 		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
@@ -209,11 +220,7 @@ protected:
 		//same as geometry pass but with a much smaller window?
 		pickBuffer->Bind();
 
-		GLenum drawbuffers[1] = {
-			pickBuffer->attachments[0]->FBODesc.attachmentFormat, //depth
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		pickBuffer->DrawAll();
 
 		testModel->meshes[0].textures[0].SetActive(0);
 		//add the previous depth?
@@ -232,15 +239,15 @@ protected:
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		pickBuffer->Unbind();
+		
 	}
 
 	virtual void StencilPass()
 	{
 		geometryBuffer->Bind();
 		//enable stencils, 
-		glEnable(GL_STENCIL_TEST);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
+		
 		if(testModel->isPicked)
 		{
 			glStencilMask(0x01);
@@ -250,15 +257,11 @@ protected:
 		else
 		{
 			//just to remove that error message for now
-			//glStencilMask(0);
-			//glStencilFunc(GL_ALWAYS, 5, 0);
+			glStencilMask(0);
+			glStencilFunc(GL_ALWAYS, 5, 0);
 		}
 
-		GLenum drawbuffers[1] = {
-			geometryBuffer->attachments[1]->FBODesc.attachmentFormat, //stencil
-		};
-
-		glDrawBuffers(1, drawbuffers);
+		geometryBuffer->attachments[1]->Draw();
 
 		testModel->meshes[0].textures[0].SetActive(0);
 
@@ -272,20 +275,21 @@ protected:
 		}
 		glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[0].indices.size(), GL_UNSIGNED_INT, 0);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 		geometryBuffer->Unbind();
+		
 	}
 
 	virtual void FinalPass(texture* tex1, frameBuffer::attachment_t* tex2) override
 	{
-		//draw directly to backbuffer		
-		tex1->SetActive(0);
-
+		//draw directly to backbuffer
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
-		tex2->SetActive(1);
-		tex2->SetReadMode(FBODescriptor::attachmentType_t::stencil);
+		tex2->SetReadMode(FBODescriptor::attachmentType_t::depthAndStencil);
+
+		tex1->SetActive(0);
+		tex2->SetActive(1);		
+		
 		glUseProgram(compareProgram);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -293,18 +297,36 @@ protected:
 
 	virtual void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state) override
 	{
-		scene::HandleMouseClick(window, button, state);
+		scene3D::HandleMouseClick(window, button, state);
 		if (button == mouseButton_t::left && state == buttonState_t::down)
 		{
-			
-			transform identity = transform();
-			glm::vec2 mousePosition = glm::vec2(windows[0]->mousePosition.x, windows[0]->mousePosition.y);
-			//fire off a ray from the mouse position (in world space),
-			//test if this ray intersects with any triangles in every mesh
-			raycast::result res = raycast::RayFromMouse(*sceneCamera, mousePosition, *testModel, identity);
-			printf("hit: %i\n", res);
-			readBuffer = res.hit;
+			readBuffer = true;
+			/*sceneCamera->ChangeProjection(camera::projection_t::perspective);
+			sceneCamera->Update();
+
+			UpdateDefaultBuffer();
+
+			RayCast(); //camera must be in perspective mode*/
 		}
+	}
+
+	void RayCast()
+	{
+		glUseProgram(pickCompProgram);
+		glDispatchCompute(32, 1, 1);
+
+		glFinish();
+		glBindBuffer(gl_shader_storage_buffer, hitResult.bufferHandle);
+		result_t result;
+		glGetBufferSubData(gl_shader_storage_buffer, 0, sizeof(result), &result);
+		printf("result: %f | point: %f, %f, %f \n", result.isHit, result.point.x, result.point.y, result.point.z);
+		hitResult.data.isHit = false;
+		hitResult.Update();
+		testModel->isPicked = result.isHit;
+
+		//raycast::ray testRay;
+		//raycast::RayFromMouse(*sceneCamera, defaultPayload.data.mousePosition, *testModel, transform());
+
 	}
 
 	virtual void ClearBuffers()
@@ -315,8 +337,8 @@ protected:
 
 		geometryBuffer->Bind();
 		geometryBuffer->ClearTexture(geometryBuffer->attachments[0], clearColor1);
-		geometryBuffer->ClearTexture(geometryBuffer->attachments[1], clearColor1);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		//geometryBuffer->ClearTexture(geometryBuffer->attachments[1], clearColor1);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		geometryBuffer->Unbind();
 
 		pickBuffer->Bind();
@@ -327,10 +349,10 @@ protected:
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 	}
 
-	virtual void ResizeBuffers(glm::vec2 resolution)
+	virtual void ResizeBuffers(glm::ivec2 resolution)
 	{
 		stencil::ResizeBuffers(resolution);
-		pickBuffer->Resize(resolution);
+		pickBuffer->Resize(glm::ivec3(resolution, 1));
 	}
 };
 

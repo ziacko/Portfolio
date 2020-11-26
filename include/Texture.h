@@ -9,11 +9,10 @@ struct textureDescriptor
 	textureDescriptor(GLenum target = GL_TEXTURE_2D, GLenum dataType = GL_UNSIGNED_BYTE,
 		GLenum format = GL_RGBA, GLint internalFormat = GL_RGBA8,		
 		GLenum minFilterSetting = GL_LINEAR, GLenum magFilterSetting = GL_LINEAR,
-		GLenum wrapSSetting = GL_REPEAT, GLenum wrapTSetting = GL_REPEAT, GLenum wrapRSetting = gl_clamp_to_edge)
+		GLenum wrapSSetting = GL_REPEAT, GLenum wrapTSetting = GL_REPEAT, GLenum wrapRSetting = gl_clamp_to_edge,
+		GLenum access = gl_read_write)
 	{
-		this->width = 0;
-		this->height = 0;
-		this->depth = 0;
+		dimensions = glm::vec3(1280, 720, 1);
 		this->channels = 4;
 		this->format = format;
 		this->bitsPerPixel = 8;
@@ -33,12 +32,13 @@ struct textureDescriptor
 		this->wrapSSetting = wrapSSetting;
 		this->wrapTSetting = wrapTSetting;
 		this->wrapRSetting = wrapRSetting;
+
+		this->isImmutable = false;
+		this->access = access;
 	}
 
 	//size and pixel depth density settings
-	GLint			width;
-	GLint			height;
-	GLint			depth;
+	glm::ivec3		dimensions;
 	GLint			channels;
 	GLenum			format;
 
@@ -60,6 +60,9 @@ struct textureDescriptor
 	GLenum			wrapRSetting;
 
 	GLuint			bitsPerPixel;
+	GLenum			access;
+
+	bool			isImmutable;
 };
 
 class texture
@@ -90,13 +93,13 @@ public:
 		this->texDesc = texDescriptor;
 
 		isResident = false;
+		residentHandle = 0;
+		this->data = nullptr;
+		uniformHandle = 0;
 	}
-
-	virtual void BindTexture()
-	{
-		glBindTexture(texDesc.target, handle);
-	}
-
+	
+	virtual ~texture(){};
+	
 	virtual void GetUniformLocation(GLuint programHandle)
 	{
 		uniformHandle = glGetUniformLocation(programHandle, uniformName.c_str());
@@ -105,28 +108,34 @@ public:
 		SetActive();
 	}
 
+	virtual void BindTexture()
+	{
+		glBindTexture(texDesc.target, handle);
+	}
+
 	virtual void SetActive()
 	{
-		glActiveTexture(gl_texture0 + handle);
-		glBindTexture(texDesc.target, handle);
+		glBindTextureUnit(handle, handle);
 	}
 	
 	virtual void SetActive(GLuint texUnit)
 	{
-		glActiveTexture(gl_texture0 + texUnit);
-		glBindTexture(texDesc.target, handle);
+		glBindTextureUnit(texUnit, handle);
 	}
 
-	void UnbindTexture()
+	void UnbindTexture() const
 	{
-		glActiveTexture(gl_texture0 + handle);
 		glBindTexture(texDesc.target, NULL);
 	}
 
-	static void UnbindTexture(GLenum target, unsigned int texUnit)
+	static void UnbindTexture(GLenum target)
 	{
-		glActiveTexture(gl_texture0 + texUnit);
 		glBindTexture(target, NULL);
+	}
+
+	void BindAsImage(GLuint texUnit)
+	{
+		glBindImageTexture(texUnit, handle, texDesc.currentMipmapLevel, 0, 0, gl_write_only, texDesc.internalFormat);
 	}
 
 	virtual void OverloadTextureUnit(GLuint texUnit)
@@ -138,7 +147,7 @@ public:
 	void LoadTexture()
 	{
 		stbi_set_flip_vertically_on_load(true);
-		char* data = (char*)stbi_load(path.c_str(), &texDesc.width, &texDesc.height, &texDesc.channels, 0);
+		char* data = (char*)stbi_load(path.c_str(), &texDesc.dimensions.x, &texDesc.dimensions.y, &texDesc.channels, 0);
 
 		//if stbi fails then use gli instead. if that fails give up
 		if (data == nullptr)
@@ -166,11 +175,11 @@ public:
 	virtual void ReloadTexture(const char* path)
 	{
 		stbi_set_flip_vertically_on_load(true);
-		char* data = (char*)stbi_load(path, &texDesc.width, &texDesc.height, &texDesc.channels, 0);
+		char* data = (char*)stbi_load(path, &texDesc.dimensions.x, &texDesc.dimensions.y, &texDesc.channels, 0);
 
 		if (data != nullptr)
 		{
-			stbLoad(data);
+			stbLoad(data, true);
 		}
 
 		else
@@ -191,132 +200,111 @@ public:
 	{
 		switch (minFilterSetting)
 		{
-		case 0:
-		{
-			texDesc.minFilterSetting = GL_LINEAR;
-			break;
-		}
+			case 0:
+			{
+				texDesc.minFilterSetting = GL_LINEAR;
+				break;
+			}
 
-		case 1:
-		{
-			texDesc.minFilterSetting = GL_NEAREST;
-			break;
-		}
+			case 1:
+			{
+				texDesc.minFilterSetting = GL_NEAREST;
+				break;
+			}
 
-		case 2:
-		{
-			texDesc.minFilterSetting = GL_NEAREST_MIPMAP_NEAREST;
-			break;
-		}
+			case 2:
+			{
+				texDesc.minFilterSetting = GL_NEAREST_MIPMAP_NEAREST;
+				break;
+			}
 
-		case 3:
-		{
-			texDesc.minFilterSetting = GL_NEAREST_MIPMAP_LINEAR;
-			break;
-		}
+			case 3:
+			{
+				texDesc.minFilterSetting = GL_NEAREST_MIPMAP_LINEAR;
+				break;
+			}
 
-		case 4:
-		{
-			texDesc.minFilterSetting = GL_LINEAR_MIPMAP_NEAREST;
-			break;
-		}
+			case 4:
+			{
+				texDesc.minFilterSetting = GL_LINEAR_MIPMAP_NEAREST;
+				break;
+			}
 
-		case 5:
-		{
-			texDesc.minFilterSetting = GL_LINEAR_MIPMAP_LINEAR;
-			break;
-		}
+			case 5:
+			{
+				texDesc.minFilterSetting = GL_LINEAR_MIPMAP_LINEAR;
+				break;
+			}
+
+			default:
+			{
+				break;
+			}
 		}
 		BindTexture();
 		glTexParameteri(texDesc.target, GL_TEXTURE_MIN_FILTER, texDesc.minFilterSetting);
-		UnbindTexture();
+		//UnbindTexture();
 	}
 
 	virtual void SetMagFilter(GLenum magFilterSetting)
 	{
 		switch (magFilterSetting)
 		{
-		case 0:
-		{
-			texDesc.magFilterSetting = GL_LINEAR;
-			break;
-		}
-
-		case 1:
-		{
-			texDesc.magFilterSetting = GL_NEAREST;
-			break;
-		}
-
-		case 2:
-		{
-			texDesc.magFilterSetting = GL_NEAREST_MIPMAP_NEAREST;
-			break;
-		}
-
-		case 3:
-		{
-			texDesc.magFilterSetting = GL_NEAREST_MIPMAP_LINEAR;
-			break;
-		}
-
-		case 4:
-		{
-			texDesc.magFilterSetting = GL_LINEAR_MIPMAP_NEAREST;
-			break;
-		}
-
-		case 5:
-		{
-			texDesc.magFilterSetting = GL_LINEAR_MIPMAP_LINEAR;
-			break;
-		}
-		}
-
-		BindTexture();
-		glTexParameteri(texDesc.target, GL_TEXTURE_MAG_FILTER, texDesc.magFilterSetting);
-		UnbindTexture();
-	}
-
-	virtual void SetWrapS(GLenum wrapSetting)
-	{
-		texDesc.wrapSSetting = wrapSetting;
-		/*switch (wrapSetting)
-		{
 			case 0:
 			{
-				this->wrapSSetting = gl_clamp_to_edge;
+				texDesc.magFilterSetting = GL_LINEAR;
 				break;
 			}
 
 			case 1:
 			{
-				this->wrapSSetting = gl_mirror_clamp_to_edge;
+				texDesc.magFilterSetting = GL_NEAREST;
 				break;
 			}
 
 			case 2:
 			{
-				this->wrapSSetting = gl_clamp_to_border;
+				texDesc.magFilterSetting = GL_NEAREST_MIPMAP_NEAREST;
 				break;
 			}
 
 			case 3:
 			{
-				this->wrapSSetting = GL_REPEAT;
+				texDesc.magFilterSetting = GL_NEAREST_MIPMAP_LINEAR;
 				break;
 			}
 
 			case 4:
 			{
-				this->wrapSSetting = gl_mirrored_repeat;
+				texDesc.magFilterSetting = GL_LINEAR_MIPMAP_NEAREST;
 				break;
 			}
-		}*/
+
+			case 5:
+			{
+				texDesc.magFilterSetting = GL_LINEAR_MIPMAP_LINEAR;
+				break;
+			}
+
+			default:
+			{
+				break;
+			}
+		}
 
 		BindTexture();
+		glTexParameteri(texDesc.target, GL_TEXTURE_MAG_FILTER, texDesc.magFilterSetting);
+		//UnbindTexture();
+	}
+
+	virtual void SetWrapS(GLenum wrapSetting)
+	{
+		texDesc.wrapSSetting = wrapSetting;
+		
+		BindTexture();
 		glTexParameteri(texDesc.target, GL_TEXTURE_WRAP_S, texDesc.wrapSSetting);
-		UnbindTexture();
+		glFinish();
+		//UnbindTexture();
 	}
 
 	virtual void SetWrapT(GLenum wrapSetting)
@@ -357,7 +345,7 @@ public:
 
 		BindTexture();
 		glTexParameteri(texDesc.target, GL_TEXTURE_WRAP_T, texDesc.wrapTSetting);
-		UnbindTexture();
+		//UnbindTexture();
 	}
 
 	virtual void SetWrapR(GLenum wrapSetting)
@@ -426,19 +414,14 @@ public:
 		return handle;
 	}
 
-	unsigned int GetResidentHandle()
+	GLuint64 GetResidentHandle()
 	{
 		return residentHandle;
 	}
 
-	glm::vec2 GetSize()
-	{
-		return glm::vec2(texDesc.width, texDesc.height);
-	}
-
 	std::vector<float> GetPixels()
 	{
-		int bytes = texDesc.width * texDesc.height * 2;
+		int bytes = texDesc.dimensions.x * texDesc.dimensions.y * 2;
 
 		GLfloat* pixels = new GLfloat[bytes];
 
@@ -454,7 +437,7 @@ public:
 	{
 		glCopyImageSubData(otherTexture->handle, otherTexture->texDesc.target, otherTexture->texDesc.currentMipmapLevel, 0, 0, 0,
 			handle, texDesc.target, texDesc.currentMipmapLevel, 0, 0, 0,
-			texDesc.width, texDesc.height, 1);
+			texDesc.dimensions.x, texDesc.dimensions.y, texDesc.dimensions.z);
 	}
 
 	void ToggleResident()
@@ -494,7 +477,7 @@ public:
 
 private:
 
-	void stbLoad(char* data)
+	void stbLoad(char* data, bool reload = false)
 	{
 		switch (texDesc.channels)
 		{
@@ -521,9 +504,17 @@ private:
 			texDesc.format = GL_RGBA;
 			break;
 		}
-		}
 
-		glGenTextures(1, &handle);
+		default:
+		{
+			break;
+		}
+		}
+		if(!reload)
+		{
+			glGenTextures(1, &handle);
+		}
+		
 		glBindTexture(texDesc.target, handle);
 
 		switch (texDesc.target)
@@ -543,7 +534,16 @@ private:
 			glTexParameteri(texDesc.target, GL_TEXTURE_WRAP_S, texDesc.wrapSSetting);
 			glTexParameteri(texDesc.target, GL_TEXTURE_WRAP_T, texDesc.wrapTSetting);
 
-			glTexImage2D(texDesc.target, texDesc.mipmapLevels, texDesc.internalFormat, texDesc.width, texDesc.height, texDesc.border, texDesc.format, texDesc.dataType, data);
+			if(texDesc.isImmutable)
+			{				
+				glTexStorage2D(texDesc.target, texDesc.mipmapLevels, texDesc.internalFormat, texDesc.dimensions.x, texDesc.dimensions.y);
+				glTextureSubImage2D(handle, texDesc.currentMipmapLevel, texDesc.xOffset, texDesc.yOffset, texDesc.dimensions.x, texDesc.dimensions.y, texDesc.format, texDesc.dataType, data);
+			}
+
+			else
+			{
+				glTexImage2D(texDesc.target, texDesc.currentMipmapLevel, texDesc.internalFormat, texDesc.dimensions.x, texDesc.dimensions.y, texDesc.border, texDesc.format, texDesc.dataType, data);
+			}
 			
 			if (texDesc.mipmapLevels > 0)
 			{
@@ -602,6 +602,8 @@ private:
 		}
 		}
 
+		
+
 		if (texDesc.mipmapLevels > 0)
 		{
 			glTexParameteri(GL_TEXTURE_2D, gl_texture_max_level, texDesc.mipmapLevels);
@@ -610,7 +612,7 @@ private:
 		}
 
 		else
-		{
+		{			
 			glTexParameteri(texDesc.target, GL_TEXTURE_MIN_FILTER, texDesc.minFilterSetting);
 			glTexParameteri(texDesc.target, GL_TEXTURE_MAG_FILTER, texDesc.magFilterSetting);
 		}
@@ -618,8 +620,6 @@ private:
 		float aniso = 0.0f;
 		glGetFloatv(gl_max_texture_max_anisotropy, &aniso); //throws out an openGL error but works anyway. not sure how to fix
 		glTexParameterf(GL_TEXTURE_2D, gl_texture_max_anisotropy, aniso);
-
-		UnbindTexture();
 	}
 
 	void gliLoad(gli::texture tex)
@@ -628,15 +628,14 @@ private:
 		gli::gl GL(gli::gl::PROFILE_GL33);
 		gli::gl::format const gliFormat = GL.translate(tex.format(), tex.swizzles());
 		texDesc.target = GL.translate(tex.target());
-		texDesc.mipmapLevels = tex.levels();
+		texDesc.mipmapLevels = (GLint)tex.levels();
 		texDesc.currentMipmapLevel = 0;
 		texDesc.internalFormat = gliFormat.Internal;
 		texDesc.format = gliFormat.External;
 		texDesc.dataType = gliFormat.Type;
 
 		glm::vec3 res = tex.extent();
-		texDesc.width = res.x;
-		texDesc.height = res.y;
+		texDesc.dimensions = res;
 
 		//data = tex.data()
 		
@@ -672,7 +671,7 @@ private:
 				glm::tvec3<GLsizei> extents(tex.extent(level));
 				if(compressed)
 				{
-					glTexStorage2D(texDesc.target, texDesc.currentMipmapLevel, texDesc.internalFormat, texDesc.width, texDesc.height);
+					glTexStorage2D(texDesc.target, texDesc.currentMipmapLevel, texDesc.internalFormat, texDesc.dimensions.x, texDesc.dimensions.y);
 					glCompressedTexSubImage2D(
 						texDesc.target, static_cast<GLint>(level), 0, 0, extents.x, extents.y,
 						texDesc.internalFormat, static_cast<GLsizei>(tex.size(level)), tex.data(0, 0, level));
@@ -681,7 +680,7 @@ private:
 				else
 				{
 					texDesc.currentMipmapLevel = 0;
-					glTexImage2D(texDesc.target, texDesc.currentMipmapLevel, texDesc.internalFormat, texDesc.width, texDesc.height, texDesc.border, texDesc.format, texDesc.dataType, tex.data(0, 0, level));
+					glTexImage2D(texDesc.target, texDesc.currentMipmapLevel, texDesc.internalFormat, texDesc.dimensions.x, texDesc.dimensions.y, texDesc.border, texDesc.format, texDesc.dataType, tex.data(0, 0, level));
 				}
 			}
 			break;

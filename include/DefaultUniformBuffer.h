@@ -73,7 +73,7 @@ public:
 	GLuint				totalFrames;
 
 	defaultUniformBuffer( glm::mat4 projection, glm::mat4 view,
-			glm::mat4 translation = glm::mat4( 1 ), glm::vec2 resolution = glm::vec2(1280, 720) )
+			glm::mat4 translation = glm::mat4( 1 ), glm::ivec2 resolution = glm::ivec2(1280, 720) )
 		//: uniformBuffer_t()
 	{
 		//BuildBuffer();

@@ -290,10 +290,16 @@ void Discreet3DSExporter::WriteMaterials() {
             ChunkWriter curChunk(writer, Discreet3DS::CHUNK_MAT_SPECULAR);
             WriteColor(color);
         }
-
+                
         if (mat.Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS) {
             ChunkWriter curChunk(writer, Discreet3DS::CHUNK_MAT_AMBIENT);
             WriteColor(color);
+        }
+
+        float f;
+        if (mat.Get(AI_MATKEY_OPACITY, f) == AI_SUCCESS) {
+            ChunkWriter chunk(writer, Discreet3DS::CHUNK_MAT_TRANSPARENCY);
+            WritePercentChunk(1.0f - f);
         }
 
         if (mat.Get(AI_MATKEY_COLOR_EMISSIVE, color) == AI_SUCCESS) {
@@ -333,7 +339,6 @@ void Discreet3DSExporter::WriteMaterials() {
             writer.PutU2(static_cast<uint16_t>(shading_mode_out));
         }
 
-        float f;
         if (mat.Get(AI_MATKEY_SHININESS, f) == AI_SUCCESS) {
             ChunkWriter chunk(writer, Discreet3DS::CHUNK_MAT_SHININESS);
             WritePercentChunk(f);
@@ -367,7 +372,7 @@ void Discreet3DSExporter::WriteTexture(const aiMaterial &mat, aiTextureType type
         aiTextureMapMode_Wrap, aiTextureMapMode_Wrap
     };
     ai_real blend = 1.0;
-    if (mat.GetTexture(type, 0, &path, NULL, NULL, &blend, NULL, map_mode) != AI_SUCCESS || !path.length) {
+    if (mat.GetTexture(type, 0, &path, nullptr, nullptr, &blend, nullptr, map_mode) != AI_SUCCESS || !path.length) {
         return;
     }
 

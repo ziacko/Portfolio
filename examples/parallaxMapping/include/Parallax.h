@@ -33,7 +33,6 @@ public:
 		texturedScene(defaultTexture, windowName, parallaxCamera, shaderConfigPath)
 	{
 		this->parallax = parallaxSettings;
-		this->tweakBarName = windowName;
 		this->heightMap = heightMap;
 	}
 
