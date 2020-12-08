@@ -8,10 +8,11 @@ struct vertexAttribute_t
 	glm::vec4	normal;
 	glm::vec4	tangent;
 	glm::vec4	biNormal;
-	GLuint		boneIndex;
-	GLfloat		weight;
+	glm::ivec4	boneIndex;
+	glm::vec4	weight;
 	glm::vec2	uv;
 	glm::vec2	uv2;
+
 
 	vertexAttribute_t(glm::vec4 position, glm::vec4 normal, glm::vec4 tangent,
 		glm::vec4 biTangent, glm::vec2 uv)
@@ -21,9 +22,9 @@ struct vertexAttribute_t
 		this->tangent = tangent;
 		this->biNormal = biTangent;
 		this->uv = uv;
-		this->boneIndex = 0;
-		this->weight = 0.0f;
-		this->uv2 = glm::vec4(0);
+		this->boneIndex = glm::ivec4(0);
+		this->weight = glm::vec4(0.0f);
+		this->uv2 = glm::vec2(0);
 	}
 
 	vertexAttribute_t()
@@ -33,8 +34,8 @@ struct vertexAttribute_t
 		normal = glm::vec4(0);
 		tangent = glm::vec4(0);
 		biNormal = glm::vec4(0);
-		boneIndex = 0;
-		weight = 0.0f;
+		boneIndex = glm::ivec4(0);
+		weight = glm::vec4(0.0f);
 		uv = glm::vec2(0);
 		uv2 = glm::vec2(0);
 	}
@@ -42,6 +43,8 @@ struct vertexAttribute_t
 
 enum vertexOffset
 {
+
+
 	position = offsetof(vertexAttribute_t, position),
 	color = offsetof(vertexAttribute_t, color),
 	normal = offsetof(vertexAttribute_t, normal),
@@ -50,5 +53,6 @@ enum vertexOffset
 	boneIndex = offsetof(vertexAttribute_t, boneIndex),
 	weight = offsetof(vertexAttribute_t, weight),
 	uv = offsetof(vertexAttribute_t, uv),
-	uv2 = offsetof(vertexAttribute_t, uv2)
+	uv2 = offsetof(vertexAttribute_t, uv2),
+
 };

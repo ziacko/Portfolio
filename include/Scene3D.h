@@ -34,7 +34,7 @@ public:
 	scene3D(const char* windowName = "Ziyad Barakat's Portfolio(3D scene)",
 		camera* camera3D = new camera(glm::vec2(1280, 720), 200.0f, camera::projection_t::perspective, 0.1f, 1000000.f),
 		const char* shaderConfigPath = "../../resources/shaders/AnimTest.txt",
-		model_t* model = new model_t("../../resources/models/Marv/MarvIdle.fbx")) :
+		model_t* model = new model_t("../../resources/models/anims/Goalkeeper.fbx")) :
 		scene(windowName, camera3D, shaderConfigPath)
 	{
 		testModel = model;
@@ -59,8 +59,13 @@ public:
 	{
 		scene::Initialize();
 		testModel->loadModel();
-		testModel->meshes[0].boneTransforms.Initialize(0, gl_shader_storage_buffer, gl_static_draw);
-		testModel->meshes[0].boneTransforms.Update(gl_shader_storage_buffer, gl_static_draw, sizeof(glm::mat4) * testModel->meshes[0].boneTransforms.data.transforms.size(), testModel->meshes[0].boneTransforms.data.transforms.data());
+		//for(size_t iter = 0; iter < testModel->meshes.size(); iter++)
+		{
+			testModel->boneBuffer.Initialize(0, gl_shader_storage_buffer, gl_dynamic_draw);
+			testModel->boneBuffer.Update(gl_shader_storage_buffer, gl_dynamic_draw,
+				sizeof(glm::mat4) * testModel->boneBuffer.data.finalTransforms.size(), 
+				testModel->boneBuffer.data.finalTransforms.data());
+		}
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
@@ -69,30 +74,32 @@ public:
 protected:
 
 	model_t* testModel;
-	//texture* diffuse;
 	bufferHandler_t<baseMaterialSettings_t>	materialBuffer;
 	bool wireframe;
 
 	virtual void Draw() override 
 	{
 		//for each mesh in the model
-		for(const auto& iter : testModel->meshes)
+		for(size_t iter = 0; iter < testModel->meshes.size(); iter++)
 		{
-			if (iter.isCollision)
+			if (testModel->meshes[iter].isCollision)
 			{
 				continue;
 			}
+
 			//set the materials per mesh
-			materialBuffer.data.diffuse = iter.diffuse;
-			materialBuffer.data.ambient = iter.ambient;
-			materialBuffer.data.specular = iter.specular;
-			materialBuffer.data.reflective = iter.reflective;
+			materialBuffer.data.diffuse = testModel->meshes[iter].diffuse;
+			materialBuffer.data.ambient = testModel->meshes[iter].ambient;
+			materialBuffer.data.specular = testModel->meshes[iter].specular;
+			materialBuffer.data.reflective = testModel->meshes[iter].reflective;
 			materialBuffer.Update(gl_uniform_buffer, gl_dynamic_draw);
 
 			//glBindBuffer(gl_element_array_buffer, iter.indexBufferHandle);
-			glBindVertexArray(iter.vertexArrayHandle);
+			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
 			glUseProgram(this->programGLID);
 
+			//first bind the correct bone transforms
+			//testModel->BindBoneTransforms(iter, 0);
 			/*if (iter.textures.size() > 0)
 			{
 
@@ -104,7 +111,7 @@ protected:
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
-			glDrawElements(GL_TRIANGLES, (GLsizei)iter.indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 		
@@ -142,6 +149,11 @@ protected:
 		}
 		
 		defaultPayload.Update(gl_uniform_buffer, gl_dynamic_draw);
+		
+
+		//only one animation in marv so just grab the first
+		//pass in time in milliseconds
+		testModel->Evaluate("", sceneClock->GetTotalTime(), true, 24, 0);
 	}
 
 	virtual void BuildGUI(tWindow* window, ImGuiIO io) override

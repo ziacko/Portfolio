@@ -4,8 +4,8 @@ layout (location = 0) in vec4 position;
 layout (location = 1) in vec4 normal;
 layout (location = 2) in vec4 tangent;
 layout (location = 3) in vec4 biTangent;
-layout (location = 4) in uint boneIndex;
-layout (location = 5) in float weight;
+layout (location = 4) in ivec4 boneIndex;
+layout (location = 5) in vec4 weight;
 layout (location = 6) in vec2 uv;
 
 out defaultBlock
@@ -37,7 +37,11 @@ void main()
 {
 	//move from world space to screen space
 	mat4 mvp = projection * view * translation;
-	vec4 pos = Bones[boneIndex] * position * weight;
+	vec4 pos = Bones[boneIndex.x] * position * weight.x;
+	pos += Bones[boneIndex.y] * position * weight.y;
+	pos += Bones[boneIndex.z] * position * weight.z;
+	pos += Bones[boneIndex.w] * position * weight.w;
+
 	outBlock.position = projection * view * translation * pos;// Bones[boneIndex] * position * weight;
 
 	outBlock.uv = uv;

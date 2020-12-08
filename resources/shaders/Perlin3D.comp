@@ -1,6 +1,6 @@
 #version 450
 
-layout(local_size_x = 2, local_size_y = 2, local_size_z = 2) in;
+layout(local_size_x = 10, local_size_y = 10, local_size_z = 10) in;
 
 layout(binding = 0, r16f) writeonly uniform image3D outputImage;
 
@@ -22,37 +22,6 @@ layout(binding = 1) uniform perlin3DSettings
     vec3  uvwScale;
     int   layer;
 };
-
-/*
-layout(binding = 2) uniform perlinSettings
-{
-	vec2		uvOffset;
-	vec2 		uvScale;
-	float		modValue;
-	float		permuteValue;
-	float		taylorInverse;
-	float		fadeValue1;
-	float		fadeValue2;
-	float		fadeValue3;
-	uint		numOctaves;
-
-	float		noiseValue;//41.0
-	float		noiseValue2;//2.3
-	uint		colorBias;//20
-
-	float		patternValue1;//0.3
-	float		patternValue2;//0.8
-	float		patternValue3;//5.2
-	float		patternValue4;//1.3
-	float		patternValue5;//4.0
-	float		patternValue6;//1.7
-	float		patternValue7;//9.2
-	float		patternValue8;//4.0
-	float		patternValue9;//8.3
-	float		patternValue10;//2.8
-	float		patternValue11;//4.0	
-
-};*/
 
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}

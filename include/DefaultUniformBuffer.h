@@ -53,6 +53,27 @@ public:
 		//printf("%i \n", sizeof(data));
 	}
 
+	void Override(unsigned int uniformHandle, GLenum target = gl_uniform_buffer, GLenum usage = gl_dynamic_draw, size_t dataSize = 0, void* inData = nullptr)
+	{
+		//ok so this is for overriding the data in existing shader storage buffers
+		//might have to look for a better system later
+		//glBindBuffer(target, bufferHandle); //i don't think re-setting the bufferhandle is needed here
+		glBindBufferBase(target, uniformHandle, bufferHandle);
+		if (dataSize > 0 && inData != nullptr)
+		{
+			glBufferData(target, dataSize, inData, usage);
+			glFinish();
+		}
+	}
+
+	void BindToSlot(unsigned int uniformHandle, GLenum target = gl_uniform_buffer)
+	{
+		//glBindBuffer(target, bufferHandle);
+		glBindBufferBase(target, uniformHandle, bufferHandle);
+		//Update(target, gl_dynamic_draw);
+		this->uniformHandle = uniformHandle;
+	}
+
 	bufferType data;
 	unsigned int bufferHandle;
 	unsigned int uniformHandle;
