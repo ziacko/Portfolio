@@ -26,7 +26,11 @@ struct mesh_t
 	unsigned int							vertexBufferHandle;
 	unsigned int							indexBufferHandle;
 
+	unsigned int							numBones;
+
 	bool									isCollision;
+
+	unsigned int							vertexOffset;
 
 	mesh_t()
 	{
@@ -44,6 +48,7 @@ struct mesh_t
 		vertexBufferHandle = 0;
 		indexBufferHandle = 0;
 		isCollision = false;
+		numBones = 0;
 	}
 
 	mesh_t(std::vector<vertexAttribute_t> inVertices, std::vector<unsigned int> inIndices, std::vector<texture> inTextures) : 
@@ -59,6 +64,7 @@ struct mesh_t
 		vertexBufferHandle = 0;
 		indexBufferHandle = 0;
 		isCollision = false;
+		numBones = 0;
 	}
 };
 
@@ -93,7 +99,7 @@ public:
 
 	void loadModel()
 	{
-		assimpScene = aiImportFile(resourcePath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+		assimpScene = aiImportFile(resourcePath.c_str(), aiProcessPreset_TargetRealtime_Fast); //change this to max quality later
 		assert(assimpScene != nullptr);
 
 		directory = resourcePath.substr(0, resourcePath.find_last_of('/'));
@@ -218,16 +224,12 @@ public:
 		glm::mat4 globalTransform = parentTransform * trans;
 
 		//for each bone, look for all the meshes that use this bone and update the final transform of that bone
-		//for (size_t meshIter = 0; meshIter < meshes.size(); meshIter++)
+		for (size_t meshIter = 0; meshIter < meshes.size(); meshIter++)
 		{
 			if (boneLookup.count(std::string(node->mName.C_Str())) > 0)
 			{
 				unsigned int boneIndex = boneLookup[node->mName.C_Str()];
 				boneBuffer.data.finalTransforms[boneIndex] = globalTransform * rawTransforms[boneIndex];
-
-				//unsigned int transformID = meshes[meshIter].boneLookup[node->mName.C_Str()];// node->mName.C_Str()]; //get the transform associated with node
-				//glm::mat4 finalTransform = globalTransform * meshes[meshIter].rawTransforms[transformID];//globalInverse * 
-				
 			}
 		}
 
@@ -590,10 +592,29 @@ public:
 		glBindBuffer(gl_array_buffer, 0);
 		glBindBuffer(gl_element_array_buffer, 0);
 
+		//this only works if using one giant vector as a mesh
+		//CalculateMeshVertexOffset(newMesh);
+
 		meshes.push_back(newMesh);
 	}
 
-	void ExtractBoneOffsets(aiMesh* mesh, std::vector<vertexAttribute_t>& verts, mesh_t& currentMesh)
+	//note this is BEFORE this mesh is added to the mesh vector (only works if all vertices are thrown in a single mesh)
+	void CalculateMeshVertexOffset(mesh_t& mesh)
+	{
+		if(meshes.size() == 0)
+		{
+			mesh.vertexOffset = 0;
+			return;
+		}
+		else
+		{
+			//ok grab the vertex offset of the last mesh and add it's vertex list size
+			mesh_t lastMesh = meshes[meshes.size() - 1];
+			mesh.vertexOffset = lastMesh.vertexOffset + lastMesh.vertices.size();
+		}
+	}
+
+	void ExtractBoneOffsets(aiMesh* mesh, std::vector<vertexAttribute_t>& verts, mesh_t& currentMesh) //current mesh is if we move data to the mesh
 	{
 		printf("mesh %s has %i bones \n", mesh->mName.C_Str(), mesh->mNumBones);
 		//for each bone in the current mesh,
@@ -601,13 +622,42 @@ public:
 		{
 			int boneIndex = 0;
 			std::string boneName = mesh->mBones[boneIter]->mName.C_Str();
-			//if we already have the bone then skip
-			if (boneLookup.count(boneName) == 0)
-			{
-				boneIndex = boneLookup.size();
 
-				boneLookup.emplace(boneName, boneIndex);
-				//move bone transforms into a map?
+			//ok but how do we know if the bone data is relevant to the current submesh?
+			/*bool shouldGrab = false;
+			//if the other meshes already have the bone then skip
+			for(auto iter : meshes)
+			{
+				if(iter.boneLookup.count(boneName) > 0)
+				{
+					//ok then we don't load this bone
+					shouldGrab = false;
+				}
+				else
+				{
+					shouldGrab = true;
+				}
+			}*/
+
+			//has this bone already been found? (redundant when each mesh links to every bone)
+			if (boneLookup.find(boneName) == boneLookup.end())//&& shouldGrab)
+			{
+				boneIndex = currentMesh.numBones;
+				currentMesh.numBones++;
+				rawTransforms.push_back(glm::mat4(0.0f));
+			}
+			else
+			{
+				boneIndex = boneLookup[boneName];
+			}
+
+			{
+				//add bone name and bone offset to their containers
+				if(boneLookup.count(boneName) == 0)
+				{
+					boneLookup.emplace(boneName, boneIndex);
+				}
+				
 				glm::mat4 boneTransform;
 				boneTransform[0].x = mesh->mBones[boneIndex]->mOffsetMatrix.a1;
 				boneTransform[0].y = mesh->mBones[boneIndex]->mOffsetMatrix.b1;
@@ -620,57 +670,45 @@ public:
 				boneTransform[1].w = mesh->mBones[boneIndex]->mOffsetMatrix.d2;
 
 				boneTransform[2].x = mesh->mBones[boneIndex]->mOffsetMatrix.a3;
-				boneTransform[2].y = mesh->mBones[boneIndex]->mOffsetMatrix.b3; //why is some of this garbled?
+				boneTransform[2].y = mesh->mBones[boneIndex]->mOffsetMatrix.b3;
 				boneTransform[2].z = mesh->mBones[boneIndex]->mOffsetMatrix.c3;
 				boneTransform[2].w = mesh->mBones[boneIndex]->mOffsetMatrix.d3;
 
 				boneTransform[3].x = mesh->mBones[boneIndex]->mOffsetMatrix.a4;
 				boneTransform[3].y = mesh->mBones[boneIndex]->mOffsetMatrix.b4;
 				boneTransform[3].z = mesh->mBones[boneIndex]->mOffsetMatrix.c4;
-				boneTransform[3].w = mesh->mBones[boneIndex]->mOffsetMatrix.d4;
-				rawTransforms.push_back(boneTransform);
-			}
-			else
-			{
-				boneIndex = boneLookup[boneName];
+				boneTransform[3].w = mesh->mBones[boneIndex]->mOffsetMatrix.d4; //am i copying this matrix correctly?
+				rawTransforms[boneIndex] = boneTransform;
 			}
 
-			/*else
+			for (size_t weightsIter = 0; weightsIter < mesh->mBones[boneIndex]->mNumWeights; weightsIter++)
 			{
-				//are these the same matrix offsets? turns out yes th
-				aiMatrix4x4 mat = mesh->mBones[boneIter]->mOffsetMatrix;
-				printf("bone name: %s \n", boneName.c_str());
-				printf("%f %f %f %f \n", mat.a1, mat.b1, mat.c1, mat.d1);
-				printf("%f %f %f %f \n", mat.a2, mat.b2, mat.c2, mat.d2);
-				printf("%f %f %f %f \n", mat.a3, mat.b3, mat.c3, mat.d3);
-				printf("%f %f %f %f \n", mat.a4, mat.b4, mat.c4, mat.d4);
-				printf("\n");
-				glm::mat4 mat2 = rawTransforms[boneLookup[boneName]];
-				printf("bone name: %s \n", boneName.c_str());
-				printf("%f %f %f %f \n", mat2[0][0], mat2[0][1], mat2[0][2], mat2[0][3]);
-				printf("%f %f %f %f \n", mat2[1][0], mat2[1][1], mat2[1][2], mat2[1][3]);
-				printf("%f %f %f %f \n", mat2[2][0], mat2[2][1], mat2[2][2], mat2[2][3]);
-				printf("%f %f %f %f \n", mat2[3][0], mat2[3][1], mat2[3][2], mat2[3][3]);
-				printf("\n");
-			}*/
-
-			for (size_t weightsIter = 0; weightsIter < mesh->mBones[boneIter]->mNumWeights; weightsIter++)
-			{
-				aiVertexWeight weight = mesh->mBones[boneIter]->mWeights[weightsIter];
 				unsigned int boneID = boneLookup[boneName];
-
-				for(size_t iter = 0; iter < 4; iter++)
+				aiVertexWeight weight = mesh->mBones[boneID]->mWeights[weightsIter];
+				//for every weight grouping associated with this bone
+				if (weight.mWeight < 0.0f)
 				{
-					if (verts[weight.mVertexId].weight[iter] == 0.0f)
-					{
-						verts[weight.mVertexId].boneIndex[iter] = boneLookup[boneName];// boneIndex
-						verts[weight.mVertexId].weight[iter] = weight.mWeight;
-						break;
-					}
+					printf("something broke \n");
 				}
+				UpdateBoneData(verts, weight, boneIter);
 			}
 		}
 		boneBuffer.data.finalTransforms = std::vector<glm::mat4>(rawTransforms.size());
+	}
+
+	void UpdateBoneData(std::vector<vertexAttribute_t>& verts, aiVertexWeight& const weight, unsigned int boneIndex)
+	{
+		for (size_t iter = 0; iter < 4; iter++)
+		{
+			//for all 4 vertex attribute slots check if the current vertex weights are 0. if they are, fill in that data
+			unsigned int vertexID = weight.mVertexId;
+			if (verts[vertexID].weight[iter] == 0.0f)
+			{
+				verts[vertexID].boneIndex[iter] = boneIndex;
+				verts[vertexID].weight[iter] = weight.mWeight;
+				return; //leave early to prevent the entire set of weights to be written to
+			}
+		}
 	}
 
 	void BindBoneTransforms(unsigned int meshID, unsigned int uniformSlot)
@@ -757,11 +795,10 @@ public:
 	std::vector<texture>					loadedTextures;
 	std::vector<std::vector<glm::vec4>>		posData;
 
+	//animation data
 	std::vector<glm::mat4>					rawTransforms;
 	std::map<std::string, unsigned int>		boneLookup;
 	bufferHandler_t<boneTransforms_t>		boneBuffer;
-
-	//std::map<std::string, aiAnimation>	animations;
 	glm::mat4 globalInverse;
 
 	//change these from std::vector to map?

@@ -63,10 +63,9 @@ public:
 		{
 			testModel->boneBuffer.Initialize(0, gl_shader_storage_buffer, gl_dynamic_draw);
 			testModel->boneBuffer.Update(gl_shader_storage_buffer, gl_dynamic_draw,
-				sizeof(glm::mat4) * testModel->boneBuffer.data.finalTransforms.size(), 
+				sizeof(glm::mat4) * testModel->boneBuffer.data.finalTransforms.size(),
 				testModel->boneBuffer.data.finalTransforms.data());
 		}
-
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 	}
