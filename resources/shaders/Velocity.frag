@@ -35,7 +35,7 @@ layout(std140, binding = 1) uniform velocitySettings
 
 layout(binding = 4) uniform jitterSettings
 {
-	vec2 haltonSequence[128];
+	vec2 haltonSequence[30];
 	float haltonScale;
 	uint numSamples;
 	uint enableDithering;
@@ -46,6 +46,17 @@ layout(binding = 0) uniform sampler2D diffuse;
 
 float OffsetX[4]; //use quincux set here. couldn't get halton to work here
 float OffsetY[4];
+
+// (xchen) gamma to linear sRGB transformation
+const float SRGB_GAMMA = 1.0 / 2.2;
+const float SRGB_INVERSE_GAMMA = 2.2;
+const float SRGB_ALPHA = 0.055;
+
+// (xchen) gamma to linear sRGB transformation
+// Converts a srgb color to a rgb color (approximated, but fast)
+vec3 srgb_to_rgb_approx(vec3 srgb) {
+    return pow(srgb, vec3(SRGB_INVERSE_GAMMA));
+}
 
 void main()
 {
@@ -73,7 +84,8 @@ void main()
 
 	if(col.a < noise && enableDithering > 0)
 	{
-		discard;
+		// (xchen) disable ToD
+		//discard;
 	}
 
 	if(col.a < 0.5)
@@ -87,5 +99,6 @@ void main()
 	}
 
 	outVelocity = vec4(velocity, 0, 1);
-	outColor = col;
+	outColor.xyz = srgb_to_rgb_approx( col.xyz );
+	outColor.w = 1.0f;
 }

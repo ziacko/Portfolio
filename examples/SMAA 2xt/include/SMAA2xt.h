@@ -40,19 +40,11 @@ public:
 	SMAA2xt(
 		const char* windowName = "Ziyad Barakat's portfolio (SMAA 2xt)",
 		camera* texModelCamera = new camera(glm::vec2(1280, 720), 5.0f, camera::projection_t::perspective, 100.0f, 2000.f),
-		const char* shaderConfigPath = "../../resources/shaders/SMAA1xt.txt",
+		const char* shaderConfigPath = "../../resources/shaders/SMAA2xt.txt",
 		model_t* model = new model_t("../../resources/models/fbx_foliage/broadleaf_field/Broadleaf_Desktop_Field.FBX"))
 		: SMAA1xt(windowName, texModelCamera, shaderConfigPath, model)
 	{
-		velocityUniforms = bufferHandler_t<reprojectSettings_t>();
-		taaUniforms = bufferHandler_t<TAASettings_t>();
-		jitterUniforms = bufferHandler_t<jitterSettings_t>();
-		jitter2Uniforms = bufferHandler_t<jitter2Settings_t>();
-
-		for (int iter = 0; iter < 128; iter++)
-		{
-			jitterUniforms.data.haltonSequence[iter] = glm::vec2(CreateHaltonSequence(iter + 1, 2), CreateHaltonSequence(iter + 1, 3));
-		}
+		downscaleBuffer = new frameBuffer();
 	}
 
 	~SMAA2xt() {};
@@ -103,6 +95,10 @@ public:
 		SMAABuffer->Bind();
 		SMAABuffer->AddAttachment(new frameBuffer::attachment_t("SMAA"));
 
+		downscaleBuffer->Initialize();
+		downscaleBuffer->Bind();
+		downscaleBuffer->AddAttachment(new frameBuffer::attachment_t("downscale"));
+
 		for(unsigned int iter = 0; iter < numPreviousFrames; iter++)
 		{
 			frameBuffer* newBuffer = new frameBuffer();
@@ -118,9 +114,10 @@ public:
 		edgeDetectionProgram = shaderPrograms[1]->handle;
 		blendingWeightProgram = shaderPrograms[2]->handle;
 		SMAAProgram = shaderPrograms[3]->handle;
-		resolveProgram = shaderPrograms[4]->handle;
-		compareProgram = shaderPrograms[5]->handle;
-		finalProgram = shaderPrograms[6]->handle;
+		downscaleProgram = shaderPrograms[4]->handle;
+		resolveProgram = shaderPrograms[5]->handle;
+		compareProgram = shaderPrograms[6]->handle;
+		finalProgram = shaderPrograms[7]->handle;
 		
 		frameBuffer::Unbind();
 	}
@@ -144,23 +141,26 @@ protected:
 	{
 		velocityUniforms.data.currentView = sceneCamera->view;
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
-		glm::vec2 defaultResolution = sceneCamera->resolution;
-		sceneCamera->resolution = glm::vec2(sceneCamera->resolution.x * 2, sceneCamera->resolution.y * 2);
 		sceneCamera->Update();
 
 		UpdateDefaultBuffer();
 
 		JitterPass(); //render current scene with jitter
-		sceneCamera->resolution = defaultResolution;
+		//sceneCamera->resolution = defaultResolution;
 
 		sceneCamera->ChangeProjection(camera::projection_t::orthographic);
 		UpdateDefaultBuffer();
 		
+		//SMAA
 		EdgeDetectionPass();
 		BlendingWeightsPass();
 
 		SMAAPass();
 
+		//Downscale
+		DownscalePass();
+
+		//TAA
 		SMAAResolvePass();
 
 		FinalPass(historyFrames[currentFrame]->attachments[0], geometryBuffer->attachments[0]);
@@ -172,92 +172,25 @@ protected:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	virtual void JitterPass()
+	virtual void DownscalePass()
 	{
-		geometryBuffer->Bind();
-
-		GLenum drawbuffers[2] = {
-			geometryBuffer->attachments[0]->FBODesc.attachmentFormat, //color
-			geometryBuffer->attachments[1]->FBODesc.attachmentFormat, //velocity
-		};
-
-		glDrawBuffers(2, drawbuffers);
-
-		//we just need the first LOd so only do the first 3 meshes
-		for (size_t iter = 0; iter < 3; iter++)
+		downscaleBuffer->Bind();
+		GLenum drawBuffers[1] =
 		{
-			if (testModel->meshes[iter].isCollision)
-			{
-				continue;
-			}
+			downscaleBuffer->attachments[0]->FBODesc.attachmentFormat
+		};
+		glDrawBuffers(1, drawBuffers);
 
-			testModel->meshes[iter].textures[0].SetActive(0);
-
-			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
-			glUseProgram(this->programGLID);
-			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
-			glCullFace(GL_BACK);
-
-			if (wireframe)
-			{
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			}
-			glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, nullptr);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
-
-		geometryBuffer->Unbind();
-	}
-
-	virtual void EdgeDetectionPass()
-	{
-		edgesBuffer->Bind();
-
-		glDrawBuffers(1, &edgesBuffer->attachments[0]->FBODesc.attachmentFormat);
-
-		geometryBuffer->attachments[0]->SetActive(0);//color
-		geometryBuffer->attachments[1]->SetActive(1);//depth
-
+		SMAABuffer->attachments[0]->SetActive(0); //current color
+		historyFrames[!currentFrame]->attachments[0]->SetActive(2);//previous color
+		
+		//also apply downscaling to depth?
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glUseProgram(edgeDetectionProgram);
+		glUseProgram(downscaleProgram);
 		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		edgesBuffer->Unbind();
-	}
-
-	virtual void BlendingWeightsPass()
-	{
-		weightsBuffer->Bind();
-
-		glDrawBuffers(1, &weightsBuffer->attachments[0]->FBODesc.attachmentFormat);
-
-		edgesBuffer->attachments[0]->SetActive(0);
-		SMAAArea->SetActive(1);
-		SMAASearch->SetActive(2);
-
-		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glUseProgram(blendingWeightProgram);
-		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		weightsBuffer->Unbind();
-	}
-
-	virtual void SMAAPass()
-	{
-		SMAABuffer->Bind();
-		glDrawBuffers(1, &SMAABuffer->attachments[0]->FBODesc.attachmentFormat);
-
-		geometryBuffer->attachments[0]->SetActive(0); // color
-		weightsBuffer->attachments[0]->SetActive(1); //blending weights
-
-		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glUseProgram(SMAAProgram);
-		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		SMAABuffer->Unbind();
+		downscaleBuffer->Unbind();
 	}
 
 	virtual void SMAAResolvePass()
@@ -268,15 +201,13 @@ protected:
 		};
 		glDrawBuffers(1, drawBuffers);
 
-		SMAABuffer->attachments[0]->SetActive(0); //current color
+		downscaleBuffer->attachments[0]->SetActive(0); //current color
 		geometryBuffer->attachments[2]->SetActive(1);//current depth
 
 		historyFrames[!currentFrame]->attachments[0]->SetActive(2); //previous color
 		historyFrames[!currentFrame]->attachments[1]->SetActive(3);//previous depth
 
 		geometryBuffer->attachments[1]->SetActive(4); //velocity
-		
-		
 
 		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
 		glUseProgram(resolveProgram);
@@ -286,69 +217,9 @@ protected:
 		historyFrames[currentFrame]->Unbind();
 	}
 
-	void FinalPass(texture* tex1, texture* tex2)
-	{
-		//draw directly to backbuffer
-		tex1->SetActive(0);
-		
-		glBindVertexArray(defaultVertexBuffer->vertexArrayHandle);
-		glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
-		if (enableCompare)
-		{
-			tex2->SetActive(1);
-			glUseProgram(compareProgram);
-		}
-
-		else
-		{
-			glUseProgram(finalProgram);
-		}
-	
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-	}
-
 	virtual void BuildGUI(tWindow* window, ImGuiIO io) override
 	{
-		scene3D::BuildGUI(windows[0], io);
-
-		DrawBufferAttachments();
-		DrawSMAASettings();
-	}
-
-	void DrawSMAASettings()
-	{
-		ImGui::Begin("SMAA Settings");
-		ImGui::Checkbox("enable Compare", &enableCompare);
-		ImGui::Separator();
-		ImGui::DragFloat("halton scale", &jitterUniforms.data.haltonScale, 0.1f, 0.0f, 15.0f, "%.3f");
-		ImGui::DragInt("halton index", &jitterUniforms.data.haltonIndex, 1.0f, 0, 128);
-
-		ImGui::End();
-	}
-
-	virtual void DrawTAASettings()
-	{
-		ImGui::Begin("TAA Settings");
-		ImGui::Text("performance | %f", defaultTimer->GetTimeMilliseconds());
-		ImGui::Checkbox("enable Compare", &enableCompare);
-		//ImGui::SliderFloat("feedback factor", &taaUniforms.data.feedbackFactor, 0.0f, 1.0f);
-		//ImGui::InputFloat("max depth falloff", &taaUniforms.data.maxDepthFalloff, 0.01f);
-
-		//velocity settings
-		ImGui::Separator();
-		//ImGui::SameLine();
-		//ImGui::Text("Velocity settings");
-		//ImGui::SliderFloat("Velocity scale", &taaUniforms.data.velocityScale, 0.0f, 10.0f);
-
-		//jitter settings
-		//ImGui::Separator();
-		//ImGui::SameLine();
-		ImGui::DragFloat("halton scale", &jitterUniforms.data.haltonScale, 0.1f, 0.0f, 15.0f, "%.3f");
-		ImGui::DragInt("halton index", &jitterUniforms.data.haltonIndex, 1.0f, 0, 128);
-		ImGui::DragInt("enable dithering", &jitterUniforms.data.enableDithering, 1.0f, 0, 1);
-		ImGui::DragFloat("dithering scale", &jitterUniforms.data.ditheringScale, 1.0f, 0.0f, 1000.0f, "%.3f");
-
-		ImGui::End();
+		SMAA1xt::BuildGUI(windows[0], io);
 	}
 
 	virtual void DrawBufferAttachments()
@@ -376,6 +247,11 @@ protected:
 			ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
 		ImGui::Text("%s\n", SMAABuffer->attachments[0]->GetUniformName().c_str());
+
+		ImGui::Image((ImTextureID*)downscaleBuffer->attachments[0]->GetHandle(), ImVec2(512, 288),
+			ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+		ImGui::Text("%s\n", downscaleBuffer->attachments[0]->GetUniformName().c_str());
 
 		for (auto iter : historyFrames)
 		{
@@ -439,6 +315,10 @@ protected:
 		weightsBuffer->ClearTexture(weightsBuffer->attachments[0], clearColor2);
 		weightsBuffer->Unbind();
 
+		downscaleBuffer->Bind();
+		downscaleBuffer->ClearTexture(downscaleBuffer->attachments[0], clearColor2);
+		downscaleBuffer->Unbind();
+
 		sceneCamera->ChangeProjection(camera::projection_t::perspective);
 		velocityUniforms.data.previousProjection = sceneCamera->projection;
 		velocityUniforms.data.previousView = sceneCamera->view;
@@ -449,6 +329,7 @@ protected:
 	virtual void ResizeBuffers(glm::ivec2 resolution) override
 	{
 		SMAA::ResizeBuffers(resolution);
+		downscaleBuffer->Resize(glm::ivec3(resolution, 1));
 		for (auto frame : historyFrames)
 		{
 			for (auto iter : frame->attachments)
@@ -466,6 +347,8 @@ protected:
 		jitter2Uniforms.Initialize(3);
 		velocityUniforms.Initialize(1);
 		taaUniforms.Initialize(2);
+		downscaleUniforms.Initialize(5);
+		lanzcosUniforms.Initialize(6);
 	}
 };
 #endif

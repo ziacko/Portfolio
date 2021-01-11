@@ -67,6 +67,7 @@ public:
 		setting.name = windowName;
 		setting.userData = this;
 		setting.resolution = vec2_t<unsigned int>(1280, 720);
+		setting.SetProfile(profile_t::core);
 
 		windows.push_back(manager->AddWindow(setting));
 		

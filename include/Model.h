@@ -132,7 +132,7 @@ public:
 			
 		globalInverse = glm::inverse(rootTransform);
 
-		Evaluate("Character|Character|Take 001|BaseLayer", 1.f, false, 24, 0);
+		//Evaluate("Character|Character|Take 001|BaseLayer", 1.f, false, 24, 0);
 	}
 
 	void BeginExtraction(aiNode* node, const aiScene* scene)
