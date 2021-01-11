@@ -2,6 +2,9 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
+      <FullPath>D:\projects\Portfolio\x64\Debug\ZERO_CHECK</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
       <FullPath>D:\projects\Portfolio\examples\SSAA\Debug\SSAA.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
