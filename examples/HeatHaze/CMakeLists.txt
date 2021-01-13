@@ -44,7 +44,7 @@ set (SCENE_INCLUDE_DIR "./include")
 set (COMMON_HEADER_DIR "../../include/")
 set (COMMON_HEADERS 
 "${COMMON_HEADER_DIR}Camera.h" 
-"${COMMON_HEADER_DIR}/DefaultUniformBuffer.h" 
+"${COMMON_HEADER_DIR}DefaultUniformBuffer.h" 
 "${COMMON_HEADER_DIR}Scene.h" 
 "${COMMON_HEADER_DIR}Texture.h"
 "${COMMON_HEADER_DIR}TexturedScene.h"

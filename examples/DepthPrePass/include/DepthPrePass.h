@@ -141,11 +141,13 @@ protected:
 			{
 				continue;
 			}
-
-			testModel->meshes[iter].textures[0].SetActive(0);
+			if (testModel->meshes[iter].textures.size() > 0)
+			{
+				testModel->meshes[iter].textures[0].SetActive(0);
+			}
 			//add the previous depth?
 
-			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
+			glBindVertexArray(testModel->meshes[0].vertexArrayHandle);
 			glUseProgram(earlyDepthProgram);
 			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
@@ -153,7 +155,12 @@ protected:
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
-			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
+			//glDrawElements(GL_TRIANGLES, testModel->indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElementsBaseVertex(GL_TRIANGLES,
+				testModel->meshes[iter].numIndices,
+				GL_UNSIGNED_INT,
+				(void*)(sizeof(unsigned int) * testModel->meshes[iter].indexOffset),
+				testModel->meshes[iter].vertexOffset);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
@@ -182,10 +189,13 @@ protected:
 				continue;
 			}
 
-			testModel->meshes[iter].textures[0].SetActive(0);
+			if (testModel->meshes[iter].textures.size() > 0)
+			{
+				testModel->meshes[iter].textures[0].SetActive(0);
+			}
 			//add the previous depth?
 
-			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
+			glBindVertexArray(testModel->meshes[0].vertexArrayHandle);
 			glUseProgram(programGLID);
 			glViewport(0, 0, windows[0]->settings.resolution.width, windows[0]->settings.resolution.height);
 
@@ -195,7 +205,12 @@ protected:
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
-			glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
+			glDrawElementsBaseVertex(GL_TRIANGLES,
+				testModel->meshes[iter].numIndices,
+				GL_UNSIGNED_INT,
+				(void*)(sizeof(unsigned int) * testModel->meshes[iter].indexOffset),
+				testModel->meshes[iter].vertexOffset);
+			//glDrawElements(GL_TRIANGLES, testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 

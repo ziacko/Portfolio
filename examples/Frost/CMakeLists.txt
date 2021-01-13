@@ -1,16 +1,20 @@
 cmake_minimum_required (VERSION 2.6)
-project (Scene_Example CXX)
+project (Frost C CXX)
 
-set(PROJECT_LABEL "Displacement")
-set ( SOURCE "./source/Displacement.cpp")
+set(PROJECT_LABEL "Frost")
 
+link_directories (${LINK_DIRECTORY})
+link_libraries (${LIBS})
+set ( SOURCE "./source/Frost.cpp")
+
+#set (TINYEXTENDER_SOURCE_DIR "../../dependencies/tinyextender/Source")
 find_package(OpenGL)
 
 if(UNIX)
 set (LINK_DIRECTORY "/usr/lib/")
 set (LIBS "-lX11 ${OPENGL_LIBRARIES}")
-set (RELEASE_FLAGS "-std=c++11 -DSO -w -fpermissive 2> errors.txt")
-set (DEBUG_FLAGS "-std=c++11 -DSO -w -g -fpermissive -DDEBUG 2> errors.txt")
+set (RELEASE_FLAGS "-std=c++11 -DSO -Wall -Wextra -g 2> errors.txt")
+set (DEBUG_FLAGS "-std=c++11 -DSO -Wall -Wextra -g -DDEBUG 2> errors.txt")
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
 	add_definitions(${RELEASE_FLAGS})
@@ -21,7 +25,6 @@ elseif (CMAKE_BUILD_TYPE MATCHES "")
 endif()
 
 endif(UNIX)
-
 set (COMMON_OUTPUT_DIR "./bin")
 set (DEBUG_OUTPUT_DIR "./bin/Debug/")
 set (RELEASE_OUTPUT_DIR "./bin/Release/")
@@ -35,9 +38,8 @@ set (TINYCLOCK_INCLUDE_DIR "../../dependencies/tinyclock/Include")
 set (GLM_INCLUDE_DIR "../../dependencies/glm/")
 set (GLI_INCLUDE_DIR "../../dependencies/gli/")
 set (IMGUI_INCLUDE_DIR "../../dependencies/imgui/")
-set (ASSIMP_INCLUDE_DIR "../../dependencies/assimp/include/")
 set (STB_INCLUDE_DIR "../../dependencies/stb")
-set (SCENE_INCLUDE_DIR "./include") 
+set (SCENE_INCLUDE_DIR "./include")
 
 set (COMMON_HEADER_DIR "../../include/")
 set (COMMON_HEADERS 
@@ -48,11 +50,9 @@ set (COMMON_HEADERS
 "${COMMON_HEADER_DIR}TexturedScene.h"
 "${COMMON_HEADER_DIR}UniformBuffer.h"
 "${COMMON_HEADER_DIR}Utilities.h"
-"${COMMON_HEADER_DIR}VertexBuffer.h"
-"${COMMON_HEADER_DIR}Model.h"
-"${COMMON_HEADER_DIR}Scene3D.h")
+"${COMMON_HEADER_DIR}VertexBuffer.h")
 
-set (HEADERS "${COMMON_HEADERS}" "../texturedModel/include/" "./include/displacement.h")
+set (HEADERS "${COMMON_HEADERS}" "${SCENE_INCLUDE_DIR}/Frost.h" "../HeatHaze/include/HeatHaze.h")
 
 include_directories("${PORTFOLIO_INCLUDE_DIR}")
 include_directories("${TINYWINDOW_INCLUDE_DIR}")
@@ -63,18 +63,13 @@ include_directories("${TINYCLOCK_INCLUDE_DIR}")
 include_directories("${IMGUI_INCLUDE_DIR}")
 include_directories("${GLM_INCLUDE_DIR}")
 include_directories("${GLI_INCLUDE_DIR}")
-include_directories("${ASSIMP_INCLUDE_DIR}")
 include_directories("${STB_INCLUDE_DIR}")
 include_directories("${SCENE_INCLUDE_DIR}")
 
-set(ASSIMP_LIB_DIRECTORY "../../dependencies/assimp/lib/Debug")
-set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw" "${IMGUI_INCLUDE_DIR}/imgui_demo" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
+link_directories (${LINK_DIRECTORY})
+link_libraries (${LIBS})
 
-add_executable(Displacement ${SOURCE} ${IMGUI_SOURCES} ${HEADER_FILES} ${HEADERS})
-set_property(TARGET Displacement PROPERTY OUTPUT_NAME "Displacement")
-find_library("${ASSIMP_LIB_DIRECTORY}", assimp)
+set (IMGUI_SOURCES "${IMGUI_INCLUDE_DIR}/imgui.cpp" "${IMGUI_INCLUDE_DIR}/imgui_draw.cpp" "${IMGUI_INCLUDE_DIR}/imgui_demo.cpp" "${IMGUI_INCLUDE_DIR}/imgui_widgets.cpp")
 
-target_link_libraries(Displacement "${ASSIMP_LIB_DIRECTORY}/assimp-vc142-mtd")
-
-set (SHADER_DIR "../../resources/shaders/")
-file(GLOB GLSL_SOURCE_FILES "${SHADER_DIR}/Model.txt" "${SHADER_DIR}/Model.vert" "${SHADER_DIR}/Model.frag")
+add_executable(Frost ${SOURCE} ${IMGUI_SOURCES} ${SOIL_SOURCES} ${HEADER_FILES} ${HEADERS})
+set_property(TARGET Frost PROPERTY OUTPUT_NAME "Frost")

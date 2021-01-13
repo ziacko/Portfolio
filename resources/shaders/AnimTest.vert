@@ -42,7 +42,7 @@ void main()
 	pos += Bones[boneIndex.z] * position * weight.z;
 	pos += Bones[boneIndex.w] * position * weight.w;
 
-	outBlock.position = projection * view * translation * pos;// Bones[boneIndex] * position * weight;
+	outBlock.position = projection * view * translation * position;// Bones[boneIndex] * position * weight;
 
 	outBlock.uv = uv;
 	outBlock.normal = normal;
