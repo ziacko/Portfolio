@@ -35,7 +35,7 @@ layout(std140, binding = 1) uniform velocitySettings
 
 layout(binding = 4) uniform jitterSettings
 {
-	vec2 haltonSequence[30];
+	vec2 haltonSequence[128];
 	float haltonScale;
 	uint numSamples;
 	uint enableDithering;

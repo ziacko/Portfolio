@@ -537,7 +537,7 @@ protected:
 	virtual void ClearBuffers()
 	{
 		//ok copy the current frame into the previous frame and clear the rest of the buffers	
-		float clearColor1[4] = { 0.25f, 0.25f, 0.25f, 0.25f };
+		float clearColor1[4] = { 0.05f, 0.05f, 0.05f, 0.0f };
 		float clearColor2[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		float clearColor3[4] = { 1.0f, 0.0f, 0.0f, 0.0f }; //this is for debugging only!
 
