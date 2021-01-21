@@ -43,8 +43,6 @@ struct vertexAttribute_t
 
 enum vertexOffset
 {
-
-
 	position = offsetof(vertexAttribute_t, position),
 	color = offsetof(vertexAttribute_t, color),
 	normal = offsetof(vertexAttribute_t, normal),

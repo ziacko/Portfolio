@@ -215,7 +215,7 @@ float Pattern2(in vec2 perlinVector, out vec2 q, out vec2 r, in float time)
 void main()
 {
 	vec2 q = (inBlock.uv + uvOffset) * uvScale;
-	q *= uvScale;
+	//q *= uvScale;
 	vec2 p = -1.0 + 2.0 * q;
 	vec2 qQ;
 	vec2 r;

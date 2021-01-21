@@ -42,10 +42,10 @@ void main()
 	pos += Bones[boneIndex.z] * position * weight.z;
 	pos += Bones[boneIndex.w] * position * weight.w;
 
-	gl_Position = mvp * pos;// Bones[boneIndex] * position * weight;
+	outBlock.position = projection * view * translation * pos;// Bones[boneIndex] * position * weight;
 
 	outBlock.uv = uv;
 	outBlock.normal = normal;
 	
-	// = outBlock.position;
+	gl_Position = outBlock.position;
 }

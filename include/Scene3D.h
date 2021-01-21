@@ -34,7 +34,7 @@ public:
 	scene3D(const char* windowName = "Ziyad Barakat's Portfolio(3D scene)",
 		camera* camera3D = new camera(glm::vec2(1280, 720), 200.0f, camera::projection_t::perspective, 0.1f, 1000000.f),
 		const char* shaderConfigPath = "../../resources/shaders/AnimTest.txt",
-		model_t* model = new model_t("../../resources/models/anims/Goalkeeper.fbx")) :
+		model_t* model = new model_t("../../resources/models/bob/boblampclean.md5mesh")) :
 		scene(windowName, camera3D, shaderConfigPath)
 	{
 		testModel = model;
@@ -68,6 +68,8 @@ public:
 		}
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
+
+		OGLProgram = shaderPrograms[1]->handle;
 	}
 
 protected:
@@ -76,9 +78,13 @@ protected:
 	bufferHandler_t<baseMaterialSettings_t>	materialBuffer;
 	bool wireframe;
 
+	unsigned int OGLProgram;
+
 	virtual void Draw() override 
 	{
-		//for each mesh in the model
+		//glUseProgram(OGLProgram);
+		//testModel->Render();
+
 		for(size_t iter = 0; iter < testModel->meshes.size(); iter++)
 		{
 			if (testModel->meshes[iter].isCollision)
@@ -87,11 +93,11 @@ protected:
 			}
 
 			//set the materials per mesh
-			materialBuffer.data.diffuse = testModel->meshes[iter].diffuse;
+			/*materialBuffer.data.diffuse = testModel->meshes[iter].diffuse;
 			materialBuffer.data.ambient = testModel->meshes[iter].ambient;
 			materialBuffer.data.specular = testModel->meshes[iter].specular;
 			materialBuffer.data.reflective = testModel->meshes[iter].reflective;
-			materialBuffer.Update(gl_uniform_buffer, gl_dynamic_draw);
+			materialBuffer.Update(gl_uniform_buffer, gl_dynamic_draw);*/
 
 			//glBindBuffer(gl_element_array_buffer, iter.indexBufferHandle);
 			glBindVertexArray(testModel->meshes[iter].vertexArrayHandle);
@@ -111,6 +117,12 @@ protected:
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 			glDrawElements(GL_TRIANGLES, (GLsizei)testModel->meshes[iter].indices.size(), GL_UNSIGNED_INT, 0);
+			/*glDrawElementsBaseVertex(GL_TRIANGLES,
+				testModel->meshes[iter].numIndices,
+				GL_UNSIGNED_INT,
+				(void*)(sizeof(unsigned int) * testModel->meshes[iter].indexOffset),
+				testModel->meshes[iter].vertexOffset);*/
+
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 		
@@ -148,7 +160,6 @@ protected:
 		}
 		
 		defaultPayload.Update(gl_uniform_buffer, gl_dynamic_draw);
-		
 
 		//only one animation in marv so just grab the first
 		//pass in time in milliseconds
